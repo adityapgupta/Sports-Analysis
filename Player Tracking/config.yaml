@@ -1,0 +1,10 @@
+path: /home/adityapg/work/Sports-Analysis/datasets
+train: images/train
+val: images/val
+
+# Classes
+names:
+  0: ball
+  1: player
+  2: goalkeeper
+  3: referee
