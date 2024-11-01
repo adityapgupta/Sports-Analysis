@@ -3,8 +3,12 @@ const textinp = document.getElementById('textinp')
 const numinp = document.getElementById('numinp')
 const numout = document.getElementById('numout')
 const textout = document.getElementById('textout')
+let socket;
 
-const socket = new WebSocket("ws://localhost:8001/")
+const id = setInterval(() => {
+    socket = new WebSocket('ws://')
+})
+socket.addEventListener('open')
 
 const handler = function (e) {
     socket.send(JSON.stringify({
