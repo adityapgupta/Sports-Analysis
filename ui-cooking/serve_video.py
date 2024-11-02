@@ -3,8 +3,11 @@ import subprocess as sp
 import asyncio
 from websockets.asyncio.server import serve
 import numpy
+import os
 import pandas as pd
 import json
+from http.server import SimpleHTTPRequestHandler, HTTPServer
+import threading
 
 df:pd.DataFrame = pd.read_csv("./media-videos/SNMOT-060/det/det.txt", header=0, names=['frame', 'user', 'x', 'y', 'w', 'h'], index_col=False)
 # go into frontend/ in a cli and run `python -m http.server`
@@ -17,11 +20,35 @@ async def handler(webs):
         print(message)
         try:
             jsval:dict = json.loads(message)
-            if jsval['data'] == 'boxes':
-                await webs.send(df.loc[df['frame'] == 1, ['x', 'y', 'w', 'h']].to_json(orient='records'))
-
+            match jsval['type']:
+                case 'getFiles':
+                    videos = os.listdir('./frontend/media-videos/')
+                    await webs.send(json.dumps({
+                                'type': 'vidList',
+                                'data': videos
+                            }))
+                case 'bufVid':
+                    mval, maxval = jsval['min'], jsval['max']
+                    frames = df.loc[df['frame'].between(mval, maxval)]
+                    frame_dict = {}
+                    for frame, group in frames.groupby('frame'):
+                        frame_dict[frame] = group[['user', 'x', 'y', 'w', 'h']].to_dict(orient='records')
+                    await webs.send(json.dumps({
+                        'type': 'bufferedFrames',
+                        'data': frame_dict
+                    }))
         except Exception as e:
-            print(e)
+            pass
+
+class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory='./frontend/media-videos', **kwargs)
+
+def start_http_server():
+    handler = CustomHTTPRequestHandler
+    httpd = HTTPServer(('localhost', 8000), handler)
+    print('serving')
+    httpd.serve_forever()
 
 async def send_data(webs, num, txt):
     message = {"num": num, "text": txt}
@@ -30,6 +57,6 @@ async def send_data(webs, num, txt):
 async def main_loop():
     async with serve(handler, "", 8001):
         await asyncio.get_running_loop().create_future()
-
-if __name__ == "__main__":
-    asyncio.run(main_loop())
+http_thread = threading.Thread(target=start_http_server)
+http_thread.start()
+asyncio.run(main_loop())

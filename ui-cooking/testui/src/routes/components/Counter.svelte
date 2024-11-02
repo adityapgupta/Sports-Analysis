@@ -1,37 +1,29 @@
 <script lang="ts">
 	import { spring } from 'svelte/motion';
+	import { get } from 'svelte/store';
+	import { counterVal } from '../shared/progstate.svelte.ts';
 
-	let count = $state(0);
+	let count = $state(get(counterVal))
 
-	// svelte-ignore state_referenced_locally
-	const displayedCount = spring(count);
-
-	$effect(() => {
-		displayedCount.set(count);
-	});
-	let offset = $derived(modulo($displayedCount, 1));
-
-	function modulo(n: number, m: number) {
-		// handle negative numbers
-		return ((n % m) + m) % m;
-	}
+	counterVal.subscribe(state => {
+		count = get(counterVal)
+	})
 </script>
 
 <div class="counter">
-	<button onclick={() => (count -= 1)} aria-label="Decrease the counter by one">
+	<button onclick={() => counterVal.set(count - 1)} aria-label="Decrease the counter by one">
 		<svg aria-hidden="true" viewBox="0 0 1 1">
 			<path d="M0,0.5 L1,0.5" />
 		</svg>
 	</button>
 
 	<div class="counter-viewport">
-		<div class="counter-digits" style="transform: translate(0, {100 * offset}%)">
-			<!-- <strong class="hidden" aria-hidden="true">{Math.floor($displayedCount + 1)}</strong> -->
-			<strong>{Math.floor($displayedCount)}</strong>
+		<div class="counter-digits">
+			<strong>{count}</strong>
 		</div>
 	</div>
 
-	<button onclick={() => (count += 1)} aria-label="Increase the counter by one">
+	<button onclick={() => counterVal.set(count + 1)} aria-label="Increase the counter by one">
 		<svg aria-hidden="true" viewBox="0 0 1 1">
 			<path d="M0,0.5 L1,0.5 M0.5,0 L0.5,1" />
 		</svg>
@@ -97,10 +89,5 @@
 		position: absolute;
 		width: 100%;
 		height: 100%;
-	}
-
-	.hidden {
-		top: -100%;
-		user-select: none;
 	}
 </style>

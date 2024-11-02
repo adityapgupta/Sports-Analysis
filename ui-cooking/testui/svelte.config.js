@@ -17,10 +17,7 @@ const config = {
 			fallback: undefined,
 			precompress: false,
 			strict: true
-		}),
-		prerender: {
-			entries: ['/', '/page-1/']
-		}
+		})
 	}
 };
 
