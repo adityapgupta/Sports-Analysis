@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { fade } from 'svelte/transition';
 	import Sidebar from './components/sidebar.svelte';
 	import { get } from 'svelte/store';
 	import Homepage from './shared/homepage.svelte';
 	import Page2 from './shared/page2.svelte';
 	import { currentPage, pages } from './shared/progstate.svelte.ts';
 
-	const fprops = {duration:50}
 	let socket:WebSocket;
 	let cpage = get(currentPage)
 	currentPage.subscribe(pg => cpage = pg)
@@ -27,9 +25,9 @@
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<div class="flex flex-row items-stretch">
+<div class="flex flex-row flex-grow items-stretch">
 	<Sidebar />
-	<div class="flex flex-col flex-grow" in:fade={fprops}>
+	<div class="flex flex-col flex-grow" style="width: 100%;">
 		{#if cpage==pages.HOME}
 			<Homepage {socket} />
 		{:else if cpage==pages.PAGE1}

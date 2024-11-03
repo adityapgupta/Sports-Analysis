@@ -1,4 +1,4 @@
-import { writable } from "svelte/store"
+import { writable, get } from "svelte/store"
 enum pages {
     HOME = "home",
     PAGE1 = "page-1"
@@ -9,8 +9,14 @@ let counterVal = writable(0)
 const currentFile = writable("")
 let cvideo = writable("")
 let port = writable(8000)
-const boxesData = writable<box[]>([])
-const dataStore = writable<{ [key: number]: box[] }>({})
+interface boxesData {
+    [key: number]: box[]
+}
+
+const dataStore = writable<boxesData>({})
+const allBoxes = writable<box[]>([])
+const activeBox = writable<number>(0)
+const activeBoxFrames = writable(0)
 
 class box {
     x: number
@@ -18,6 +24,7 @@ class box {
     w: number
     h: number
     owner: number
+    appearedFrames = 0
 
     constructor(owner: number, x: number, y: number, w: number, h: number) {
         this.x = x
@@ -39,9 +46,39 @@ class box {
         const h = cvs.height
         const [tx, ty, tw, th] = this.transformedCoords(realw, realh, w, h)
         ctx.beginPath()
-        ctx.rect(tx, ty, tw, th)
-        ctx.stroke()
+        if (this.owner == get(activeBox)) {
+            ctx.strokeStyle = "#55f"
+            ctx.rect(tx, ty, tw, th)
+            ctx.stroke()
+            ctx.strokeStyle = "red"
+        } else {
+            ctx.rect(tx, ty, tw, th)
+            ctx.stroke()
+        }
+    }
+
+    isClicked(mouseX: number, mouseY: number, cvs: HTMLCanvasElement, realw: number, realh: number  ): boolean {
+        const w = cvs.width
+        const h = cvs.height
+        const [tx, ty, tw, th] = this.transformedCoords(realw, realh, w, h)
+        return mouseX >= tx && mouseX <= tx + tw && mouseY >= ty && mouseY <= ty + th
+    }
+
+    evaluateAppearedFrames() {
+        this.appearedFrames = 0
+        const storeData = get(dataStore);
+        for (const key in storeData) {
+            if (storeData.hasOwnProperty(key)) {
+                const items = storeData[key];
+                for (const item of items) {
+                    if (item.owner == this.owner) {
+                        this.appearedFrames++
+                    }
+                }
+            }
+        }
     }
 }
+const video_duration = $state(writable(0));
 
-export { currentPage, pages, counterVal, currentFile, cvideo, port, boxesData, box, dataStore }
+export { currentPage, pages, counterVal, currentFile, cvideo, port, type boxesData, box, dataStore, video_duration, activeBox, allBoxes, activeBoxFrames }

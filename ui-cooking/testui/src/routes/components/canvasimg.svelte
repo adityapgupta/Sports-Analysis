@@ -1,15 +1,17 @@
 <script lang="ts">
     import { get } from "svelte/store";
-    import { onMount } from "svelte";
-    import { cvideo, port, boxesData, dataStore } from "../shared/progstate.svelte";
+    import { setContext } from "svelte";
+    import { cvideo, port, dataStore, video_duration, activeBox, activeBoxFrames } from "../shared/progstate.svelte";
+    let { children }: { children: () => any } = $props();
     let vidobj: HTMLVideoElement;
     let getVidUrl = function() {
         return `http://localhost:${get(port)}/${get(cvideo)}`
     }
     let vidurl = $state(getVidUrl())
     let ctime = $state(0)
-    let dur = $state(0)
-    let portion = $derived(ctime/dur*100)
+    // let dur = $state(0)
+    let portion = $derived(ctime/$video_duration*100)
+    // setContext('video-duration', dur)
     let frame = $derived(Math.floor(ctime*25))
     let p_frame = 0
     let isPaused = $state(false)
@@ -18,6 +20,7 @@
     let vheight = $state(0)
     let vnatw = $state(0)
     let vnath = $state(0)
+
     function formatTime(time: number): string {
         return time.toFixed(2);
     }
@@ -29,6 +32,7 @@
         }
         vidurl = getVidUrl()
         vidobj.load()
+        redrawCanvas()
     })
 
     function playVideo() {
@@ -46,16 +50,19 @@
             p_frame = frame
             redrawCanvas()
         }
+        if (canvas.height != vheight) {
+            canvas.height = vheight
+            canvas.width = vwidth
+            redrawCanvas()
+        }
     })
 
     function redrawCanvas() {
         const current_frame_boxes = get(dataStore)[frame + 2]
-        console.log(frame)
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
         canvas.height = vheight
         canvas.width = vwidth
         ctx.clearRect(0, 0, vwidth, vheight)
-        if (frame > 700) console.log(get(dataStore))
         if (current_frame_boxes == undefined) return
         ctx.strokeStyle = "red"
         ctx.lineWidth = 2
@@ -64,26 +71,38 @@
         }
     }
 
+    function check_boxes(e: MouseEvent) {
+        const current_frame_boxes = get(dataStore)[frame + 2];
+        if (current_frame_boxes) {
+            let b = current_frame_boxes.findLast(box => 
+                    box.isClicked(e.layerX, e.layerY, canvas, vnatw, vnath) && box.owner != $activeBox)
+            if (b) { 
+                $activeBox = b.owner
+                $activeBoxFrames = b.appearedFrames
+            }
+        }
+        redrawCanvas()
+    }
+
     $inspect(vidurl)
 </script>
-<div id="vid-container" class="primaryvid relative">
-    <video bind:this={vidobj} src={vidurl} controls
-        bind:currentTime={ctime} bind:duration={dur} bind:paused={isPaused}
-        bind:clientHeight={vheight} bind:clientWidth={vwidth}
-        bind:videoHeight={vnath} bind:videoWidth={vnatw}>
-        <track kind="captions" srclang="en" label="English captions" default>
-    </video>
-    <canvas bind:this={canvas} class="absolute top-0 left-0 pointer-events-none"></canvas>
+<div class="flex flex-col flex-grow xl:flex-grow-0">
+    <div id="vid-container" class="relative">
+        <video bind:this={vidobj} src={vidurl}
+            bind:currentTime={ctime} bind:duration={$video_duration} bind:paused={isPaused}
+            bind:clientHeight={vheight} bind:clientWidth={vwidth}
+            bind:videoHeight={vnath} bind:videoWidth={vnatw} onclick={check_boxes}>
+            <track kind="captions" srclang="en" label="English captions" default>
+        </video>
+        <canvas bind:this={canvas} class="absolute top-0 left-0 pointer-events-none"></canvas>
+    </div>
+    <button onclick={playVideo} class="bg-orange-300 w-fit px-3 pb-1 rounded-sm">{isPaused ? "play" : "pause"} video</button>
+    <p>the video is {formatTime(ctime)} out of {formatTime($video_duration)} seconds. also {Math.floor(portion)}%. frame {Math.floor(frame)}</p>
 </div>
-<button onclick={playVideo}>{isPaused ? "play" : "pause"} video</button>
-<p>the video is {formatTime(ctime)} out of {formatTime(dur)} seconds. also {Math.floor(portion)}%. frame {Math.floor(frame)}</p>
+
+{@render children?.()}
 <style>
-    .primaryvid {
-        width: 100%;
-    }
-    @media (min-width: 1300px) {
-        .primaryvid {
-            width: 50%;
-        }
+    video {
+        max-height: 50vh;
     }
 </style>

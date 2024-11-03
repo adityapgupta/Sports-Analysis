@@ -9,12 +9,14 @@ import json
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import threading
 
-df:pd.DataFrame = pd.read_csv("./media-videos/SNMOT-060/det/det.txt", header=0, names=['frame', 'user', 'x', 'y', 'w', 'h'], index_col=False)
+cvideo = "snmot-60.mp4"
+df:pd.DataFrame = pd.read_csv(f"./media-videos/outputs/{cvideo}.txt", header=0, names=['frame', 'user', 'x', 'y', 'w', 'h'], index_col=False)
 # go into frontend/ in a cli and run `python -m http.server`
 # remember to run this file first
 
 
 async def handler(webs):
+    global cvideo, df
     while True:
         message = await webs.recv()
         print(message)
@@ -29,6 +31,10 @@ async def handler(webs):
                             }))
                 case 'bufVid':
                     mval, maxval = jsval['min'], jsval['max']
+                    if jsval['video'] != cvideo:
+                        cvideo = jsval['video']
+                        df = pd.read_csv(f"./media-videos/outputs/{cvideo}.txt", header=0, names=['frame', 'user', 'x', 'y', 'w', 'h'], index_col=False)
+                    print(df.head())
                     frames = df.loc[df['frame'].between(mval, maxval)]
                     frame_dict = {}
                     for frame, group in frames.groupby('frame'):

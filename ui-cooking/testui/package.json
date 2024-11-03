@@ -19,6 +19,7 @@
 		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@tailwindcss/container-queries": "^0.1.1",
 		"@tailwindcss/forms": "^0.5.9",
+		"@types/heatmap.js": "^2.0.41",
 		"autoprefixer": "^10.4.20",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
@@ -30,6 +31,8 @@
 		"@emotion/react": "^11.13.3",
 		"@emotion/styled": "^11.13.0",
 		"@mui/icons-material": "^6.1.6",
+		"heatmap.js": "^2.0.5",
+		"pixi.js": "^8.5.2",
 		"vite-plugin-svgr": "^4.2.0"
 	}
 }

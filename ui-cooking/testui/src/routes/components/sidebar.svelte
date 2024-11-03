@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 </svelte:head>
 
-<div class="flex flex-col flex-grow-0 mx-4 px-1 pt-1 bg-amber-600 rounded-sm items-stretch min-w-fit">
+<div class="sidebardiv flex flex-col flex-grow-0 mx-4 px-1 pt-1 bg-amber-600 rounded-sm items-stretch min-w-fit">
     <button id="expbutton" onclick={() => expanded = !expanded} class="inline-flex items-center buttons mt-2">
         <i class="material-icons text-center pl-1.5">menu</i>
         {#if expanded}
@@ -29,7 +29,7 @@
         {/if}
     </button>
     {#each icons as icon, i}
-    <button class="inline-flex items-center cspan w-auto h-auto p-1 buttons" onclick={() => changePage(i)}>
+    <button class="inline-flex items-center w-auto h-auto p-1 buttons" onclick={() => changePage(i)}>
         {#if i == 0}
             <img src={icon} alt="icon" class="rounded-sm" width="24px"/>
         {:else}
