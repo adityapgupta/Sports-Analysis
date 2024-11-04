@@ -4,19 +4,20 @@ enum pages {
     PAGE1 = "page-1"
 }
 
-const currentPage = writable(pages.HOME)
-let counterVal = writable(0)
-const currentFile = writable("")
-let cvideo = writable("")
-let port = writable(8000)
+export let currentPage = writable(pages.HOME)
+export let currentFile = writable("")
+export let cvideo = writable("")
+export let port = writable(8000)
 interface boxesData {
     [key: number]: box[]
 }
 
-const dataStore = writable<boxesData>({})
-const allBoxes = writable<box[]>([])
-const activeBox = writable<number>(0)
-const activeBoxFrames = writable(0)
+export const video_duration = $state(writable(0));
+export const dataStore = writable<boxesData>({})
+export const allBoxes = writable<box[]>([])
+export const activeBox = writable<number>(0)
+export const activeBoxFrames = writable(0)
+export const validVideo = writable(0)
 
 class box {
     x: number
@@ -79,6 +80,5 @@ class box {
         }
     }
 }
-const video_duration = $state(writable(0));
 
-export { currentPage, pages, counterVal, currentFile, cvideo, port, type boxesData, box, dataStore, video_duration, activeBox, allBoxes, activeBoxFrames }
+export { pages, type boxesData, box }

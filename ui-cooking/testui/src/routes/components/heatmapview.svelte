@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { get } from "svelte/store";
     import { activeBox, activeBoxFrames } from "../shared/progstate.svelte";
     let heatmapContainer:HTMLDivElement;
 </script>

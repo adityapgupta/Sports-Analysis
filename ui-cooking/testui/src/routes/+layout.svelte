@@ -4,6 +4,8 @@
 	let { children } = $props();
 
 </script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+
 
 <div class="app min-h-screen">
 
@@ -17,7 +19,7 @@
 
 	<footer class="flex-shrink">
 		<p>
-			visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to learn about SvelteKit
+			UMC301 sports analysis project, <a href="https://github.com/adityapgupta/Sports-Analysis">Github</a> 
 		</p>
 	</footer>
 </div>

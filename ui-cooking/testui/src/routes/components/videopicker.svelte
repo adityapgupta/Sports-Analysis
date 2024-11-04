@@ -1,13 +1,9 @@
 <script lang="ts">
-    import { getContext } from "svelte";
-    import { cvideo, type boxesData, box, dataStore, video_duration, allBoxes } from "../shared/progstate.svelte"
-    import { get } from "svelte/store"
+    import { cvideo, box, dataStore, video_duration } from "../shared/progstate.svelte"
     const { socket }: { socket: WebSocket } = $props()
 
     let videos = $state([])
     let bval = $state('');
-    let vidstart: number;
-    let vidend: number;
     function getFiles() {
         socket.send(JSON.stringify({
             type:'getFiles',

@@ -1,19 +1,16 @@
 <script lang="ts">
-    import { get } from "svelte/store";
-    import { onMount } from "svelte";
     let expanded = $state(true);
-    import { slide, fly } from 'svelte/transition'
+    import { fade } from 'svelte/transition';
     import { currentPage, pages } from '../shared/progstate.svelte.ts'
     import ico1 from '$lib/sidebar-icons/ico1.jpg'
     import ico2 from '$lib/sidebar-icons/ico2.jpg'
 
+    const fadeOpt = {duration: 150}
     const icons = [ico1, ico2]
-
-    const descriptions = ["Hello there", "Second icon"]
+    const descriptions = ["Homepage", "Player list"]
 
     let changePage = function(idx: number) {
-        currentPage.set(Object.values(pages)[idx])
-        console.log("something is happening?", idx)
+        $currentPage = Object.values(pages)[idx]
     }
 </script>
 
@@ -25,7 +22,7 @@
     <button id="expbutton" onclick={() => expanded = !expanded} class="inline-flex items-center buttons mt-2">
         <i class="material-icons text-center pl-1.5">menu</i>
         {#if expanded}
-            <span class="pr-2 pl-3 text-center self-stretch content-center">Modules</span>
+            <span class="pr-2 pl-3 text-center self-stretch content-center" transition:fade={fadeOpt}>Modules</span>
         {/if}
     </button>
     {#each icons as icon, i}
@@ -36,7 +33,7 @@
             <img src={icon} alt="icon" class="rounded-sm" width="24px"/>
         {/if}
         {#if expanded}
-            <span class="text-center pl-2 pr-3">{descriptions[i]}</span>
+            <span class="text-center pl-2 pr-3" transition:fade={fadeOpt}>{descriptions[i]}</span>
         {/if}
     </button>
     {/each}
