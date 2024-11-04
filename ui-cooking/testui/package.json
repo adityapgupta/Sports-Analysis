@@ -30,7 +30,6 @@
 	"dependencies": {
 		"@emotion/react": "^11.13.3",
 		"@emotion/styled": "^11.13.0",
-		"@mui/icons-material": "^6.1.6",
 		"heatmap.js": "^2.0.5",
 		"pixi.js": "^8.5.2",
 		"vite-plugin-svgr": "^4.2.0"
