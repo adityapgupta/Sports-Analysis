@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Sidebar from './components/sidebar.svelte';
 	import Homepage from './shared/homepage.svelte';
-	import Page2 from './shared/page2.svelte';
+	import PlayerList from './shared/player_list.svelte';
 	import { currentPage, pages } from './shared/progstate.svelte.ts';
 
 	let socket:WebSocket;
@@ -26,7 +26,7 @@
 	<Sidebar />
 	<div class="flex flex-col flex-grow" style="width: 100%;">
 		<Homepage {socket} visibility={$currentPage == pages.HOME} />
-		<Page2 visibility={$currentPage == pages.PAGE1}/>
+		<PlayerList {socket} visibility={$currentPage == pages.PLAYERS_LIST}/>
 	</div>
 </div>
 

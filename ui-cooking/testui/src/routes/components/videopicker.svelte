@@ -1,8 +1,10 @@
 <script lang="ts">
-    import { cvideo, box, dataStore, video_duration } from "../shared/progstate.svelte"
+    import Page from "../+page.svelte";
+    import PlayerList from "../shared/player_list.svelte";
+    import { cvideo, box, dataStore, video_duration, vid_prefix, player_data } from "../shared/progstate.svelte"
     const { socket }: { socket: WebSocket } = $props()
 
-    let videos = $state([])
+    let videos = $state(["Use the \"Get Videos\" button to load a video"])
     let bval = $state('');
     function getFiles() {
         socket.send(JSON.stringify({
@@ -18,9 +20,15 @@
         const data = JSON.parse(msg.data)
         if (data.type == 'vidList') {
             videos = data.data
+            $vid_prefix = data.prefix
+        } else if (data.type == 'player_info') {
+            let newdata: [string, string, string][] = []
+            for (let i in data.data) {
+                newdata.push([data.data[i][0].toString(), data.data[i][1].toString().trim(), data.data[i][2].toString().trim()])
+            }
+            $player_data = newdata
         }
     })
-    
     socket.addEventListener('message', msg => {
         const data = JSON.parse(msg.data)
         if (data.type == 'bufferedFrames') {
