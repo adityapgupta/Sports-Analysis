@@ -1,24 +1,25 @@
 import { writable, get } from "svelte/store"
 enum pages {
-    HOME = "home",
-    PAGE1 = "page-1"
+    HOME = "page-1",
+    PLAYERS_LIST = "page-2"
 }
 
 export let currentPage = writable(pages.HOME)
 export let currentFile = writable("")
 export let cvideo = writable("")
+export let vid_prefix = writable("")
 export let port = writable(8000)
+export let player_data = $state(writable<Array<[string, string, string]>>([]))
+export let video_duration = $state(writable(0));
+export let dataStore = writable<boxesData>({})
+export let allBoxes = writable<box[]>([])
+export let activeBox = writable<number>(0)
+export let activeBoxFrames = writable(0)
+export let validVideo = writable(0)
+
 interface boxesData {
     [key: number]: box[]
 }
-
-export const video_duration = $state(writable(0));
-export const dataStore = writable<boxesData>({})
-export const allBoxes = writable<box[]>([])
-export const activeBox = writable<number>(0)
-export const activeBoxFrames = writable(0)
-export const validVideo = writable(0)
-
 class box {
     x: number
     y: number

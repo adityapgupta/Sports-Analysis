@@ -3,20 +3,28 @@ import subprocess as sp
 import asyncio
 from websockets.asyncio.server import serve
 import numpy
+import csv
 import os
 import pandas as pd
 import json
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import threading
 
-cvideo = "snmot-60.mp4"
-df:pd.DataFrame = pd.read_csv(f"./media-videos/outputs/{cvideo}.txt", header=0, names=['frame', 'user', 'x', 'y', 'w', 'h'], index_col=False)
-# go into frontend/ in a cli and run `python -m http.server`
-# remember to run this file first
+def load_video_failsafe(path, names):
+    try:
+        return pd.read_csv(path, names=names, index_col=False)
+    except:
+        return pd.DataFrame(names=names)
 
+video_prefix = "media-videos/vids/"
+data_prefix = "media-videos/outputs/"
+cvideo = "snmot-60.mp4"
+
+df = load_video_failsafe(f"{data_prefix}{cvideo}/player_screen_data.txt", ['frame', 'user', 'x', 'y', 'w', 'h'])
+df_identity = load_video_failsafe(f"{data_prefix}{cvideo}/player_identity.txt", ['sr_no', 'identity', 'jersey'])
 
 async def handler(webs):
-    global cvideo, df
+    global cvideo, df, video_prefix, data_prefix, df_identity
     while True:
         message = await webs.recv()
         print(message)
@@ -24,16 +32,18 @@ async def handler(webs):
             jsval:dict = json.loads(message)
             match jsval['type']:
                 case 'getFiles':
-                    videos = os.listdir('./frontend/media-videos/')
+                    videos = os.listdir(f'{video_prefix}')
                     await webs.send(json.dumps({
                                 'type': 'vidList',
-                                'data': videos
+                                'data': videos,
+                                'prefix': video_prefix
                             }))
                 case 'bufVid':
                     mval, maxval = jsval['min'], jsval['max']
                     if jsval['video'] != cvideo:
                         cvideo = jsval['video']
-                        df = pd.read_csv(f"./media-videos/outputs/{cvideo}.txt", header=0, names=['frame', 'user', 'x', 'y', 'w', 'h'], index_col=False)
+                        df = load_video_failsafe(f"{data_prefix}{cvideo}/player_screen_data.txt", ['frame', 'user', 'x', 'y', 'w', 'h'])
+                        df_identity = load_video_failsafe(f"{data_prefix}{cvideo}/player_identity.txt", ['sr_no', 'identity', 'jersey'])
                     print(df.head())
                     frames = df.loc[df['frame'].between(mval, maxval)]
                     frame_dict = {}
@@ -43,15 +53,19 @@ async def handler(webs):
                         'type': 'bufferedFrames',
                         'data': frame_dict
                     }))
+                    await webs.send(json.dumps({
+                        'type': 'player_info',
+                        'data': df_identity.values.tolist()
+                    }))
+                case 'update-players':
+                    with open(f"{data_prefix}{cvideo}/player_identity.txt" , 'w') as f:
+                        c = csv.writer(f)
+                        c.writerows(jsval['data'])
         except Exception as e:
             pass
 
-class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory='./frontend/media-videos', **kwargs)
-
 def start_http_server():
-    handler = CustomHTTPRequestHandler
+    handler = SimpleHTTPRequestHandler
     httpd = HTTPServer(('localhost', 8000), handler)
     print('serving')
     httpd.serve_forever()
