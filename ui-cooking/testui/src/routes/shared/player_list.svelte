@@ -11,51 +11,53 @@
 </script>
 
 <div class="flex-col flex-grow" style:display={visibility ? "flex" : "none"}>
-    <table class="p-1 m-2">
-        <thead>
-            <tr>
-                <th class="width-fit">ID</th>
-                <th>Jersey number</th>
-                <th>Player name</th>
-            </tr>
-        </thead>
-        <tbody>
-            {#each $player_data as val, idx}
-                {#if val[1] != "ball"}
-                <tr>
-                    <td>{val[0]}</td>
-                    <td>{val[2]}</td>
-                    <td><input class="player_input" type="text" bind:value="{val[1]}"></td>
-                </tr>
-                {/if}
-            {/each}
-        </tbody>
-    </table>
-    <button onclick={sendUpdatedPlayers}> Update players to the file </button>
+    <div class="main-grid">
+        <div class="g1 font-bold">ID</div>
+        <div class="g2 font-bold">Jersey Number</div>
+        <div class="g3 font-bold">Name</div>
+        {#each $player_data as val, idx}
+            {#if val[1] != "ball"}
+                <div class="g1">{val[0]}</div>
+                <div class="g2">{val[2]}</div>
+                <div class="g3"><input class="player_input" type="text" bind:value="{val[1]}"></div>
+            {/if}
+        {/each}
+
+    </div>
+    <button onclick={sendUpdatedPlayers} class="text-lg p-2 py-1 m-auto mt-2 rounded border-black border-2"> Update players to the file </button>
 </div>
 
 <style>
-    table {
-        border-collapse: collapse;
-        min-width: 500px;
-        max-width: 700px;
-        text-align: center;
-        align-self: center;
-    }
-    @media (max-width: 650px) {
-        table {
-            min-width: 90%;
-            transition: width linear 0.5s;
-        }
-    }
-    th, td {
-        border: 1.5px solid black;
-        padding: 3px;
-    }
     .player_input {
         all: inherit;
-        border: none;
-        margin: none;
-        padding: none;
+        border: 0px;
+        margin: auto;
+        padding: 0px;
+        width: 100%;
     }
+    
+    .main-grid {
+        display: grid;
+        grid-template-columns: fit-content(50px) 1fr 1fr;
+        align-content: center;
+        justify-content: center;
+        text-align: center;
+        width: min(80%, 800px);
+        align-self: center;
+        border: 0.5px solid;
+        div {
+            padding: 5px;
+            padding-inline: 20px;
+            border: 0.5px solid;
+            
+        }
+        .g3 {
+            padding-block: 0px;
+            input {
+                padding: 5px;
+            }
+        }
+    }
+
+
 </style>

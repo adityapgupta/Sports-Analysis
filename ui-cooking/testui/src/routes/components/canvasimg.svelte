@@ -4,7 +4,6 @@
     let vidobj: HTMLVideoElement;
     let vidurl = $derived(`http://localhost:${$port}/${$vid_prefix}${$cvideo}`)
     let ctime = $state(0)
-    let portion = $derived(ctime/$video_duration*100)
     let frame = $derived(Math.floor(ctime*25))
     let p_frame = 0
     let isPaused = $state(false)
@@ -12,7 +11,6 @@
     let vwidth = $state(0)
     let vheight = $state(0)
     let vnatw = $state(0)
-    let optWidth = $state(0)
     let vnath = $state(0)
     let bWidth = $state(0)
     let play_button:HTMLButtonElement;
@@ -80,13 +78,6 @@
         redrawCanvas()
     }
 
-    function barClicked(e: MouseEvent) {
-        const t = e.target as HTMLElement
-        const frac = (e.layerX-bWidth)/t.clientWidth // The button width is included in layerX
-        vidobj.currentTime = frac * $video_duration
-        play_button.focus()
-    }
-
     $inspect(vidurl)
     $inspect($validVideo)
 </script>
@@ -100,14 +91,10 @@
             </video>
             <canvas bind:this={canvas} class="absolute top-0 left-0 pointer-events-none"></canvas>
             {#if $validVideo}
-                <div class="flex flex-row w-auto">
-                    <button bind:clientWidth={bWidth} onclick={playVideo} class="bg-orange-300 w-fit  px-2 py-1 rounded-sm" bind:this={play_button}>
+                <div class="flex flex-row w-auto mt-1">
+                    <button bind:clientWidth={bWidth} onclick={playVideo} class="bg-orange-300 w-fit px-2 pb-0.5 pt-1 rounded-md" bind:this={play_button}>
                         <i class="material-icons">{isPaused ? "play_arrow" : "pause"}</i> </button>
-
-                    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-                    <!-- svelte-ignore a11y_click_events_have_key_events -->
-                    <progress max={$video_duration} value={ctime} class="flex-grow"
-                        bind:clientWidth={optWidth} onclick={barClicked}></progress>
+                    <input type='range' max={$video_duration} step="any" bind:value={ctime} onkeydown={playVideo} class="flex-grow h-auto mx-2"/>
                 </div>
             {/if}
     </div>
