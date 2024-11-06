@@ -10,11 +10,18 @@ import json
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import threading
 
+def load_video_failsafe(path, names):
+    try:
+        return pd.read_csv(path, names=names, index_col=False)
+    except:
+        return pd.DataFrame(names=names)
+
 video_prefix = "media-videos/vids/"
 data_prefix = "media-videos/outputs/"
 cvideo = "snmot-60.mp4"
-df:pd.DataFrame = pd.read_csv(f"{data_prefix}{cvideo}/player_screen_data.txt", names=['frame', 'user', 'x', 'y', 'w', 'h'], index_col=False)
-df_identity:pd.DataFrame = pd.read_csv(f"{data_prefix}{cvideo}/player_identity.txt", names=['sr_no', 'identity', 'jersey'], index_col=False)
+
+df = load_video_failsafe(f"{data_prefix}{cvideo}/player_screen_data.txt", ['frame', 'user', 'x', 'y', 'w', 'h'])
+df_identity = load_video_failsafe(f"{data_prefix}{cvideo}/player_identity.txt", ['sr_no', 'identity', 'jersey'])
 
 async def handler(webs):
     global cvideo, df, video_prefix, data_prefix, df_identity
@@ -35,8 +42,8 @@ async def handler(webs):
                     mval, maxval = jsval['min'], jsval['max']
                     if jsval['video'] != cvideo:
                         cvideo = jsval['video']
-                        df = pd.read_csv(f"{data_prefix}{cvideo}/player_screen_data.txt", header=0, names=['frame', 'user', 'x', 'y', 'w', 'h'], index_col=False)
-                        df_identity = pd.read_csv(f"{data_prefix}{cvideo}/player_identity.txt", header=0, names=['sr_no', 'identity', 'jersey'], index_col=False)
+                        df = load_video_failsafe(f"{data_prefix}{cvideo}/player_screen_data.txt", ['frame', 'user', 'x', 'y', 'w', 'h'])
+                        df_identity = load_video_failsafe(f"{data_prefix}{cvideo}/player_identity.txt", ['sr_no', 'identity', 'jersey'])
                     print(df.head())
                     frames = df.loc[df['frame'].between(mval, maxval)]
                     frame_dict = {}
