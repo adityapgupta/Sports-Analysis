@@ -44,7 +44,6 @@ async def handler(webs):
                         cvideo = jsval['video']
                         df = load_video_failsafe(f"{data_prefix}{cvideo}/player_screen_data.txt", ['frame', 'user', 'x', 'y', 'w', 'h'])
                         df_identity = load_video_failsafe(f"{data_prefix}{cvideo}/player_identity.txt", ['sr_no', 'identity', 'jersey'])
-                    print(df.head())
                     frames = df.loc[df['frame'].between(mval, maxval)]
                     frame_dict = {}
                     for frame, group in frames.groupby('frame'):
