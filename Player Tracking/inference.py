@@ -19,7 +19,8 @@ from help.utils.utils_heatmap import get_keypoints_from_heatmap_batch_maxpool, g
 transform2 = T.Resize((540, 960))
 device = torch.device("cuda:0")
 color_map = {
-    'player': (0, 0, 255),
+    'player0': (0, 0, 255),
+    'player1': (0, 255, 0),
     'ball': (255, 255, 0),
     'referee': (255, 0, 0),
     'goalkeeper': (0, 0, 0)
@@ -158,11 +159,16 @@ def project(P, coords):
 
     pts = coords['cords']
     labs = coords['labels']
+    teams = coords['class_id']
     pts = [get_map_point([(x1+x2)/2, y2,1], P) for x1,_,x2,y2 in pts]
-
+    idx = 0
     for i, coord in enumerate(pts):
         x, y = coord
-        color = color_map[labs[i]] if labs[i] in color_map else (255, 255, 0)
+        label = labs[i]
+        if label == 'player':
+            label = 'player' + str(teams[idx])
+            idx += 1
+        color = color_map[label] if label in color_map else (255, 255, 0)
         cv2.circle(field, (int(x)*640//105, int(y)*480//68), 4, color, -1)
         cv2.circle(field, (int(x)*640//105, int(y)*480//68), 4, (0, 0, 0), 1)
     return field

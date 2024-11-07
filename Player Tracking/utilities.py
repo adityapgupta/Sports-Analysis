@@ -102,8 +102,6 @@ def annotate_video(input_path, output_path, finetune_path = "../final_models/bes
             cords = detections.xyxy
             labels = detections.data['class_name']
             arr = {'cords': cords, 'labels': labels}
-            annotated_frame = inf_main(frame, arr)
-            plt.imsave(f"./saves/{i}.png", annotated_frame)
             # with open(f"./saves/{i}.pkl", 'wb') as f:
             #     pickle.dump((x, y, trac), f)
 
@@ -114,15 +112,15 @@ def annotate_video(input_path, output_path, finetune_path = "../final_models/bes
             # detections = tracker.update_with_detections(detections)
 
             # goalkeeper_detections = all_detections[all_detections.class_id == GOALKEEPER_ID]
-            # players_detections = all_detections[all_detections.class_id == PLAYER_ID]
+            players_detections = detections[detections.class_id == PLAYER_ID]
             # referees_detections = all_detections[all_detections.class_id == REFEREE_ID]
 
-            # players_crops = [sv.crop_image(frame, xyxy) for xyxy in players_detections.xyxy]
-            # players_detections.class_id = team_classifier.predict(players_crops)
+            players_crops = [sv.crop_image(frame, xyxy) for xyxy in players_detections.xyxy]
+            players_detections.class_id = team_classifier.predict(players_crops)
             
-            # players_mean = []
-            # for crop in players_crops:
-            #     players_mean.append(crop.reshape(-1, crop.shape[-1]).mean(axis=0))
+            arr['class_id'] = players_detections.class_id
+            annotated_frame = inf_main(frame, arr)
+            plt.imsave(f"./saves/{i}.png", annotated_frame)
 
             # goalkeeper_detections.class_id = resolve_goalkeepers_team_id(players_detections, goalkeeper_detections)
 
@@ -152,6 +150,6 @@ def annotate_video(input_path, output_path, finetune_path = "../final_models/bes
             # video_sink.write_frame(annotated_frame)
             video_writer.write(annotated_frame)
     video_writer.release()
-input_path = "help/examples/iniesta_sample.mp4"
-output_path = "help/examples/iniesta_sample_out.mp4"
+input_path = "trimmedtrimeed.mp4"
+output_path = "trimmedtrimeed_out.mp4"
 annotate_video(input_path, output_path)
