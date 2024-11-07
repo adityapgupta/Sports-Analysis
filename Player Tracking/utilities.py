@@ -1,6 +1,7 @@
 import numpy as np
 import subprocess as sp
 import supervision as sv
+import pickle
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from ultralytics import YOLO
@@ -95,11 +96,16 @@ def annotate_video(input_path, output_path, finetune_path = "../final_models/bes
             detections = sv.Detections.from_ultralytics(result)
             # temp_cords = detections.xyxy
             # temp_labels = detections.data['class_name']
+            # detections = detections.with_nms(threshold=0.5, class_agnostic=True)
+            # detections = tracker.update_with_detections(detections)
+            # trac = detections.tracker_id
             cords = detections.xyxy
             labels = detections.data['class_name']
             arr = {'cords': cords, 'labels': labels}
             annotated_frame = inf_main(frame, arr)
             plt.imsave(f"./saves/{i}.png", annotated_frame)
+            # with open(f"./saves/{i}.pkl", 'wb') as f:
+            #     pickle.dump((x, y, trac), f)
 
             # ball_detections = detections[detections.class_id == BALL_ID]
             # # ball_detections.xyxy = sv.pad_boxes(xyxy=ball_detections.xyxy, px=10)

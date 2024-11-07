@@ -19,34 +19,34 @@ from help.utils.utils_heatmap import get_keypoints_from_heatmap_batch_maxpool, g
 transform2 = T.Resize((540, 960))
 device = torch.device("cuda:0")
 color_map = {
-    'player': 'lightblue',
-    'ball': 'yellow',
-    'referee': 'red',
-    'goalkeeper': 'black'
+    'player': (0, 0, 255),
+    'ball': (255, 255, 0),
+    'referee': (255, 0, 0),
+    'goalkeeper': (0, 0, 0)
 }
-lines_coords = [[[0., 54.16, 0.], [16.5, 54.16, 0.]],
-                [[16.5, 13.84, 0.], [16.5, 54.16, 0.]],
-                [[16.5, 13.84, 0.], [0., 13.84, 0.]],
-                [[88.5, 54.16, 0.], [105., 54.16, 0.]],
-                [[88.5, 13.84, 0.], [88.5, 54.16, 0.]],
-                [[88.5, 13.84, 0.], [105., 13.84, 0.]],
-                [[0., 37.66, -2.44], [0., 30.34, -2.44]],
-                [[0., 37.66, 0.], [0., 37.66, -2.44]],
-                [[0., 30.34, 0.], [0., 30.34, -2.44]],
-                [[105., 37.66, -2.44], [105., 30.34, -2.44]],
-                [[105., 30.34, 0.], [105., 30.34, -2.44]],
-                [[105., 37.66, 0.], [105., 37.66, -2.44]],
-                [[52.5, 0., 0.], [52.5, 68, 0.]],
-                [[0., 68., 0.], [105., 68., 0.]],
-                [[0., 0., 0.], [0., 68., 0.]],
-                [[105., 0., 0.], [105., 68., 0.]],
-                [[0., 0., 0.], [105., 0., 0.]],
-                [[0., 43.16, 0.], [5.5, 43.16, 0.]],
-                [[5.5, 43.16, 0.], [5.5, 24.84, 0.]],
-                [[5.5, 24.84, 0.], [0., 24.84, 0.]],
-                [[99.5, 43.16, 0.], [105., 43.16, 0.]],
-                [[99.5, 43.16, 0.], [99.5, 24.84, 0.]],
-                [[99.5, 24.84, 0.], [105., 24.84, 0.]]]
+# lines_coords = [[[0., 54.16, 0.], [16.5, 54.16, 0.]],
+#                 [[16.5, 13.84, 0.], [16.5, 54.16, 0.]],
+#                 [[16.5, 13.84, 0.], [0., 13.84, 0.]],
+#                 [[88.5, 54.16, 0.], [105., 54.16, 0.]],
+#                 [[88.5, 13.84, 0.], [88.5, 54.16, 0.]],
+#                 [[88.5, 13.84, 0.], [105., 13.84, 0.]],
+#                 [[0., 37.66, -2.44], [0., 30.34, -2.44]],
+#                 [[0., 37.66, 0.], [0., 37.66, -2.44]],
+#                 [[0., 30.34, 0.], [0., 30.34, -2.44]],
+#                 [[105., 37.66, -2.44], [105., 30.34, -2.44]],
+#                 [[105., 30.34, 0.], [105., 30.34, -2.44]],
+#                 [[105., 37.66, 0.], [105., 37.66, -2.44]],
+#                 [[52.5, 0., 0.], [52.5, 68, 0.]],
+#                 [[0., 68., 0.], [105., 68., 0.]],
+#                 [[0., 0., 0.], [0., 68., 0.]],
+#                 [[105., 0., 0.], [105., 68., 0.]],
+#                 [[0., 0., 0.], [105., 0., 0.]],
+#                 [[0., 43.16, 0.], [5.5, 43.16, 0.]],
+#                 [[5.5, 43.16, 0.], [5.5, 24.84, 0.]],
+#                 [[5.5, 24.84, 0.], [0., 24.84, 0.]],
+#                 [[99.5, 43.16, 0.], [105., 43.16, 0.]],
+#                 [[99.5, 43.16, 0.], [99.5, 24.84, 0.]],
+#                 [[99.5, 24.84, 0.], [105., 24.84, 0.]]]
 
 
 def projection_from_cam_params(final_params_dict):
@@ -105,31 +105,56 @@ def get_map_point(point, P):
     return (point[0], point[1])
 
 def project(P, coords):
-    fig, ax = plt.subplots()
+    # fig, ax = plt.subplots()
 
-    for line in lines_coords:
-        x1, y1, _ = line[0]
-        x2, y2, _ = line[1]
+    # for line in lines_coords:
+    #     x1, y1, _ = line[0]
+    #     x2, y2, _ = line[1]
 
-        ax.plot([x1, x2], [y1, y2], 'white', lw=3)
+    #     ax.plot([x1, x2], [y1, y2], 'white', lw=3)
 
-    ax.add_artist(plt.Circle((105/2, 68/2), 9.15, color='white', fill=False, lw=3))
+    # ax.add_artist(plt.Circle((105/2, 68/2), 9.15, color='white', fill=False, lw=3))
 
-    points_l = []
-    for ang in np.linspace(219, 321, 200):
-        ang = np.deg2rad(ang)
-        point = [94 + 9.15*np.sin(ang), 68/2 + 9.15*np.cos(ang)]
-        # Plot the arc
-        points_l.append(point)
-    ax.plot([x for x, _ in points_l], [y for _, y in points_l], 'white', lw=3)
+    # points_l = []
+    # for ang in np.linspace(219, 321, 200):
+    #     ang = np.deg2rad(ang)
+    #     point = [94 + 9.15*np.sin(ang), 68/2 + 9.15*np.cos(ang)]
+    #     # Plot the arc
+    #     points_l.append(point)
+    # ax.plot([x for x, _ in points_l], [y for _, y in points_l], 'white', lw=3)
     
-    points_r = []
-    for ang in np.linspace(39, 141, 200):
-        ang = np.deg2rad(ang)
-        point = [11 + 9.15*np.sin(ang), 68/2 + 9.15*np.cos(ang)]
-        # Plot the arc
-        points_r.append(point)
-    ax.plot([x for x, _ in points_r], [y for _, y in points_r], 'white', lw=3)
+    # points_r = []
+    # for ang in np.linspace(39, 141, 200):
+    #     ang = np.deg2rad(ang)
+    #     point = [11 + 9.15*np.sin(ang), 68/2 + 9.15*np.cos(ang)]
+    #     # Plot the arc
+    #     points_r.append(point)
+    # ax.plot([x for x, _ in points_r], [y for _, y in points_r], 'white', lw=3)
+
+    # pts = coords['cords']
+    # labs = coords['labels']
+    # pts = [get_map_point([(x1+x2)/2, y2,1], P) for x1,_,x2,y2 in pts]
+
+    # for i, coord in enumerate(pts):
+    #     x, y = coord
+    #     color = color_map[labs[i]] if labs[i] in color_map else 'yellow'
+    #     ax.scatter(x, y, c = color, marker='o')
+
+    # ax.set_xlim(0, 105)
+    # ax.set_ylim(0, 68)
+    # ax.invert_yaxis()
+    # ax.axis('off')
+    # plt.tight_layout(pad=0)
+    # fig.patch.set_facecolor('green')
+    # return fig
+
+    # Open ./field.png
+    field = cv2.imread('field.png')
+
+    # for i, coord in enumerate(pts):
+    #     x, y = coord
+    #     color = color_map[labs[i]] if labs[i] in color_map else 'yellow'
+    #     ax.scatter(x, y, c = color, marker='o')
 
     pts = coords['cords']
     labs = coords['labels']
@@ -137,16 +162,11 @@ def project(P, coords):
 
     for i, coord in enumerate(pts):
         x, y = coord
-        color = color_map[labs[i]] if labs[i] in color_map else 'yellow'
-        ax.scatter(x, y, c = color, marker='o')
+        color = color_map[labs[i]] if labs[i] in color_map else (255, 255, 0)
+        cv2.circle(field, (int(x)*640//105, int(y)*480//68), 4, color, -1)
+        cv2.circle(field, (int(x)*640//105, int(y)*480//68), 4, (0, 0, 0), 1)
+    return field
 
-    ax.set_xlim(0, 105)
-    ax.set_ylim(0, 68)
-    ax.invert_yaxis()
-    ax.axis('off')
-    plt.tight_layout(pad=0)
-    fig.patch.set_facecolor('green')
-    return fig
 
 
 def process_input(input, coords, model, model_l, kp_threshold, line_threshold):
@@ -167,17 +187,13 @@ def process_input(input, coords, model, model_l, kp_threshold, line_threshold):
           )
             projected_frame = project(P_reduced, coords)
         else:
-            fig, ax = plt.subplots()
-            ax.set_xlim(0, 105)
-            ax.set_ylim(0, 68)
-            ax.invert_yaxis()
-            projected_frame = fig
+            projected_frame = cv2.imread('./field.png')  
 
         # Make the projected frame into a cv2 image
-        projected_frame.canvas.draw()
-        width, height = projected_frame.canvas.get_width_height()
-        projected_frame = np.fromstring(projected_frame.canvas.tostring_rgb(), dtype='uint8', sep='')
-        projected_frame = projected_frame.reshape((height, width, 3))
+        # projected_frame.canvas.draw()
+        # width, height = projected_frame.canvas.get_width_height()
+        # projected_frame = np.fromstring(projected_frame.canvas.tostring_rgb(), dtype='uint8', sep='')
+        # projected_frame = projected_frame.reshape((height, width, 3))
 
         return projected_frame
 # if __name__ == "__main__":

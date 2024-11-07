@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { cvideo, box, dataStore, video_duration, vid_prefix, player_data, balls } from "../shared/progstate.svelte"
+    import Page from "../+page.svelte";
+    import PlayerList from "../shared/player_list.svelte";
+    import { cvideo, box, dataStore, video_duration, vid_prefix, player_data } from "../shared/progstate.svelte"
     const { socket }: { socket: WebSocket } = $props()
 
     let videos = $state(["Use the \"Get Videos\" button to load a video"])
@@ -21,17 +23,8 @@
             $vid_prefix = data.prefix
         } else if (data.type == 'player_info') {
             let newdata: [string, string, string][] = []
-            $balls = []
             for (let i in data.data) {
                 newdata.push([data.data[i][0].toString(), data.data[i][1].toString().trim(), data.data[i][2].toString().trim()])
-            }
-            console.log(newdata)
-            console.log(typeof newdata)
-            for (let i in newdata) {
-                if (newdata[i][1] == "ball") {
-                    console.log(i, newdata[i][1], newdata[i][1] == "ball")
-                    $balls.push(Number.parseInt(newdata[i][0]))
-                }
             }
             $player_data = newdata
         }
@@ -87,7 +80,7 @@
         class="bg-slate-400 p-2" onclick={getFiles}>Get videos</button>
     <select name="optsel" bind:value={bval} onchange={updateVideo} class="flex-grow p-1">
         {#each videos as vid}
-            <option class="p-2 rounded" value={vid}>{vid}</option>
+            <option value={vid}>{vid}</option>
         {/each}
     </select>
     <button onclick={loadFrameData} class="bg-slate-400 p-2">Load frame data</button>
@@ -97,9 +90,5 @@
     button, select {
         margin: 2px;
         border-radius: 3px;
-    }
-
-    option {
-        padding: 2px;
     }
 </style>
