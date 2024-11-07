@@ -2,3 +2,5 @@ datasets
 models
 **/media-videos/
 Player Tracking/runs
+Player Tracking/help/weights
+**/__pycache__/
