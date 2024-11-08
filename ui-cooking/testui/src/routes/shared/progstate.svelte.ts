@@ -16,6 +16,7 @@ export let allBoxes = writable<box[]>([])
 export let activeBox = writable<number>(0)
 export let activeBoxFrames = writable(0)
 export let validVideo = writable(0)
+export let balls= writable<number[]>([])
 
 interface boxesData {
     [key: number]: box[]
@@ -43,29 +44,6 @@ class box {
         return [this.x*hmult, this.y*vmult, this.w*hmult, this.h*vmult].map(Math.floor)
     }
 
-    draw(ctx:CanvasRenderingContext2D, cvs: HTMLCanvasElement, realw: number, realh: number) {
-        const w = cvs.width
-        const h = cvs.height
-        const [tx, ty, tw, th] = this.transformedCoords(realw, realh, w, h)
-        ctx.beginPath()
-        if (this.owner == get(activeBox)) {
-            ctx.strokeStyle = "#55f"
-            ctx.rect(tx, ty, tw, th)
-            ctx.stroke()
-            ctx.strokeStyle = "red"
-        } else {
-            ctx.rect(tx, ty, tw, th)
-            ctx.stroke()
-        }
-    }
-
-    isClicked(mouseX: number, mouseY: number, cvs: HTMLCanvasElement, realw: number, realh: number  ): boolean {
-        const w = cvs.width
-        const h = cvs.height
-        const [tx, ty, tw, th] = this.transformedCoords(realw, realh, w, h)
-        return mouseX >= tx && mouseX <= tx + tw && mouseY >= ty && mouseY <= ty + th
-    }
-
     evaluateAppearedFrames() {
         this.appearedFrames = 0
         const storeData = get(dataStore);
@@ -80,6 +58,13 @@ class box {
             }
         }
     }
+}
+
+const leeway = 20;
+export const isBoxClicked = function(inbox: box, svgelt: SVGElement, clickx: number, clicky: number, vidx: number, vidy: number) {
+    let [svgw, svgh] = [svgelt.clientWidth, svgelt.clientHeight]
+    let [t_clickx, t_clicky] = [clickx*vidx/svgw, clicky*vidy/svgh]
+    return t_clickx >= inbox.x-leeway && t_clickx <= inbox.x + inbox.w+leeway && t_clicky >= inbox.y-leeway && t_clicky <= inbox.y + inbox.h+leeway
 }
 
 export { pages, type boxesData, box }
