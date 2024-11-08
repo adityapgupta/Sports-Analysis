@@ -4,7 +4,13 @@ from dataclasses import dataclass
 from datetime import datetime
 import matplotlib.pyplot as plt
 import yaml
-from ..utils.calculations import calculate_velocity, calculate_direction
+import sys
+
+if '/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils' not in sys.path:
+    sys.path.append('/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils')
+
+from calculations import calculate_velocity, calculate_direction
+import os
 
 @dataclass
 class Sprint:
@@ -22,7 +28,7 @@ class Sprint:
 class SprintAnalyzer:
     """Analyzer for sprint detection and analysis"""
     
-    def __init__(self, config_path: str = '../../config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """Initialize Sprint Analyzer with configuration"""
         try:
             with open(config_path, 'r') as f:

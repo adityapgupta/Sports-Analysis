@@ -8,6 +8,7 @@ from sklearn.cluster import KMeans
 from scipy.spatial.distance import cdist
 import logging
 from datetime import datetime
+import os
 
 @dataclass
 class FormationZone:
@@ -30,7 +31,7 @@ class Formation:
     balance_score: float
 
 class FormationAnalyzer:
-    def __init__(self, config_path: str = 'config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """Initialize Formation Analyzer"""
         with open(config_path, 'r') as f:
             config = yaml.safe_load(f)

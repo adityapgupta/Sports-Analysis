@@ -6,23 +6,28 @@ from dataclasses import dataclass
 import yaml
 from datetime import datetime
 import logging
+import os
+import sys
+# if '/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils' not in sys.path:
+#     sys.path.append('/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils')
+
 
 # Import analyzers from core package
 from formation_analyzer import FormationAnalyzer
-from .heat_map_analyzer import HeatMapAnalyzer
-from .pressing_analyzer import PressingAnalyzer
-from .distance_analyzer import DistanceAnalyzer
-from .sprint_analyzer import SprintAnalyzer
-from .team_shape_analyzer import TeamShapeAnalyzer
-from .defensive_line_analyzer import DefensiveLineAnalyzer
-from .ball_possession_analyzer import BallPossessionAnalyzer
-from .buildup_analyzer import BuildupAnalyzer
-from .space_control_analyzer import SpaceControlAnalyzer
-from .passing_opportunities import PassingOpportunitiesAnalyzer
-from .off_ball_runs import OffBallRunsAnalyzer
+from heat_map_analyzer import HeatMapAnalyzer
+from pressing_analyzer import PressingAnalyzer
+from distance_analyzer import DistanceAnalyzer
+from sprint_analyzer import SprintAnalyzer
+from team_shape_analyzer import TeamShapeAnalyzer
+from defensive_line_analyzer import DefensiveLineAnalyzer
+from ball_possession_analyzer import BallPossessionAnalyzer
+from buildup_analyzer import BuildupAnalyzer
+from space_control_analyzer import SpaceControlAnalyzer
+from passing_opportunities import PassingOpportunitiesAnalyzer
+from off_ball_runs import OffBallRunsAnalyzer
 
 # Import utilities
-from ..utils.calculations import calculate_velocity, calculate_direction
+from calculations import calculate_velocity, calculate_direction
 # from ..utils.visualization import VisualizationHelper
 
 
@@ -35,7 +40,7 @@ class PlayerState:
     jersey_number: int
 
 class SoccerAnalyticsIntegrator:
-    def __init__(self, config_path: str = 'config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """Initialize Soccer Analytics Integrator"""
         self.logger = logging.getLogger(__name__)
         

@@ -3,9 +3,10 @@ from typing import List, Tuple, Dict
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter
 import yaml
+import os
 
 class HeatMapAnalyzer:
-    def __init__(self, config_path: str = 'config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """
         Initialize Heat Map Analyzer
         
