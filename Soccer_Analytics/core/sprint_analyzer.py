@@ -1,5 +1,3 @@
-# soccer_analytics/core/sprint_analyzer.py
-
 import numpy as np
 from typing import List, Tuple, Dict, Optional
 from dataclasses import dataclass

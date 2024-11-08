@@ -26,6 +26,8 @@ class PressingAnalyzer:
         with open(config_path, 'r') as f:
             config = yaml.safe_load(f)
         
+        self.field_length = config['field']['length']
+        self.field_width = config['field']['width']
         self.max_distance = config['thresholds']['pressing']['max_distance']
         self.reaction_time = config['thresholds']['pressing']['reaction_time']
         self.intensity_threshold = config['thresholds']['pressing']['intensity_threshold']
@@ -144,10 +146,7 @@ class PressingAnalyzer:
             ])
         }
     
-    def visualize_pressing(self, 
-                         event_index: int = -1,
-                         field_length: float = 105,
-                         field_width: float = 68):
+    def visualize_pressing(self, event_index: int = -1):
         """Visualize a specific pressing event"""
         if not self.pressing_events:
             print("No pressing events to visualize")
@@ -158,11 +157,11 @@ class PressingAnalyzer:
         plt.figure(figsize=(12, 8))
         
         # Draw field
-        plt.plot([0, field_length], [0, 0], 'k-')
-        plt.plot([0, field_length], [field_width, field_width], 'k-')
-        plt.plot([0, 0], [0, field_width], 'k-')
-        plt.plot([field_length, field_length], [0, field_width], 'k-')
-        plt.plot([field_length/2, field_length/2], [0, field_width], 'k--', alpha=0.3)
+        plt.plot([0, self.field_length], [0, 0], 'k-')
+        plt.plot([0, self.field_length], [self.field_width, self.field_width], 'k-')
+        plt.plot([0, 0], [0, self.field_width], 'k-')
+        plt.plot([self.field_length, self.field_length], [0, self.field_width], 'k-')
+        plt.plot([self.field_length/2, self.field_length/2], [0, self.field_width], 'k--', alpha=0.3)
         
         # Plot ball
         plt.plot(event.ball_position[0], event.ball_position[1], 'ro', 
