@@ -7,14 +7,7 @@
 	let socket:WebSocket;
 
 	socket = new WebSocket("ws://localhost:8001/")
-	socket.addEventListener('open',() => socket.send(JSON.stringify({data: 'boxes'})))
-	socket.addEventListener('message', (e) => {
-		const data = e.data as string
-		console.log(JSON.parse(data))
-	})
-
-	socket.addEventListener('close', () => console.log("The connection was closed"))
-
+	socket.addEventListener('open',() => console.log("The websocket connection is successful"))
 </script>
 
 <svelte:head>

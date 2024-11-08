@@ -1,7 +1,7 @@
 <script lang="ts">
     import Page from "../+page.svelte";
     import PlayerList from "../shared/player_list.svelte";
-    import { cvideo, box, dataStore, video_duration, vid_prefix, player_data } from "../shared/progstate.svelte"
+    import { cvideo, box, dataStore, video_duration, vid_prefix, player_data, balls } from "../shared/progstate.svelte"
     const { socket }: { socket: WebSocket } = $props()
 
     let videos = $state(["Use the \"Get Videos\" button to load a video"])
@@ -14,6 +14,7 @@
     
     function updateVideo() {
         cvideo.set(bval)
+        setTimeout(loadFrameData, 50)
     }
     
     socket.addEventListener('message', msg => {
@@ -25,6 +26,11 @@
             let newdata: [string, string, string][] = []
             for (let i in data.data) {
                 newdata.push([data.data[i][0].toString(), data.data[i][1].toString().trim(), data.data[i][2].toString().trim()])
+            }
+            for (let i in newdata) {
+                if (newdata[i][1] == "ball") {
+                    $balls.push(Number.parseInt(newdata[i][0]))
+                }
             }
             $player_data = newdata
         }
@@ -58,7 +64,6 @@
 
     function loadFrameData() {
         const d = $video_duration
-        console.log(d)
         if (isNaN(d)) {
             return
         }
@@ -68,7 +73,6 @@
             max: Math.floor(25*d),
             video: bval
         }))
-        console.log('sending')
     }
 
     $inspect(bval)
