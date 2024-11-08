@@ -5,6 +5,8 @@ from websockets.asyncio.server import serve
 import numpy
 import csv
 import os
+import shutil
+from pathlib import Path
 import pandas as pd
 import json
 from http.server import SimpleHTTPRequestHandler, HTTPServer
@@ -14,7 +16,7 @@ def load_video_failsafe(path, names):
     try:
         return pd.read_csv(path, names=names, index_col=False)
     except:
-        return pd.DataFrame(names=names)
+        return pd.DataFrame(columns=names)
 
 video_prefix = "media-videos/vids/"
 data_prefix = "media-videos/outputs/"
@@ -61,8 +63,15 @@ async def handler(webs):
                     with open(f"{data_prefix}{cvideo}/player_identity.txt" , 'w') as f:
                         c = csv.writer(f)
                         c.writerows(jsval['data'])
+                case 'loadFile':
+                    shutil.copy(f"{jsval['file']}", f"{video_prefix}{Path(jsval['file']).name}")
+                    webs.send(json.dumps({
+                        'type': 'fileSaveEvent',
+                        "Success": True
+                    }))
+
         except Exception as e:
-            pass
+            print(e)
 
 def start_http_server():
     handler = SimpleHTTPRequestHandler

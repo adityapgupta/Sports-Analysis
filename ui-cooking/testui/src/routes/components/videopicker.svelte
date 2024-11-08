@@ -4,8 +4,9 @@
     import { cvideo, box, dataStore, video_duration, vid_prefix, player_data, balls } from "../shared/progstate.svelte"
     const { socket }: { socket: WebSocket } = $props()
 
-    let videos = $state(["Use the \"Get Videos\" button to load a video"])
+    let videos = $state([])
     let bval = $state('');
+    let fileInput: HTMLInputElement
     function getFiles() {
         socket.send(JSON.stringify({
             type:'getFiles',
@@ -75,24 +76,38 @@
         }))
     }
 
+    async function copyFileInternal() {
+        await socket.send(JSON.stringify({
+            type: 'loadFile',
+            file: fileInput.value
+        }))
+    }
     $inspect(bval)
 </script>
 
-
-<div class="m-2 p-2 flex flex-col lg:flex-row">
+<div class="maingrid m-2 p-2 grid">
+    <button name="selectFileButton" class="bg-slate-400 px-3" onclick={copyFileInternal}>Copy to field</button>
+    <input bind:this={fileInput} class="m-1 rounded" placeholder="Enter a full filepath here"/>
     <button name="getVideoButton" id="get_videos"
-        class="bg-slate-400 p-2" onclick={getFiles}>Get videos</button>
-    <select name="optsel" bind:value={bval} onchange={updateVideo} class="flex-grow p-1">
+    class="bg-slate-400 p-2" onclick={getFiles}>Get videos</button>
+    <select name="optsel" bind:value={bval} onchange={updateVideo} class="p-1" title="Get video">
         {#each videos as vid}
-            <option value={vid}>{vid}</option>
+        <option value={vid}>{vid}</option>
         {/each}
     </select>
-    <button onclick={loadFrameData} class="bg-slate-400 p-2">Load frame data</button>
 </div>
 
 <style>
     button, select {
         margin: 2px;
         border-radius: 3px;
+    }
+    .maingrid {
+        grid-template-columns: auto;
+    }
+    @media (min-width: 800px) {
+        .maingrid {
+            grid-template-columns: auto 1fr;
+        }
     }
 </style>
