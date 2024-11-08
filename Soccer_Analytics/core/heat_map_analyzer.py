@@ -17,6 +17,7 @@ class HeatMapAnalyzer:
             
         self.field_length = config['field']['length']
         self.field_width = config['field']['width']
+        self.field_radius = config['field']['radius']
         self.grid_size = config['visualization']['heat_map']['grid_size']
         self.smoothing = config['visualization']['heat_map']['smoothing']
         
@@ -94,7 +95,7 @@ class HeatMapAnalyzer:
         
         # Center circle
         center_circle = plt.Circle((self.field_length/2, self.field_width/2), 
-                                 9.15, fill=False, color='w', alpha=0.5)
+                                 self.field_radius, fill=False, color='w', alpha=0.5)
         plt.gca().add_artist(center_circle)
     
     def get_zone_statistics(self) -> Dict:

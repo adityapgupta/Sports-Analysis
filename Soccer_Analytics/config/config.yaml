@@ -2,6 +2,7 @@
 field:
   length: 105
   width: 68
+  radius: 9.15
 
 # Analysis thresholds
 thresholds:
