@@ -2,10 +2,6 @@ import numpy as np
 from typing import Tuple, List, Union
 from scipy.spatial.distance import euclidean
 
-def extract_positions(data: List[Dict[str, Union[float, str]]]) -> List[Tuple[float, float]]:
-    pass # Implement this function after getting the input data
-
-## Big TODO: Integrate extract_positions function into the calculations.py file
 
 def calculate_velocity(pos1: Tuple[float, float], 
                       pos2: Tuple[float, float], 

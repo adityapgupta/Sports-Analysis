@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime
 import matplotlib.pyplot as plt
 import yaml
-from ..utils.calculations import calculate_velocity, calculate_direction, extract_positions
+from ..utils.calculations import calculate_velocity, calculate_direction
 
 @dataclass
 class Sprint:
