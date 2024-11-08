@@ -1,0 +1,214 @@
+  # Field dimensions in meters
+field:
+  length: 105
+  width: 68
+
+# Analysis thresholds
+thresholds:
+  # Heat Map Analysis
+  heat_map:
+    grid_size: [10, 10]  # number of cells in x and y
+    smoothing: 1.5  # gaussian smoothing factor
+
+  # Sprint Analysis
+  sprint:
+    min_velocity: 20.0  # km/h
+    min_duration: 1.0  # seconds
+    recovery_threshold: 15.0  # km/h
+    update_frequency: 0.1  # seconds
+    smoothing_window: 5  # frames
+
+  # Distance Analysis
+  distance:
+    sprint_threshold: 20.0  # km/h
+    high_intensity_threshold: 15.0  # km/h
+    jogging_threshold: 8.0  # km/h
+
+  # Pressing Analysis
+  pressing:
+    max_distance: 10.0  # meters
+    reaction_time: 2.0  # seconds
+    intensity_threshold: 18.0  # km/h
+
+  # Formation Analysis
+  formation:
+    window_size: 300  # 5 minutes in seconds
+    cluster_tolerance: 5.0  # meters
+    min_players: 7
+    update_frequency: 1.0  # seconds
+
+  # Formation Detection
+  vertical_clustering:
+    min_lines: 3 # minimum number of vertical lines
+    max_lines: 4 # maximum number of vertical lines
+    merge_threshold: 10.0 # meters
+
+  # Zone settings
+  zones:
+    defender_depth_threshold: 40.0  # meters
+    midfield_depth_range: [30.0, 70.0]  # meters
+    forward_depth_threshold: 60.0  # meters
+    lateral_tolerance: 15.0  # meters
+
+  # Tactical Unit Settings
+  units:
+    defender_max: 5
+    midfielder_max: 5
+    forward_max: 3
+    unit_spacing: 8.0  # meters
+
+  # Formation transitions
+  transitions:
+    min_duration: 30 # frames
+    similarity_threshold: 0.8 # similarity threshold for transition detection
+    max_transition_time: 10.0 # seconds
+
+  templates:
+    "4-4-2": 
+      defenders: 4
+      midfielders: 4
+      forwards: 2
+      preffered_width: 40.0
+      preffered_depth: 35.0
+    
+    "4-3-3":
+      defenders: 4
+      midfielders: 3
+      forwards: 3
+      preffered_width: 45.0
+      preffered_depth: 35.0
+    
+    "3-5-2":
+      defenders: 3
+      midfielders: 5
+      forwards: 2
+      preffered_width: 40.0
+      preffered_depth: 35.0
+
+    "4-2-3-1":
+      defenders: 4
+      midfielders: 5  
+      forwards: 3
+      preffered_width: 42.0
+      preffered_depth: 40.0
+
+  # Team Shape Analysis
+  team_shape:
+    min_players: 7
+    update_frequency: 1.0  # seconds
+
+  # Ball Possession
+  ball_possession:
+    control_radius: 2.0  # meters
+    min_possession_duration: 1.0  # seconds
+
+  buildup:
+    min_duration: 3.0  # minimum seconds for a valid build-up phase
+    counter_attack_threshold: 15.0  # km/h threshold for counter-attack classification
+    progression_threshold: 5.0  # minimum meters of forward progression
+    min_passes: 3  # minimum number of passes for organized build-up
+    vertical_progress_weight: 0.7  # importance of vertical progress in success metrics
+    max_backwards_distance: 10.0  # maximum allowed backward movement
+    transition_speed_threshold: 12.0  # km/h threshold for fast transitions
+
+  # Space control
+  space_control:
+    grid_resolution: 1.0  # meters
+    max_reach_time: 4.0  # seconds
+    acceleration: 3.0  # m/s^2
+    max_speed: 8.0  # m/s
+    control_decay: 0.7  # control decay factor
+    influence_radius: 10.0  # meters
+    velocity_weight: 0.3  # importance of velocity in control calculation
+    possesion_bonus: 0.2
+    numerical_advantage_weight: 0.1
+    pressure_threshold: 5.0  # meters
+    updates_per_second: 10
+
+  # Pass Analysis
+  passing_opportunities:
+    min_pass_distance: 5.0  # minimum distance for a valid pass in meters
+    max_pass_distance: 40.0  # maximum distance for a valid pass
+    passing_lane_width: 2.0  # width of the passing lane to check for interceptors
+    risk_zone_radius: 3.0  # radius around defenders to consider for risk calculation
+    opportunity_duration: 1.0  # minimum duration for a valid passing opportunity in seconds
+    success_probability_threshold: 0.4  # minimum probability for a pass to be considered viable
+    max_interceptor_distance: 1.5  # maximum distance from passing lane for potential interceptors
+    defensive_pressure_radius: 8.0  # radius to consider defensive pressure around receiver
+    vertical_progress_bonus: 0.3  # bonus for passes that progress the ball vertically
+    risk_weights:
+      interceptor_probability: 0.4
+      receiver_pressure: 0.3
+      pass_distance: 0.3
+    reward_weights:
+      vertical_progress: 0.4
+      space_gained: 0.3
+      tactical_advantage: 0.3
+
+  off_ball_runs:
+    # Run Detection
+    min_run_velocity: 15.0  # km/h threshold to detect run start
+    min_run_duration: 0.5  # minimum seconds for valid run
+    max_run_duration: 10.0  # maximum seconds for a single run
+    min_distance_traveled: 5.0  # minimum meters for valid run
+    velocity_smoothing_window: 5  # frames for velocity smoothing
+    position_history_window: 10  # frames to keep in history
+
+    # Space Analysis
+    space_creation_radius: 10.0  # meters to consider for space creation
+    defensive_disruption_weight: 0.4  # importance of defensive disruption
+    space_gained_weight: 0.3  # importance of space gained
+    progression_weight: 0.3  # importance of vertical progression
+
+    # Threat Assessment
+    goal_distance_weight: 0.4  # importance of distance to goal
+    defender_proximity_weight: 0.3  # importance of defender distances
+    run_direction_weight: 0.3  # importance of run direction
+    threat_score_threshold: 0.7  # minimum for high-threat run classification
+    
+    # Run Classification
+    vertical_threshold: 0.6  # threshold for penetrating run classification
+    support_distance_threshold: 15.0  # meters to classify supporting runs
+    max_support_angle: 45.0  # degrees for supporting run classification
+
+    # Performance
+    update_frequency: 10  # Hz for run analysis updates
+    cleanup_interval: 300  # seconds between memory cleanup
+
+    
+
+# Visualization settings
+visualization:
+  colors:
+    home_team: "#1f77b4"  # blue
+    away_team: "#d62728"  # red
+    neutral: "#2ca02c"    # green
+    control_surface: "RdYlBu"  # colormap for control surfaces
+    heat_map: "hot"       # colormap for heat maps
+    
+  opacities:
+    player_markers: 0.8
+    control_areas: 0.6
+    velocity_vectors: 0.7
+    
+  sizes:
+    player_marker: 8
+    arrow_width: 0.1
+    arrow_head: 0.5
+
+# Data Processing 
+processing: 
+  smoothing_window: 5  # frames
+  velocity_calc_window: 3  # frames
+  min_movement_threshold: 0.1  # meters
+  interpolation_method: "linear"  # interpolation method for missing data
+  outlier_threshold: 3.0  # standard deviations for outlier detection
+  
+
+
+# Sampling and processing
+sampling:
+  position_frequency: 25  # Hz
+  analysis_update_rate: 10  # Hz
+  batch_size: 100 # number of frames to process at once
+
