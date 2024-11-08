@@ -5,6 +5,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from scipy import stats
 import yaml
+import os
 
 @dataclass
 class DefensiveLine:
@@ -18,7 +19,7 @@ class DefensiveLine:
     offside_line: float  # Y-coordinate of the offside line
 
 class DefensiveLineAnalyzer:
-    def __init__(self, config_path: str = 'config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """
         Initialize Defensive Line Analyzer
         

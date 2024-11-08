@@ -7,7 +7,12 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import yaml
 from scipy.spatial.distance import cdist
-from ..utils.calculations import calculate_velocity
+import sys
+if '/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils' not in sys.path:
+    sys.path.append('/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils')
+
+from calculations import calculate_velocity
+import os
 
 @dataclass
 class BuildupPhase:
@@ -25,22 +30,16 @@ class BuildupPhase:
     transition_type: str = "organized"  # 'organized' or 'counter'
 
 class BuildupAnalyzer:
-    def __init__(self, config_path: str = 'config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """Initialize Build-up Analyzer"""
         with open(config_path, 'r') as f:
             config = yaml.safe_load(f)
             
         self.field_length = config['field']['length']
         self.field_width = config['field']['width']
-        
-        # Load specific buildup analysis settings if they exist
-        self.buildup_config = config.get('thresholds', {}).get('buildup', {
-            'min_duration': 3.0,  # seconds
-            'counter_attack_threshold': 15.0,  # km/h
-            'final_third_line': self.field_length * 2/3,
-            'progression_threshold': 5.0,  # meters
-            'defensive_third_line': self.field_length * 1/3
-        })
+        self.final_third_line = self.field_length * 2/3
+        self.defensive_third_line = self.field_length * 1/3
+        self.buildup_config = config['thresholds']['buildup']
         
         self.buildup_phases: List[BuildupPhase] = []
         self.current_buildup: Optional[BuildupPhase] = None
@@ -96,8 +95,8 @@ class BuildupAnalyzer:
         result = {}
         
         # Check if in defensive third
-        in_defensive_third = ball_position[1] < self.buildup_config['defensive_third_line']
-        in_final_third = ball_position[1] > self.buildup_config['final_third_line']
+        in_defensive_third = ball_position[1] < self.defensive_third_line
+        in_final_third = ball_position[1] > self.final_third_line
         
         # Start new build-up if in defensive third
         if in_defensive_third and not self.current_buildup:

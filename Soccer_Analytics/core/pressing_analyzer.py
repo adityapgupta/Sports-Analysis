@@ -5,6 +5,7 @@ from scipy.spatial.distance import cdist
 import matplotlib.pyplot as plt
 import yaml
 from datetime import datetime
+import os
 
 @dataclass
 class PressingEvent:
@@ -16,7 +17,7 @@ class PressingEvent:
     reaction_time: float
 
 class PressingAnalyzer:
-    def __init__(self, config_path: str = 'config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """
         Initialize Pressing Analyzer
         

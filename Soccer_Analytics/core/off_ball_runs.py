@@ -4,7 +4,11 @@ from dataclasses import dataclass
 from datetime import datetime
 import yaml
 from scipy.spatial.distance import cdist
-from ..utils.calculations import calculate_velocity, calculate_direction, smooth_positions
+import sys 
+# if '/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils' not in sys.path:
+#     sys.path.append('/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils') 
+from calculations import calculate_velocity, calculate_direction, smooth_positions
+import os
 
 @dataclass
 class OffBallRun:
@@ -23,7 +27,7 @@ class OffBallRun:
     defensive_disruption: float
 
 class OffBallRunsAnalyzer:
-    def __init__(self, config_path: str = 'config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """Initialize Off-Ball Runs Analyzer"""
         with open(config_path, 'r') as f:
             config = yaml.safe_load(f)
