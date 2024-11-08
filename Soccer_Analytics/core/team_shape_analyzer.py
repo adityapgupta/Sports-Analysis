@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from scipy.spatial import ConvexHull
 import yaml
 from scipy.spatial.distance import pdist, squareform
+import os
+
 
 @dataclass
 class TeamShape:
@@ -20,7 +22,7 @@ class TeamShape:
     player_distances: Dict[Tuple[int, int], float]
 
 class TeamShapeAnalyzer:
-    def __init__(self, config_path: str = 'config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """
         Initialize Team Shape Analyzer
         
@@ -287,14 +289,14 @@ if __name__ == "__main__":
     example_positions = [
         (30.0, 20.0),
         (35.0, 25.0),
-        (40.0, 30.0),
-        (45.0, 35.0),
-        (50.0, 40.0),
-        (55.0, 45.0),
-        (60.0, 50.0),
-        (65.0, 55.0),
-        (70.0, 60.0),
-        (75.0, 65.0)
+        (41.0, 30.0),
+        (47.0, 35.0),
+        (53.0, 40.0),
+        (59.0, 45.0),
+        (65.0, 50.0),
+        (71.0, 55.0),
+        (77.0, 60.0),
+        (82.0, 65.0)
     ]
     
     # Calculate shape metrics

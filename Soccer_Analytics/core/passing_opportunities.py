@@ -3,7 +3,11 @@ from typing import List, Tuple, Dict, Optional
 from dataclasses import dataclass
 import yaml
 from scipy.spatial.distance import cdist
-from ..utils.calculations import calculate_velocity, calculate_direction
+import sys 
+# if '/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils' not in sys.path:
+#     sys.path.append('/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils') 
+from calculations import calculate_velocity, calculate_direction
+import os
 
 @dataclass
 class PassingLane:
@@ -28,7 +32,7 @@ class PassingOpportunity:
     timestamp: float
 
 class PassingOpportunitiesAnalyzer:
-    def __init__(self, config_path: str = 'config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """Initialize Passing Opportunities Analyzer"""
         with open(config_path, 'r') as f:
             config = yaml.safe_load(f)

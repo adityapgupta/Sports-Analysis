@@ -180,6 +180,11 @@ thresholds:
 
 # Visualization settings
 visualization:
+
+  heat_map:
+    grid_size: [10, 10]  # number of cells in x and y
+    smoothing: 1.5  # gaussian smoothing factor
+
   colors:
     home_team: "#1f77b4"  # blue
     away_team: "#d62728"  # red

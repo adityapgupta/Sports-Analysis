@@ -1,11 +1,11 @@
 import numpy as np
 from typing import List, Tuple, Dict
 import matplotlib.pyplot as plt
-from scipy.ndimage import gaussian_filter
 import yaml
+import os
 
 class HeatMapAnalyzer:
-    def __init__(self, config_path: str = 'config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """
         Initialize Heat Map Analyzer
         
@@ -55,7 +55,7 @@ class HeatMapAnalyzer:
         else:
             normalized = self.grid
             
-        return gaussian_filter(normalized, sigma=self.smoothing)
+        return normalized
     
     def visualize(self, title: str = "Heat Map", save_path: str = None):
         """Visualize the heat map"""
@@ -126,6 +126,8 @@ if __name__ == "__main__":
         (50.0, 30.0),
         (52.0, 32.0),
         (48.0, 35.0),
+        (9, 10),
+        (10, 11)
         # Add more positions...
     ]
     

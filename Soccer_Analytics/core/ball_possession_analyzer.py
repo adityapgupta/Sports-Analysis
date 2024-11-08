@@ -5,6 +5,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 import yaml
+import os
 
 @dataclass
 class PossessionEvent:
@@ -17,7 +18,7 @@ class PossessionEvent:
     distance_covered: float
     
 class BallPossessionAnalyzer:
-    def __init__(self, config_path: str = 'config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """
         Initialize Ball Possession Analyzer
         
@@ -323,7 +324,7 @@ if __name__ == "__main__":
     
     home_players = [
         (1, (48.0, 38.0)),
-        (2, (52.0, 42.0)),
+        (2, (52.0, 40.0)),
         # Add more players...
     ]
     

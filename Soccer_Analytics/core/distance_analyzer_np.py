@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 import matplotlib.pyplot as plt
 import yaml
+import os
 
 @dataclass
 class MovementSegment:
@@ -16,7 +17,7 @@ class MovementSegment:
     category: str  # 'sprint', 'high_intensity', 'jogging', 'walking'
 
 class DistanceAnalyzer:
-    def __init__(self, config_path: str = '../../config/config.yaml'):
+    def __init__(self, config_path: str = f'{os.path.dirname(os.path.realpath(__file__))}/../config/config.yaml'):
         """
         Initialize Distance Analyzer
         
