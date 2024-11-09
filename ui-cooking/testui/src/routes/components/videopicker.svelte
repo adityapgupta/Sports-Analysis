@@ -1,6 +1,4 @@
 <script lang="ts">
-    import Page from "../+page.svelte";
-    import PlayerList from "../shared/player_list.svelte";
     import { cvideo, box, dataStore, video_duration, vid_prefix, player_data, balls } from "../shared/progstate.svelte"
     const { socket }: { socket: WebSocket } = $props()
 
@@ -88,7 +86,7 @@
 </script>
 
 <div class="maingrid m-2 p-2 grid">
-    <button name="selectFileButton" class="bg-slate-400 px-3" onclick={copyFileInternal}>Copy to field</button>
+    <button name="selectFileButton" class="bg-slate-400 p-2" onclick={copyFileInternal}>Copy to field</button>
     <input bind:this={fileInput} class="m-1 rounded" placeholder="Enter a full filepath here"/>
     <button name="getVideoButton" id="get_videos"
     class="bg-slate-400 p-2" onclick={getFiles}>Get videos</button>

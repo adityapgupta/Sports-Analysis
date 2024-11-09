@@ -7,6 +7,7 @@
     import ico3 from '$lib/sidebar-icons/ico3.svg'
     import ico4 from '$lib/sidebar-icons/ico4.svg'
     import ico5 from '$lib/sidebar-icons/ico5.svg'
+    import menuicon from '$lib/sidebar-icons/menu.svg'
 
     const fadeOpt = {duration: 150}
     const icons = [ico2, ico3, ico4, ico5]
@@ -29,18 +30,11 @@
         {/if}
     </button>
     <button id="expbutton" onclick={() => expanded = !expanded} class="inline-flex items-center buttons mt-2">
-        <i class="material-icons text-center pl-1.5">menu</i>
+        <img src={menuicon} alt="open menu" class="w-6 h-6"/>
         {#if expanded}
             <span class="pr-2 pl-3 text-center self-stretch content-center" transition:fade={fadeOpt}>Modules</span>
         {/if}
     </button>
-    <!-- {#each descriptions as description, i}
-    <button class="inline-flex items-center w-auto h-auto p-1 buttons" onclick={() => changePage(i+1)}>
-        {#if expanded}
-            <span class="text-center pl-2 pr-3" transition:fade={fadeOpt}>{description}</span>
-        {/if}
-    </button>
-    {/each} -->
     {#each icons as icon, i}
     <button class="inline-flex items-center w-auto h-auto p-1 buttons" onclick={() => changePage(i+1)}>
         <img src={icon} alt="icon" class="w-6 h-6" />
@@ -59,7 +53,7 @@
         margin: 2px;
         width: auto;
         white-space: nowrap;
-        padding-right: 15px;
+        padding-inline: 7px;
     }
     .buttons:hover {
         background-color: #434a55;

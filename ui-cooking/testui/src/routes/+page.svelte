@@ -3,8 +3,8 @@
     import Analytics from './shared/analytics.svelte';
 	import Homepage from './shared/homepage.svelte';
 	import PlayerList from './shared/player_list.svelte';
-	import Landing from './components/Landing.svelte';
-	import Team from './components/Team.svelte';
+	import Landing from './shared/Landing.svelte';
+	import Team from './shared/Team.svelte';
 	import { currentPage, pages } from './shared/progstate.svelte.ts';
 
 	let socket:WebSocket;

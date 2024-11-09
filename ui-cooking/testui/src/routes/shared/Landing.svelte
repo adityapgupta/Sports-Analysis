@@ -3,12 +3,7 @@
 </script>
 
 <div style:display={visibility ? "flex" : "none"} class="relative w-full h-full">
-    <div class = "background absolute inset-0 z-0">
-        <img 
-            src="$lib/images/1156910.jpg"
-            alt="background"
-            class="object-cover w-full h-full"
-        />
+    <div class = "background absolute inset-0 z-0 w-full h-full">
     </div>  
 
     <div class="overlay absolute inset-0 z-10 flex flex-col items-center justify-center">
