@@ -20,5 +20,5 @@ if __name__ == '__main__':
 
     shutil.copy(
         'runs/detect/train/weights/best.pt',
-        '../models/finetuned.pt',
+        '../models/players.pt',
     )

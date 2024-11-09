@@ -95,16 +95,20 @@ def get_map_point(point, P):
     return (point[0], point[1])
 
 
-def project(P, coords):
+def project(P, coords, h, w):
     pts = [get_map_point([(x1 + x2) / 2, y2, 1], P)
            for x1, _, x2, y2 in coords]
 
-    return pts
+    edges = [(0, 0, 1), (0, h, 1), (w, h, 1), (w, 0, 1)]
+    edges = [get_map_point(edge, P) for edge in edges]
+
+    return (pts, edges)
 
 
 def process_input(input, coords, model, model_l, kp_threshold, line_threshold):
-    frame_width = input.shape[1]
     frame_height = input.shape[0]
+    frame_width = input.shape[1]
+
     cam = FramebyFrameCalib(
         iwidth=frame_width, iheight=frame_height, denormalize=True
     )
@@ -121,7 +125,7 @@ def process_input(input, coords, model, model_l, kp_threshold, line_threshold):
             [P[1][0], P[1][1], P[1][3]],
             [P[2][0], P[2][1], P[2][3]],
         ])
-        pts = project(P_reduced, coords)
+        pts = project(P_reduced, coords, frame_height, frame_width)
 
     else:
         pts = []

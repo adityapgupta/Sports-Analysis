@@ -84,7 +84,6 @@ def goalkeepers_team(players, goalkeepers):
 
 
 def team_detection(frame, detections, team_classifier):
-    ball_detections = detections[detections.class_id == BALL_ID]
     goalkeeper_detections = detections[detections.class_id == GOALKEEPER_ID]
     players_detections = detections[detections.class_id == PLAYER_ID]
     referees_detections = detections[detections.class_id == REFEREE_ID]
@@ -103,8 +102,7 @@ def team_detection(frame, detections, team_classifier):
     goalkeeper_detections.class_id += 1
 
     updated = sv.Detections.merge(
-        [ball_detections, players_detections,
-            goalkeeper_detections, referees_detections]
+        [players_detections, goalkeeper_detections, referees_detections]
     )
 
     return updated
@@ -112,40 +110,62 @@ def team_detection(frame, detections, team_classifier):
 
 def get_coords(frame, detections, project=False):
     coords = detections.xyxy
-
-    if project:
-        coords = inf_main(frame, coords)
-
     tracking_ids = detections.tracker_id
     class_ids = detections.class_id
+
+    if project:
+        coords, edges = inf_main(frame, coords)
+        return (list(zip(tracking_ids, class_ids, coords)), edges)
 
     return list(zip(tracking_ids, class_ids, coords))
 
 
-def detections(clip_path, finetune_path, confidence=0.3, project=False, return_class=False, verbose=False):
-    model = YOLO(finetune_path)
+def detections(clip_path, players_path, ball_path, confidence=0.3, project=False, return_class=False, verbose=False):
+    players_model = YOLO(players_path)
+    ball_model = YOLO(ball_path)
 
     tracker = sv.ByteTrack()
     tracker.reset()
 
     video_info = sv.VideoInfo.from_video_path(clip_path)
     team_classifier = classifier(
-        model, clip_path, video_info, confidence=confidence)
+        players_model, clip_path, video_info, confidence=confidence)
 
     frame_generator = sv.get_video_frames_generator(clip_path)
 
     detect = []
     for frame in tqdm(frame_generator, total=video_info.total_frames) if verbose else frame_generator:
-        result = model(frame, conf=confidence, verbose=False)[0]
+        player_result = players_model(frame, conf=confidence, verbose=False)[0]
 
-        detections = sv.Detections.from_ultralytics(result)
-        detections = detections.with_nms(
+        players_detections = sv.Detections.from_ultralytics(player_result)
+        players_detections = players_detections.with_nms(
             threshold=0.5,
             class_agnostic=True,
         )
-        detections = tracker.update_with_detections(detections)
-        detections = team_detection(frame, detections, team_classifier)
-        detections.class_id = detections.class_id.astype(int)
+        players_detections = tracker.update_with_detections(players_detections)
+        players_detections = team_detection(
+            frame, players_detections, team_classifier)
+        players_detections.class_id = players_detections.class_id.astype(int)
+
+        ball_result = ball_model(frame, verbose=False)[0]
+        ball_detections = sv.Detections.from_ultralytics(ball_result)
+
+        if len(players_detections) == 0:
+            players_detections.tracker_id = np.array([])
+
+        if len(ball_detections) == 0:
+            ball_detections.tracker_id = np.array([])
+        else:
+            max_conf = ball_detections.confidence.max()
+            ball_detections = ball_detections[ball_detections.confidence == max_conf]
+            ball_detections.tracker_id = np.array([-1]*len(ball_detections))
+
+        try:
+            detections = sv.Detections.merge(
+                [ball_detections, players_detections])
+        except:
+            detections = sv.Detections.empty()
+            detections.tracker_id = np.array([])
 
         if return_class:
             detect.append(detections)
