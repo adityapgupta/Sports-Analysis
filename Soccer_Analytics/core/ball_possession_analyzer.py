@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 import yaml
 import os
+import pickle
 
 @dataclass
 class PossessionEvent:
@@ -141,13 +142,14 @@ class BallPossessionAnalyzer:
             elif self.current_possession.possessing_team == team:
                 # Update current possession
                 duration = (timestamp - self.current_possession.timestamp).total_seconds()
+                # print(duration)
                 self.current_possession.duration = duration
                 self.current_possession.distance_covered += distance_covered
                 
                 # Update possession statistics if minimum duration met
                 if duration >= self.min_possession_duration:
-                    self.team_possession[team] += duration
-                    self.zone_possession[zone] += duration
+                    self.team_possession[team] = duration
+                    self.zone_possession[zone] = duration
             else:
                 # Change of possession
                 if self.current_possession.duration >= self.min_possession_duration:
@@ -163,6 +165,13 @@ class BallPossessionAnalyzer:
                     duration=0.0,
                     distance_covered=0.0
                 )
+        else:
+            # End current possession if minimum duration met
+            if self.current_possession is not None:
+                duration = (timestamp - self.current_possession.timestamp).total_seconds()
+                if duration >= self.min_possession_duration:
+                    self.possession_events.append(self.current_possession)
+                self.current_possession = None
         
         self.previous_ball_position = ball_position
         
@@ -201,6 +210,7 @@ class BallPossessionAnalyzer:
             'home': sum(e.duration for e in events if e.possessing_team == 'home'),
             'away': sum(e.duration for e in events if e.possessing_team == 'away')
         }
+        # print(len(events))
         team_percentages = {
             team: (duration / total_time) * 100
             for team, duration in team_possession.items()
@@ -264,6 +274,7 @@ class BallPossessionAnalyzer:
         
         # Possession map
         plt.subplot(133)
+        # print(self.possession_events[1])
         events = [e for e in self.possession_events 
                  if time_window is None or 
                  (self.possession_events[-1].timestamp - e.timestamp).total_seconds() <= time_window]
@@ -277,7 +288,7 @@ class BallPossessionAnalyzer:
         # Plot possession points
         for event in events:
             color = 'blue' if event.possessing_team == 'home' else 'red'
-            size = event.duration * 10  # Scale point size by possession duration
+            size = event.duration * 100  # Scale point size by possession duration
             plt.scatter(event.ball_position[0], event.ball_position[1],
                        c=color, s=size, alpha=0.5)
         
@@ -299,14 +310,42 @@ class BallPossessionAnalyzer:
         plt.figure(figsize=(15, 5))
         
         # Create timeline
-        times = [(e.timestamp - events[0].timestamp).total_seconds() for e in events]
-        teams = [1 if e.possessing_team == 'home' else 0 for e in events]
+        times = [((e.timestamp - events[0].timestamp).total_seconds(), e.duration) for e in events]
+        teams = [1 if e.possessing_team == 'home' else 2 for e in events]
         
-        # Plot possession changes
-        plt.plot(times, teams, 'b-', drawstyle='steps-post')
-        plt.fill_between(times, teams, step='post', alpha=0.3)
+        time_starts = [t[0] for t in times]
+        time_ends = [t[0] + t[1] for t in times]
+
+        lines = []
+        if time_starts[0] != 0.0:
+            lines.append(((0.0, time_starts[0]), (0, 1), 'none'))
+        for i in range(len(time_starts)):
+            if i != 0:
+                if time_starts[i] != time_ends[i-1]: 
+                    lines.append(((time_ends[i-1], time_starts[i]), (0, 1), 'none'))
+                lines.append(((time_starts[i], time_ends[i]), (1, 0), f'{events[i].possessing_team}'))
+            else:
+                lines.append(((time_starts[i], time_ends[i]), (1, 0), f'{events[i].possessing_team}'))
+
+        # Plot from timestart[i] to timeend[i] for each team
+        for i in range(len(lines)):
+            if lines[i][2] == 'none':
+                color = 'gray'
+            elif lines[i][2] == 'home':
+                color = 'blue'
+            else:
+                color = 'red'
+            # plt.plot([time_starts[i], time_ends[i]], [1, 1], '-', color = color,drawstyle='steps-post')
+            # plt.fill_between([time_starts[i], time_ends[i]], [1, 1], step='post', alpha=0.3, color=color)
+
+            plt.plot(lines[i][0], lines[i][1], '-', color = color, drawstyle='steps-post')    
+            plt.fill_between(lines[i][0], lines[i][1], step='post', alpha=0.3, color=color)
+
+        # # Plot possession changes
+        # plt.plot(times, teams, 'b-', drawstyle='steps-post')
+        # plt.fill_between(times, teams, step='post', alpha=0.3)
         
-        plt.yticks([0, 1], ['Away', 'Home'])
+        plt.yticks([1, 0], ['Team', 'None'])
         plt.xlabel('Time (seconds)')
         plt.title('Possession Flow')
         plt.grid(True)
@@ -316,32 +355,116 @@ class BallPossessionAnalyzer:
 # Example usage
 if __name__ == "__main__":
     # Initialize analyzer
+    # analyzer = BallPossessionAnalyzer()
+    
+    # # Example tracking data
+    # timestamp = datetime.now()
+    # ball_pos = (50.0, 40.0)
+    
+    # home_players = [
+    #     (1, (48.0, 38.0)),
+    #     (2, (52.0, 40.0)),
+    #     # Add more players...
+    # ]
+    
+    # away_players = [
+    #     (1, (53.0, 41.0)),
+    #     (2, (47.0, 39.0)),
+    #     # Add more players...
+    # ]
+    
+    # # Analyze possession
+    # metrics = analyzer.analyze_possession(timestamp, ball_pos, home_players, away_players)
+    
+    # print("\nPossession Analysis:")
+    # print(f"Possessing Team: {metrics['possessing_team']}")
+    # print(f"Player ID: {metrics['player_id']}")
+    # print(f"Zone: {metrics['zone']}")
+    
+    # # Get overall statistics
+    # stats = analyzer.get_possession_stats()
+    # if stats:
+    #     print("\nOverall Statistics:")
+    #     print("Team Possession:")
+    #     for team, percentage in stats['team_possession'].items():
+    #         print(f"{team}: {percentage:.1f}%")
+        
+    #     print("\nZone Possession:")
+    #     for zone, percentage in stats['zone_possession'].items():
+    #         print(f"{zone}: {percentage:.1f}%")
+    
+    # # Visualize
+    # analyzer.visualize_possession()
+    # analyzer.plot_possession_flow()
+
+    # load the file detections.pkl
+    with open('Soccer_Analytics/core/detections.pkl', 'rb') as f:
+        data = pickle.load(f)
+
+    last_ball_pos = np.array([105/2, 34])
     analyzer = BallPossessionAnalyzer()
+    FRAME_RATE = 25
+
+    for i in range(len(data)):
+         # data[i] is a frame
+
+        frame_data = data[i]
+
+        # find index in an numpy array and get position of the ball
+        # ball is where frame_data[i][1] == 0
+        ball_id = None
+        ref_ids = []
+        home_positions = []
+        away_positions = []
+
+        for j in range(len(frame_data)):
+
+            if frame_data[j][1] == 0:
+                ball_pos = frame_data[j][2]
+                ball_id = j
+            elif frame_data[j][1] == 3:
+                ref_ids.append(j)
+            elif frame_data[j][1] == 1:
+                home_positions.append((frame_data[j][0], frame_data[j][2]))
+            elif frame_data[j][1] == 2:
+                away_positions.append((frame_data[j][0], frame_data[j][2]))
+        
     
-    # Example tracking data
-    timestamp = datetime.now()
-    ball_pos = (50.0, 40.0)
-    
-    home_players = [
-        (1, (48.0, 38.0)),
-        (2, (52.0, 40.0)),
-        # Add more players...
-    ]
-    
-    away_players = [
-        (1, (53.0, 41.0)),
-        (2, (47.0, 39.0)),
-        # Add more players...
-    ]
-    
-    # Analyze possession
-    metrics = analyzer.analyze_possession(timestamp, ball_pos, home_players, away_players)
-    
-    print("\nPossession Analysis:")
-    print(f"Possessing Team: {metrics['possessing_team']}")
-    print(f"Player ID: {metrics['player_id']}")
-    print(f"Zone: {metrics['zone']}")
-    
+            
+
+        # # remove the ball and ref from the data
+        # # get the index of the ball and ref
+        # removals = []
+        # if ball_id != None:
+        #     removals.append(ball_id)
+        # if ref_ids != []:
+        #     removals.extend(ref_ids)
+        # for j in sorted(removals, reverse=True):
+        #     del frame_data[j]
+        # get the player positions of the players in the possession team
+
+        if ball_pos == None:
+            ball_pos = last_ball_pos
+        
+        last_ball_pos = ball_pos
+
+        # print(f"Frame {i} - Ball Position: {ball_pos}")
+        #print who has the ball using the function
+        ball_possessing = analyzer.find_possessing_player(ball_pos, home_positions, away_positions)
+        
+
+
+        timestamp = datetime.fromtimestamp(i / FRAME_RATE)
+        
+        # analyze possession
+        metrics = analyzer.analyze_possession(timestamp, ball_pos, home_positions, away_positions)
+        # print(i, metrics['possessing_team'])
+        # print(metrics)
+        # get possession statistics
+        stats = analyzer.get_possession_stats()
+        # print(stats['team_possession'])
+
+
     # Get overall statistics
     stats = analyzer.get_possession_stats()
     if stats:
@@ -353,7 +476,17 @@ if __name__ == "__main__":
         print("\nZone Possession:")
         for zone, percentage in stats['zone_possession'].items():
             print(f"{zone}: {percentage:.1f}%")
-    
-    # Visualize
+        
+
+
+    # visualize possession
     analyzer.visualize_possession()
-    analyzer.plot_possession_flow()
+
+    # plot possession flow
+    analyzer.plot_possession_flow()        
+
+
+    
+
+
+    

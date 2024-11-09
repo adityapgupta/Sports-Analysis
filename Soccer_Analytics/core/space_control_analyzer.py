@@ -12,7 +12,6 @@ import sys
 # if '/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils' not in sys.path:
 #     sys.path.append('/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils')
 
-from calculations import calculate_velocity
 import os
 
 @dataclass
@@ -318,12 +317,53 @@ if __name__ == "__main__":
     results = analyzer.analyze_space_control(home_positions, away_positions)
     
     # Print results
+    # print("\nSpace Control Analysis:")
+    # print(f"Home team control: {results['space_control']['home']:.1f}%")
+    # print(f"Away team control: {results['space_control']['away']:.1f}%")
+    
+    # Visualize
+    #analyzer.visualize_space_control()
+    
+    # Visualize individual player
+    #analyzer.visualize_player_influence(1, 'home')
+
+    import pickle
+
+    # load the file test.pkl
+    with open('Soccer_Analytics/core/test.pkl', 'rb') as f:
+        data = pickle.load(f)
+
+    #remove the ball and ref from the data
+    # get the index of the ball and ref
+    ball_idx = data['tracks'][np.where(data['labels'] == 'ball')[0][0]] - 1
+    ref_idx = data['tracks'][np.where(data['labels'] == 'referee')[0][0]] - 1
+    print(ball_idx, ref_idx)
+
+    # remove the ball and ref from the data
+    data['labels'] = np.delete(data['labels'], [ball_idx, ref_idx], axis=0)
+    data['pts'] = np.delete(data['pts'], [ball_idx, ref_idx], axis=0)
+    data['tracks'] = np.delete(data['tracks'], [ball_idx, ref_idx], axis=0)
+    # get the player positions of the players in  the possession team
+
+    # Make a unit random vector of dimension 2
+    def random_unit_vector():
+        vec = np.random.rand(2)
+        return tuple(vec / np.linalg.norm(vec))
+
+    home_positions = [(data['tracks'][i], data['pts'][i], random_unit_vector()) for i in range(len(data['class_id'])) if data['class_id'][i] == 0]
+    away_positions = [(data['tracks'][i], data['pts'][i], random_unit_vector()) for i in range(len(data['class_id'])) if data['class_id'][i] == 1]
+
+
+    results = analyzer.analyze_space_control(home_positions, away_positions)
+    # Print results
     print("\nSpace Control Analysis:")
     print(f"Home team control: {results['space_control']['home']:.1f}%")
     print(f"Away team control: {results['space_control']['away']:.1f}%")
-    
+
     # Visualize
     analyzer.visualize_space_control()
-    
-    # Visualize individual player
-    analyzer.visualize_player_influence(1, 'home')
+
+    # Visualize all player zones
+    for i in range(len(data['labels'])):
+        analyzer.visualize_player_influence(data['tracks'][i], 'home' if data['class_id'][i] == 0 else 'away')
+

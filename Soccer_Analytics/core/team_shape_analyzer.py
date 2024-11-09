@@ -300,6 +300,55 @@ if __name__ == "__main__":
     ]
     
     # Calculate shape metrics
+
+
+    
+    import pickle
+
+    # load the file test.pkl
+    with open('Soccer_Analytics/core/test.pkl', 'rb') as f:
+        data = pickle.load(f)
+
+    # find index in an numpy array and get position of the ball
+    ball_pos = data['pts'][np.where(data['labels'] == 'ball')[0][0]]
+    
+    #remove the ball and ref from the data
+    # get the index of the ball and ref
+    ball_idx = data['tracks'][np.where(data['labels'] == 'ball')[0][0]] - 1
+    ref_idx = data['tracks'][np.where(data['labels'] == 'referee')[0][0]] - 1
+    print(ball_idx, ref_idx)
+
+    # remove the ball and ref from the data
+    data['labels'] = np.delete(data['labels'], [ball_idx, ref_idx], axis=0)
+    data['pts'] = np.delete(data['pts'], [ball_idx, ref_idx], axis=0)
+    data['tracks'] = np.delete(data['tracks'], [ball_idx, ref_idx], axis=0)
+    # get the player positions of the players in team 1
+    example_positions = [data['pts'][i] for i in range(len(data['class_id'])) if data['class_id'][i] == 1]
+
+
+
+    # # import cdist
+    # from scipy.spatial.distance import cdist
+
+    # # calculate distance between ball and each player
+    # distances = cdist(data['pts'], [ball_pos])
+
+    # # get the index of the player closest to the ball such that label[index] is not 'ball' or 'ref'
+    # closest_player_idx = np.argmin(distances[1])
+
+    # # get the player team
+    # possessing_team = data['class_id'][closest_player_idx]
+    # # get the player id
+    # possessing_player = data['tracks'][closest_player_idx]
+
+    # possessing_team = 'home' if possessing_team == 0 else 'away'
+
+    # player_positions = {}
+    # for i in range(len(data['class_id'])):
+    #     if data['class_id'][i] == data['class_id'][closest_player_idx]:
+    #         player_positions[data['tracks'][i]] = data['pts'][i]
+
+
     metrics = analyzer.calculate_team_shape(datetime.now(), example_positions)
     print("\nTeam Shape Metrics:")
     print(f"Width: {metrics['width']:.1f}m")

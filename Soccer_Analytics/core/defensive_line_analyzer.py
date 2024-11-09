@@ -314,4 +314,4 @@ if __name__ == "__main__":
     analyzer.visualize_defensive_line()
     
     # Plot metric evolution
-    analyzer.plot_metric_evolution('line_height')
+    #analyzer.plot_metric_evolution('line_height')
