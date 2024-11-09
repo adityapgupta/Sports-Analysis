@@ -8,7 +8,7 @@
 
     const fadeOpt = {duration: 150}
     const icons = [ico1, ico2, ico3]
-    const descriptions = ["Homepage", "Player list", "Analytics"]
+    const descriptions = ["Demo", "Insights", "Team"]
 
     let changePage = function(idx: number) {
         $currentPage = Object.values(pages)[idx]
@@ -19,7 +19,10 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 </svelte:head>
 
-<div class="sidebardiv flex flex-col flex-grow-0 mx-4 px-1 pt-1 bg-amber-600 rounded-sm items-stretch min-w-fit">
+<div class="sidebardiv flex flex-col flex-grow-0 mx-4 px-1 pt-1 bg-slate-800 rounded-sm items-stretch min-w-fit">
+    {#if expanded}
+        <h2 class="text-center p-2 px-3 m-1 text-xl font-bold" onclick={() => $currentPage = pages.MAIN_HOME}>Sigma.Ball</h2>
+    {/if}
     <button id="expbutton" onclick={() => expanded = !expanded} class="inline-flex items-center buttons mt-2">
         <i class="material-icons text-center pl-1.5">menu</i>
         {#if expanded}
@@ -46,7 +49,7 @@
         white-space: nowrap;
     }
     .buttons:hover {
-        background-color: #c58843;
+        background-color: #5f3737;
     }
     #expbutton {
         min-width: 32px;
@@ -54,6 +57,9 @@
         padding: auto;
     }
     .icons {
-        background-color: white;
+        background-color: #f8f8f8;
+    }
+    .sidebardiv {
+        color: white;
     }
 </style>

@@ -3,6 +3,7 @@
     import Analytics from './shared/analytics.svelte';
 	import Homepage from './shared/homepage.svelte';
 	import PlayerList from './shared/player_list.svelte';
+	import Landing from './components/Landing.svelte';
 	import { currentPage, pages } from './shared/progstate.svelte.ts';
 
 	let socket:WebSocket;
@@ -19,6 +20,7 @@
 <div class="flex flex-row flex-grow items-stretch">
 	<Sidebar />
 	<div class="flex flex-col flex-grow" style="width: 100%;">
+		<Landing visibility={$currentPage == pages.MAIN_HOME} />
 		<Homepage {socket} visibility={$currentPage == pages.HOME} />
 		<PlayerList {socket} visibility={$currentPage == pages.PLAYERS_LIST}/>
 		<Analytics {socket} visibility={$currentPage == pages.ANALYTICS} />
