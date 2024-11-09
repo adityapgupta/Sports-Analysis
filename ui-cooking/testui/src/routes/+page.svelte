@@ -4,6 +4,7 @@
 	import Homepage from './shared/homepage.svelte';
 	import PlayerList from './shared/player_list.svelte';
 	import Landing from './components/Landing.svelte';
+	import Team from './components/Team.svelte';
 	import { currentPage, pages } from './shared/progstate.svelte.ts';
 
 	let socket:WebSocket;
@@ -24,6 +25,7 @@
 		<Homepage {socket} visibility={$currentPage == pages.HOME} />
 		<PlayerList {socket} visibility={$currentPage == pages.PLAYERS_LIST}/>
 		<Analytics {socket} visibility={$currentPage == pages.ANALYTICS} />
+		<Team visibility = {$currentPage == pages.TEAM} />
 	</div>
 </div>
 

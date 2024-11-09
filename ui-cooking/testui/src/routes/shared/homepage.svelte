@@ -18,14 +18,4 @@
     .homepagecontainer {
         transition: opacity 5s;
     }
-/* 
-    add picture to the background */
-    .homepagecontainer {
-        /* background-image: add it from the assets folder; */
-        background-image: image('/home/sahilc/Desktop/Soccer Analysis Project/Sports-Analysis/ui-cooking/testui/src/assets/1156910.jpg');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center;
-    }
-
 </style>
