@@ -1,6 +1,5 @@
 <script lang="ts">
     import { cvideo, port, dataStore, video_duration, activeBox, activeBoxFrames, validVideo, vid_prefix, balls, isBoxClicked } from "../shared/progstate.svelte";
-    let { children }: { children: () => any } = $props();
     let vidobj: HTMLVideoElement;
     let vidurl = $derived(`http://localhost:${$port}/${$vid_prefix}${$cvideo}`)
     let ctime = $state(0)
@@ -93,10 +92,6 @@
         <p>Please load a video to get started</p>
     {/if}
 </div>
-
-{#if $validVideo}
-    {@render children?.()}
-{/if}
 
 <style>
     video {

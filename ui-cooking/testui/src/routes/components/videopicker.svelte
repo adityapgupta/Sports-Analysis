@@ -1,6 +1,4 @@
 <script lang="ts">
-    import Page from "../+page.svelte";
-    import PlayerList from "../shared/player_list.svelte";
     import { cvideo, box, dataStore, video_duration, vid_prefix, player_data, balls } from "../shared/progstate.svelte"
     const { socket }: { socket: WebSocket } = $props()
 
@@ -15,7 +13,7 @@
     
     function updateVideo() {
         cvideo.set(bval)
-        setTimeout(loadFrameData, 50)
+        setTimeout(loadFrameData, 150)
     }
     
     socket.addEventListener('message', msg => {
@@ -28,6 +26,7 @@
             for (let i in data.data) {
                 newdata.push([data.data[i][0].toString(), data.data[i][1].toString().trim(), data.data[i][2].toString().trim()])
             }
+            $balls = []
             for (let i in newdata) {
                 if (newdata[i][1] == "ball") {
                     $balls.push(Number.parseInt(newdata[i][0]))
@@ -40,7 +39,7 @@
         const data = JSON.parse(msg.data)
         if (data.type == 'bufferedFrames') {
             const recvdata = data.data as {[key: number] : Array<{ user: number, x: number, w: number, h: number, y: number }>}
-            
+            $dataStore = {}
             for (const key in recvdata) {
                 dataStore.update(currentData => {
                     const boxedData = recvdata[key].map(v => new box(v.user, v.x, v.y, v.w, v.h))
@@ -83,10 +82,11 @@
         }))
     }
     $inspect(bval)
+    $inspect($balls)
 </script>
 
 <div class="maingrid m-2 p-2 grid">
-    <button name="selectFileButton" class="bg-slate-400 px-3" onclick={copyFileInternal}>Copy to field</button>
+    <button name="selectFileButton" class="bg-slate-400 p-2" onclick={copyFileInternal}>Copy to field</button>
     <input bind:this={fileInput} class="m-1 rounded" placeholder="Enter a full filepath here"/>
     <button name="getVideoButton" id="get_videos"
     class="bg-slate-400 p-2" onclick={getFiles}>Get videos</button>

@@ -1,6 +1,6 @@
-datasets
-models
-**/media-videos/
-Player Tracking/runs
-Player Tracking/help/weights
 **/__pycache__/
+**/media-videos/
+datasets
+models/SV_FT_WC14_kp
+models/SV_FT_WC14_lines
+models/yolov10m.pt
