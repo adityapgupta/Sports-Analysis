@@ -4,10 +4,11 @@
     import { currentPage, pages } from '../shared/progstate.svelte.ts'
     import ico1 from '$lib/sidebar-icons/ico1.jpg'
     import ico2 from '$lib/sidebar-icons/ico2.jpg'
+    import ico3 from '$lib/sidebar-icons/ico3.png'
 
     const fadeOpt = {duration: 150}
-    const icons = [ico1, ico2]
-    const descriptions = ["Homepage", "Player list"]
+    const icons = [ico1, ico2, ico3]
+    const descriptions = ["Homepage", "Player list", "Analytics"]
 
     let changePage = function(idx: number) {
         $currentPage = Object.values(pages)[idx]
@@ -27,11 +28,7 @@
     </button>
     {#each icons as icon, i}
     <button class="inline-flex items-center w-auto h-auto p-1 buttons" onclick={() => changePage(i)}>
-        {#if i == 0}
-            <img src={icon} alt="icon" class="rounded-sm" width="24px"/>
-        {:else}
-            <img src={icon} alt="icon" class="rounded-sm" width="24px"/>
-        {/if}
+        <img src={icon} alt="icon" class="rounded-sm icons" width="24px"/>
         {#if expanded}
             <span class="text-center pl-2 pr-3" transition:fade={fadeOpt}>{descriptions[i]}</span>
         {/if}
@@ -55,5 +52,8 @@
         min-width: 32px;
         min-height: 32px;
         padding: auto;
+    }
+    .icons {
+        background-color: white;
     }
 </style>

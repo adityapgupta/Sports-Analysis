@@ -11,12 +11,21 @@ import pandas as pd
 import json
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import threading
+from random import random
 
 def load_video_failsafe(path, names):
     try:
         return pd.read_csv(path, names=names, index_col=False)
     except:
         return pd.DataFrame(columns=names)
+
+def make_heatmap_data():
+    out = []
+    for _ in range(10):
+        out.append([])
+        for _ in range(15):
+            out[-1].append(random())
+    return out
 
 video_prefix = "media-videos/vids/"
 data_prefix = "media-videos/outputs/"
@@ -68,6 +77,15 @@ async def handler(webs):
                     webs.send(json.dumps({
                         'type': 'fileSaveEvent',
                         "Success": True
+                    }))
+                case 'getHeatmapData':
+                    await webs.send(json.dumps({
+                        'type': 'heatmapData',
+                        'data': {
+                            'left-team': make_heatmap_data(),
+                            'right-team': make_heatmap_data(),
+                            'ball': make_heatmap_data()
+                            }
                     }))
 
         except Exception as e:
