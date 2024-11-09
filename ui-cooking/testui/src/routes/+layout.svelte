@@ -1,6 +1,5 @@
 <script lang="ts">
 	import '../app.css';
-	import Header from './components/Header.svelte';
 	let { children } = $props();
 
 </script>
@@ -9,15 +8,11 @@
 
 <div class="app min-h-screen">
 
-	<header class="flex flex-shrink">
-		<Header></Header>
-	</header>
-
 	<main class="mb-none flex-grow self-stretch flex items-stretch ">
 		{@render children()}
 	</main>
 
-	<footer class="flex-shrink">
+	<footer class="flex-shrink bg-slate-800 text-white">
 		<p>
 			UMC301 sports analysis project, <a href="https://github.com/adityapgupta/Sports-Analysis">Github</a> 
 		</p>
@@ -32,7 +27,6 @@
 
 	main {
 		min-height: 100%;
-		padding-block: 10px;
 	}
 
 	footer {

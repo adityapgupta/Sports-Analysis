@@ -1,11 +1,13 @@
 import { writable, get } from "svelte/store"
 enum pages {
+    MAIN_HOME = "landing",
     HOME = "page-1",
     PLAYERS_LIST = "page-2",
-    ANALYTICS = "page-3"
+    ANALYTICS = "page-3",
+    TEAM = "team",
 }
 
-export let currentPage = writable(pages.HOME)
+export let currentPage = writable(pages.MAIN_HOME)
 export let currentFile = writable("")
 export let cvideo = writable("")
 export let vid_prefix = writable("")

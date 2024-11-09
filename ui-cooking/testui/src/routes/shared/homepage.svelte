@@ -3,6 +3,7 @@
     import Videopicker from "../components/videopicker.svelte";
     import Analytics from "./analytics.svelte";
     let { socket, visibility } : { socket: WebSocket, visibility:boolean } = $props();
+    import ico1 from '$lib/images/1156910.jpg' 
 </script>
 
 <div style="width: 100%;" class="homepagecontainer px-3 py-3 flex-grow"
@@ -15,6 +16,6 @@
 
 <style>
     .homepagecontainer {
-        transition: opacity 1s;
+        transition: opacity 5s;
     }
 </style>
