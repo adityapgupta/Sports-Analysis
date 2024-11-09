@@ -1,0 +1,9 @@
+# YAML configuration file for YOLO training
+
+train: /home/sahilc/Desktop/Soccer Analysis Project/Ball Tracking image no SORT algorithms/YOLO_data/images/train
+val: /home/sahilc/Desktop/Soccer Analysis Project/Ball Tracking image no SORT algorithms/YOLO_data/images/val
+
+
+names:
+  0: Football  # Class name
+
