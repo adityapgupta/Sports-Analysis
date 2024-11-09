@@ -8,7 +8,7 @@
 
     const fadeOpt = {duration: 150}
     const icons = [ico1, ico2, ico3]
-    const descriptions = ["Demo", "Insights", "Highlights"]
+    const descriptions = ["Video", "Players", "Insights", "Team"]
 
     let changePage = function(idx: number) {
         $currentPage = Object.values(pages)[idx]
@@ -30,17 +30,12 @@
         {/if}
     </button>
     {#each descriptions as description, i}
-    <button class="inline-flex items-center w-auto h-auto p-1 buttons" onclick={() => changePage(i)}>
+    <button class="inline-flex items-center w-auto h-auto p-1 buttons" onclick={() => changePage(i+1)}>
         {#if expanded}
             <span class="text-center pl-2 pr-3" transition:fade={fadeOpt}>{description}</span>
         {/if}
     </button>
     {/each}
-    <button class="inline-flex items-center w-auto h-auto p-1 buttons" onclick={() => $currentPage = pages.TEAM}>
-        {#if expanded}
-            <span class="text-center pl-2 pr-3" transition:fade={fadeOpt}>Team</span>
-        {/if}
-    </button>
 </div>
 
 {#if expanded}{/if}
@@ -63,7 +58,6 @@
     }
     .sidebardiv {
         color: white;
-        width: 15%;
     }
     .text-center {
         text-align: center;

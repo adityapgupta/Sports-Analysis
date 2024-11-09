@@ -1,9 +1,9 @@
 import { writable, get } from "svelte/store"
 enum pages {
+    MAIN_HOME = "landing",
     HOME = "page-1",
     PLAYERS_LIST = "page-2",
     ANALYTICS = "page-3",
-    MAIN_HOME = "landing",
     TEAM = "team",
 }
 
