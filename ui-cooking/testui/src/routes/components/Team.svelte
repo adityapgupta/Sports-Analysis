@@ -45,7 +45,7 @@
 
 <div style:display={visibility ? "flex" : "none"} class="flex flex-col w-full p-8">
     <!-- Title Section -->
-    <div class="mb-12">
+    <div class="mb-12 flex justify-center">
         <h2 class="inline-block px-8 py-3 bg-[#1C1C2E] text-yellow-300 rounded-full text-xl font-semibold">
             Contributors
         </h2>

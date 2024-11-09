@@ -7,7 +7,7 @@ enum pages {
     TEAM = "team",
 }
 
-export let currentPage = writable(pages.HOME)
+export let currentPage = writable(pages.MAIN_HOME)
 export let currentFile = writable("")
 export let cvideo = writable("")
 export let vid_prefix = writable("")
