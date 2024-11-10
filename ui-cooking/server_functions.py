@@ -24,7 +24,6 @@ class_map = {
     2: "right_player",
     3: "referee"
 }
-
 def generate_object_map(datas):
     # datas here is a list for every frame, containing (object, class, (x, y))
     workingmap = {}
@@ -34,6 +33,7 @@ def generate_object_map(datas):
                 workingmap[int(item[0])] = class_map[item[1]]
     return workingmap
 
+player_map = generate_object_map(detections)
 vid_rel_prefix = "media-videos/vids/"
 data_rel_prefix = "media-videos/outputs/"
 data_prefix = f"{cdir}/media-videos/outputs/"
@@ -72,7 +72,7 @@ def getLinemapData(filename):
 
 def getPlayerMap(filename):
     # The frontend expects a dict of player number to player identity
-    return generate_object_map(detections)
+    return player_map
 
 def getVideoList():
     return os.listdir(video_prefix)
@@ -91,3 +91,13 @@ def handleTraining(filename):
         return
     if not os.path.exists(f"{data_prefix}{filename}"):
         os.mkdir(f"{data_prefix}{filename}")
+
+def get2dData(filename):
+    global detections
+    newdetections = []
+    for i in detections:
+        newdetections.append([])
+        for (j, k, l) in i:
+            newdetections[-1].append([int(j), int(k), (float(l[0]), float(l[1]))])
+    detections = newdetections
+    return detections

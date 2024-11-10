@@ -19,7 +19,8 @@ export let linemap_data: Writable<{"left-team": [number, number][], "right-team"
 }))
 export let currentPage = writable(pages.MAIN_HOME)
 export let frameRate = $state(writable(25))
-export let currentFile = writable("")
+export let currentFile = $state(writable(""))
+export let currentFrame = $state(writable(0))
 export let cvideo = writable("")
 export let vid_prefix = writable("")
 export let port = writable(8000)
@@ -38,6 +39,7 @@ export let identifications = writable({
     right_team: [-1],
     referee: [-1]
 })
+export let dataStore_2d: Writable<[number, number, [number, number]][][]> = $state(writable([]))
 
 interface boxesData {
     [key: number]: box[]
@@ -87,5 +89,22 @@ export const isBoxClicked = function(inbox: box, svgelt: SVGElement, clickx: num
     let [t_clickx, t_clicky] = [clickx*vidx/svgw, clicky*vidy/svgh]
     return t_clickx >= inbox.x-leeway && t_clickx <= inbox.x + inbox.w+leeway && t_clicky >= inbox.y-leeway && t_clicky <= inbox.y + inbox.h+leeway
 }
+
+export const getAppropriateColor = function(tracking_id: number) {
+    if (tracking_id == get(activeBox)) {
+        return "#D90368"
+    } else if (get(identifications).ball_ids.includes(tracking_id)) {
+        return "white"
+    } else if (get(identifications).left_team.includes(tracking_id)) {
+        return "#820263"
+    } else if (get(identifications).right_team.includes(tracking_id)) {
+        return "#FB8B24"
+    } else if (get(identifications).referee.includes(tracking_id)) {
+        return "yellow"
+    } else {
+        return "black"
+    }
+}
+
 
 export { pages, type boxesData, box }

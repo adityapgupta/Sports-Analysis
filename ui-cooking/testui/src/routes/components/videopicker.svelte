@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { cvideo, box, dataStore, video_duration, vid_prefix, identifications, frameRate } from "../shared/progstate.svelte"
+    import { cvideo, box, dataStore, video_duration, vid_prefix, identifications, frameRate, dataStore_2d } from "../shared/progstate.svelte"
     const { socket }: { socket: WebSocket } = $props()
 
     let videos = $state([])
@@ -53,8 +53,9 @@
                     }
                 }
             }
+        } else if (data.type == "2dMap") {
+            $dataStore_2d = data.data
         }
-
     })
     socket.addEventListener('message', msg => {
         const data = JSON.parse(msg.data)
@@ -96,7 +97,12 @@
         }))
 
         socket.send(JSON.stringify({
-            type: 'getPlayerMap'
+            type: 'get2dMap',
+            video: bval
+        }))
+        socket.send(JSON.stringify({
+            type: 'getPlayerMap',
+            video: bval
         }))
     }
 

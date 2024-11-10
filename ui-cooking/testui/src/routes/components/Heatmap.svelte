@@ -18,7 +18,6 @@
                 .attr("x", (d, i) => (i-1)*rectw).transition().delay((d, i) => anim_delay*i).duration(anim_delay)
                 .attr("x", (d, i) => i*rectw)
                 .attr('opacity', d => d).attr('class', 'heatmap_rects')
-                .attr('style', "fill: red; mix-blend-mode: color;")
         })
     })
 </script>
@@ -39,7 +38,7 @@
     .svg-container {
         width: min(100%, 600px);
         flex-shrink: 1;
-        background-color: #00b000;
+        background-color: #0a0;
         padding: 4px;
     }
     :global(rect.heatmap_rects) {
