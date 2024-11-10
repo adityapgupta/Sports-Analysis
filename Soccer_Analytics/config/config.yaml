@@ -103,7 +103,7 @@ thresholds:
   # Ball Possession
   ball_possession:
     control_radius: 2.0  # meters
-    min_possession_duration: 0.04  # seconds
+    min_possession_duration: 0.2  # seconds
 
   buildup:
     min_duration: 3.0  # minimum seconds for a valid build-up phase
