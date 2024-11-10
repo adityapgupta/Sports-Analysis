@@ -9,13 +9,17 @@ from heat_map_analyzer import HeatMapAnalyzer
 import pprint as pp
 
 
-def ball_possesion_integrate(data):
+def ball_possesion_integrate(data, times = None):
   
     analyzer = BallPossessionAnalyzer()
     field_length = analyzer.field_length
     field_width = analyzer.field_width
     frame_rate = analyzer.frame_rate
     ball_pos = np.array([field_length/2, field_width/2])
+
+    if times:
+        num_frames = times*frame_rate
+        data = data[:num_frames]
 
 
     for j, frame in enumerate(data):
