@@ -1,12 +1,12 @@
 import numpy as np
 from typing import List, Tuple, Dict, Optional
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import yaml
 import sys
-# if '/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils' not in sys.path:
-#     sys.path.append('/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils')
+if '/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils' not in sys.path:
+    sys.path.append('/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils')
 
 import os
 
@@ -56,6 +56,7 @@ class SprintAnalyzer:
                         last_position: Tuple[float, float],
                         last_timestamp: datetime) -> Dict:
         """Process new position data and detect sprints"""
+        
         time_diff = (timestamp - last_timestamp).total_seconds()
         velocity = calculate_velocity(last_position, position, time_diff)
         
@@ -115,17 +116,22 @@ class SprintAnalyzer:
                       current_velocity: float):
         """Update current sprint metrics"""
         self.current_sprint.end_time = timestamp
+        if self.current_sprint.end_position is not None:    
+            self.current_sprint.distance += np.sqrt(
+                (position[0] - self.current_sprint.end_position[0])**2 +
+                (position[1] - self.current_sprint.end_position[1])**2
+            )
+        else:
+            self.current_sprint.distance += 0
         self.current_sprint.end_position = position
-        self.current_sprint.distance += np.sqrt(
-            (position[0] - self.current_sprint.end_position[0])**2 +
-            (position[1] - self.current_sprint.end_position[1])**2
-        )
+
         self.current_sprint.duration = (
             timestamp - self.current_sprint.start_time
         ).total_seconds()
+        
         self.current_sprint.avg_velocity = (
             self.current_sprint.distance / self.current_sprint.duration
-        ) * 3.6  # Convert to km/h
+        ) * 3.6 if self.current_sprint.duration != 0 else 0  # Convert to km/h
         self.current_sprint.max_velocity = max(
             current_velocity,
             self.current_sprint.max_velocity
@@ -232,7 +238,6 @@ class SprintAnalyzer:
         for sprint in self.sprints:
             relative_start = (sprint.start_time - start_time).total_seconds()
             duration = sprint.duration
-            
             plt.plot([relative_start, relative_start + duration],
                     [sprint.avg_velocity, sprint.avg_velocity],
                     'r-', linewidth=2)
@@ -246,3 +251,109 @@ class SprintAnalyzer:
         plt.legend()
         plt.grid(True)
         plt.show()
+
+if __name__ == "__main__":
+
+    # # Initialize analyzer
+    # analyzer = SprintAnalyzer()
+
+    # # Example tracking data
+    # tracking_data = [
+    #     (datetime.now(), (0.0, 0.0)),
+    #     (datetime.now() + timedelta(seconds=1), (5.0, 5.0)),
+    #     (datetime.now() + timedelta(seconds=2), (10.0, 8.0)),
+    #     # Add more tracking data...
+    # ]
+
+    # # add few seconds for tracking data[1][0]
+
+       
+
+    # # Process positions
+    # for i in range(1, len(tracking_data)):
+    #     analyzer.process_position(
+    #         tracking_data[i][0],
+    #         tracking_data[i][1],
+    #         tracking_data[i-1][1],
+    #         tracking_data[i-1][0]
+    #     )
+
+    # # Get sprint statistics
+    # sprint_stats = analyzer.get_sprint_stats()
+    # print(sprint_stats)
+
+    # # Visualize sprints
+    # analyzer.visualize_sprints()
+
+    # # Plot sprint timeline
+    # analyzer.plot_sprint_timeline()
+
+    analyzer = SprintAnalyzer()
+
+    import pickle
+    with open('Soccer_Analytics/core/detections.pkl', 'rb') as f:
+        data = pickle.load(f)
+    
+    # Remove everything with label 0 or 3
+    remove_indices = []
+    for i in range(len(data)):
+        for j in range(len(data[i])):
+
+            if data[i][j][1] == 0 or data[i][j][1] == 3:
+                remove_indices.append([i, j])
+
+    # sort the indices in reverse order
+    remove_indices = sorted(remove_indices, key=lambda x: x[1], reverse=True)
+
+    for i, j in remove_indices:
+        data[i].pop(j)
+    
+    # now find unique players
+    players = []
+    for i in range(len(data)):
+        for j in range(len(data[i])):
+            if data[i][j][0] not in players:
+                players.append(data[i][j][0])
+
+    # now track the players
+    player_positions = {}
+    for player in players:
+        player_positions[player] = []
+
+    for i in range(len(data)):
+        for j in range(len(data[i])):
+            player_positions[data[i][j][0]].append(data[i][j] + (i,))
+
+    # now calculate tracking for each player
+    player_tracking = {}
+    player_sprint_stats = {}
+    
+    for player, positions in player_positions.items():
+        analyzer = SprintAnalyzer()
+        player_tracking[player] = []
+        for i in range(1, len(positions)):
+            player_tracking[player].append(
+                analyzer.process_position(
+                    datetime.now() + timedelta(seconds=positions[i][3]/25),
+                    positions[i][2],
+                    positions[i-1][2],
+                    datetime.now() + timedelta(seconds=positions[i-1][3]/25)
+                )
+            )
+        player_sprint_stats[player] = analyzer.get_sprint_stats()
+        print(player_sprint_stats[player])
+        analyzer.visualize_sprints()
+        analyzer.plot_sprint_timeline()
+
+    # # get the sprint stats for each player
+    # player_sprint_stats = analyzer.get_sprint_stats()
+
+    # print(player_sprint_stats)
+    # # visualize the sprints for each player
+    # analyzer.visualize_sprints()
+
+    # # plot the sprint timeline for each player
+    # analyzer.plot_sprint_timeline()
+
+    
+            

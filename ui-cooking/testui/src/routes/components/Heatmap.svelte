@@ -2,13 +2,13 @@
     import * as d3 from "d3";
     import { getContext, onMount } from "svelte";
     const { heatmap_data, header }: { heatmap_data: number[][], header: string } = $props()
-    const NUM_BOXES = [40, 30]
+
     let heatmapView: SVGElement
-    const ROWS = 15
-    const COLUMNS = 10
+    const ROWS = $derived(heatmap_data[0]?.length || 15)
+    const COLUMNS = $derived(heatmap_data.length || 10)
     const anim_delay = 80
-    let rectw = 105/ROWS
-    let recth = 68/COLUMNS
+    let rectw = $derived(105/ROWS)
+    let recth = $derived(68/COLUMNS)
     onMount(() => {
         $effect(() => {
             d3.select(heatmapView).selectAll("g").data(heatmap_data)
@@ -18,7 +18,6 @@
                 .attr("x", (d, i) => (i-1)*rectw).transition().delay((d, i) => anim_delay*i).duration(anim_delay)
                 .attr("x", (d, i) => i*rectw)
                 .attr('opacity', d => d).attr('class', 'heatmap_rects')
-                .attr('style', "fill: red; mix-blend-mode: color;")
         })
     })
 </script>
@@ -39,7 +38,7 @@
     .svg-container {
         width: min(100%, 600px);
         flex-shrink: 1;
-        background-color: #00b000;
+        background-color: #0a0;
         padding: 4px;
     }
     :global(rect.heatmap_rects) {

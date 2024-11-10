@@ -46,7 +46,7 @@
 <div style:display={visibility ? "flex" : "none"} class="flex flex-col w-full p-8">
     <!-- Title Section -->
     <div class="mb-12 flex justify-center">
-        <h2 class="inline-block px-8 py-3 bg-[#1C1C2E] text-yellow-300 rounded-full text-xl font-semibold">
+        <h2 class="inline-block px-8 py-3 bg-[#1C1C2E] text-yellow-300 rounded-full text-3xl font-semibold">
             Contributors
         </h2>
     </div>
@@ -56,7 +56,7 @@
         {#each contributors as contributor (contributor.id)}
             <div class="flex flex-col items-center space-y-4">
                 <!-- Avatar Circle -->
-                <div class="w-48 h-48 rounded-full border-2 border-pink-100 bg-pink-50 overflow-hidden">
+                <div class="w-48 h-48 rounded-full border-4 border-pink-100 bg-pink-50 overflow-hidden">
                     <img
                         src={contributor.image}
                         alt={contributor.name}

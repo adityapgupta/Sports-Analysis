@@ -119,27 +119,70 @@ class HeatMapAnalyzer:
 # Example usage
 if __name__ == "__main__":
     # Initialize analyzer
-    analyzer = HeatMapAnalyzer()
     
     # Example tracking data (normally from your tracking system)
-    example_positions = [
-        (50.0, 30.0),
-        (52.0, 32.0),
-        (48.0, 35.0),
-        (9, 10),
-        (10, 11)
-        # Add more positions...
-    ]
+    # example_positions = [
+    #     (50.0, 30.0),
+    #     (52.0, 32.0),
+    #     (48.0, 35.0),
+    #     (9, 10),
+    #     (10, 11)
+    #     # Add more positions...
+    # ]
     
+    # # Add positions to heat map
+    # analyzer.add_positions(example_positions)
+    
+    # # Visualize heat map
+    # analyzer.visualize("Player Heat Map")
+    
+    # # Get zone statistics
+    # stats = analyzer.get_zone_statistics()
+    # print("\nZone Statistics:")
+    # print(f"Defensive Third: {stats['defensive_third_percentage']:.1f}%")
+    # print(f"Middle Third: {stats['middle_third_percentage']:.1f}%")
+    # print(f"Attacking Third: {stats['attacking_third_percentage']:.1f}%")
+
+    import pickle
+    analyzer = HeatMapAnalyzer()
+
+
+    # load the file test.pkl
+    with open('Soccer_Analytics/core/detections.pkl', 'rb') as f:
+        data = pickle.load(f)
+
+   # Remove everything with label 0 or 3
+    remove_indices = []
+    for i in range(len(data)):
+        for j in range(len(data[i])):
+
+            if data[i][j][1] == 0 or data[i][j][1] == 3:
+                remove_indices.append([i, j])
+
+    # sort the indices in reverse order
+    remove_indices = sorted(remove_indices, key=lambda x: x[1], reverse=True)
+
+    for i, j in remove_indices:
+        data[i].pop(j)
+
+    
+    
+    # get the player positions of the players in team 1
+    # example_positions = [data['pts'][i] for i in range(len(data['class_id'])) if data['class_id'][i] == 1]
+    example_positions = [data[i][j][2] for i in range(len(data)) for j in range(len(data[i])) if data[i][j][1] == 1]
     # Add positions to heat map
     analyzer.add_positions(example_positions)
-    
+
     # Visualize heat map
-    analyzer.visualize("Player Heat Map")
-    
-    # Get zone statistics
-    stats = analyzer.get_zone_statistics()
-    print("\nZone Statistics:")
-    print(f"Defensive Third: {stats['defensive_third_percentage']:.1f}%")
-    print(f"Middle Third: {stats['middle_third_percentage']:.1f}%")
-    print(f"Attacking Third: {stats['attacking_third_percentage']:.1f}%")
+    analyzer.visualize("Player Heat Map home")
+
+    example_positions2 = [data[i][j][2] for i in range(len(data)) for j in range(len(data[i])) if data[i][j][1] == 2]
+
+    analyzer2 = HeatMapAnalyzer()
+    analyzer2.add_positions(example_positions2)
+
+    # Visualize heat map
+    analyzer2.visualize("Player Heat Map away")
+
+    analyzer2.add_positions(example_positions)
+    analyzer2.visualize("Player Heat Map home and away")
