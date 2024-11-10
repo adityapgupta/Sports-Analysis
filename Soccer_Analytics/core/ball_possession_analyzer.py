@@ -246,7 +246,7 @@ class BallPossessionAnalyzer:
             }
         }
     
-    def visualize_possession(self, time_window: float = None):
+    def visualize_possession(self, time_window: float = None, save_path: str = None, show: bool = True):
         """Visualize possession statistics"""
         stats = self.get_possession_stats(time_window)
         if not stats:
@@ -298,7 +298,12 @@ class BallPossessionAnalyzer:
         plt.ylabel('Field Width (m)')
         
         plt.tight_layout()
-        plt.show()
+        
+        if save_path:
+            plt.savefig(save_path)
+
+        if show:
+            plt.show()
     
     def data_possesion_flow(self, last_n_events: int = 20):
         """Data possession flow over time"""
@@ -318,7 +323,7 @@ class BallPossessionAnalyzer:
 
         return lists 
     
-    def plot_possession_flow(self, last_n_events: int = 20):
+    def plot_possession_flow(self, last_n_events: int = 20, save_path: str = None, show: bool = True):
         """Plot possession flow over time"""
         if not self.possession_events:
             return
@@ -370,42 +375,13 @@ class BallPossessionAnalyzer:
         plt.title('Possession Flow')
         plt.grid(False)
         
-        plt.show()
+        if save_path:
+            plt.savefig(save_path)
 
-    def output_web(self, data, analyzer):
+        if show:
+            plt.show()
 
-        last_ball_pos = np.array([self.field_length/2, self.field_width/2])
 
-        for frame in data:
-
-            ball_id = None
-            ref_ids = []
-            home_positions = []
-            away_positions = []
-
-            num_objects = len(frame)
-
-            for i in range(num_objects):
-
-                if frame[i][1] == 0:
-                    ball_pos = frame[i][2]
-                    ball_id = i
-                elif frame[i][1] == 3:
-                    ref_ids.append(i)
-                elif frame[i][1] == 1:
-                    home_positions.append((frame[i][0], frame[i][2]))
-                elif frame[i][1] == 2:
-                    away_positions.append((frame[i][0], frame[i][2]))
-
-            last_ball_pos = ball_pos
-            timestamp = datetime.fromtimestamp(i / self.frame_rate)
-
-            # analyze possession
-            metrics = analyzer.analyze_possession(timestamp, ball_pos, home_positions, away_positions)
-            stats = analyzer.get_possession_stats()
-            flow_data = analyzer.data_possesion_flow()
-
-            return stats, flow_data
 
     
 

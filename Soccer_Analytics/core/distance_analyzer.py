@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Tuple, Dict
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import yaml
 from scipy.spatial.distance import euclidean
@@ -31,6 +31,7 @@ class DistanceAnalyzer:
         self.sprint_threshold = config['thresholds']['distance']['sprint_threshold']
         self.high_intensity_threshold = config['thresholds']['distance']['high_intensity_threshold']
         self.jogging_threshold = config['thresholds']['distance']['jogging_threshold']
+        self.frame_rate = config['frame_rate']
         
         self.segments: List[MovementSegment] = []
         self.total_distance = 0.0
@@ -139,7 +140,7 @@ class DistanceAnalyzer:
             'distance_per_minute': sum(distances.values()) / (total_time / 60)
         }
     
-    def visualize_distance_breakdown(self):
+    def visualize_distance_breakdown(self, save_path: str = None, show: bool = True):
         """Visualize distance breakdown by movement category"""
         stats = self.get_distance_stats()
         
@@ -172,9 +173,13 @@ class DistanceAnalyzer:
         plt.xticks(rotation=45)
         
         plt.tight_layout()
-        plt.show()
+
+        if save_path:
+            plt.savefig(save_path)
+        if show:
+            plt.show()
     
-    def plot_velocity_profile(self, smoothing_window: int = 10):
+    def plot_velocity_profile(self, smoothing_window: int = 10, save_path: str = None, show: bool = True):
         """Plot velocity profile over time"""
         if not self.segments:
             return
@@ -206,7 +211,11 @@ class DistanceAnalyzer:
         plt.ylabel('Velocity (km/h)')
         plt.legend()
         plt.grid(True)
-        plt.show()
+
+        if save_path:
+            plt.savefig(save_path)
+        if show:
+            plt.show()
 
 # Example usage
 if __name__ == "__main__":
@@ -215,9 +224,9 @@ if __name__ == "__main__":
     
     # Example tracking data
     tracking_data = [
-        (datetime.now(), (0.0, 0.0)),
-        (datetime.now(), (5.0, 5.0)),
-        (datetime.now(), (10.0, 8.0)),
+        (datetime.fromtimestamp(0), (0.0, 0.0)),
+        (datetime.fromtimestamp(2), (5.0, 5.0)),
+        (datetime.fromtimestamp(3), (10.0, 8.0)),
         # Add more tracking data...
     ]
     
@@ -240,4 +249,6 @@ if __name__ == "__main__":
     
     # Visualize
     analyzer.visualize_distance_breakdown()
-    analyzer.plot_velocity_profile()
+    analyzer.plot_velocity_profile(smoothing_window=1)
+
+
