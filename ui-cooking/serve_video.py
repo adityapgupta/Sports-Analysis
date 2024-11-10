@@ -37,14 +37,16 @@ async def handler(webs):
                             }))
                 case 'bufVid':
                     mval, maxval = jsval['min'], jsval['max']
-                    if jsval['video'] != cvideo:
-                        cvideo = jsval['video']
-                        df = srvr.getTrackingData(cvideo)
-                        df_identity = srvr.getObjectsInfo(cvideo)
+                    # if jsval['video'] != cvideo:
+                    cvideo = jsval['video']
+                    df = srvr.getTrackingData(cvideo)
+                    df_identity = srvr.getObjectsInfo(cvideo)
                     frames = df.loc[df['frame'].between(mval, maxval)]
                     frame_dict = {}
                     for frame, group in frames.groupby('frame'):
                         frame_dict[frame] = group[['user', 'x', 'y', 'w', 'h']].to_dict(orient='records')
+                    print("frames", frames)
+                    print("df", df.head())
                     await webs.send(json.dumps({
                         'type': 'bufferedFrames',
                         'data': frame_dict

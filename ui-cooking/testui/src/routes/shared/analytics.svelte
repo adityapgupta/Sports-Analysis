@@ -1,10 +1,11 @@
 <script lang="ts" >
     import { setContext } from "svelte";
     let { socket, visibility }: { socket: WebSocket, visibility: Boolean } = $props()
-
+    import { posession as posstate } from "../shared/progstate.svelte";
     import Heatmap from "../components/Heatmap.svelte";
     import Lineplot from "../components/Lineplot.svelte";
     import Boxgraph from "../components/boxgraph.svelte";
+
     let heatmapdata: {"left-team": number[][], "right-team": number[][], "ball": number[][]} = $state({
         'left-team': [],
         'right-team': [],
@@ -38,6 +39,7 @@
             linemapdata = data.data
         } else if (data.type == "posessionData") {
             posession = data.data
+            $posstate = posession
         }
     })
 

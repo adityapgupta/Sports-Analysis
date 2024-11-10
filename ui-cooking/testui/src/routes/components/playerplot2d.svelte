@@ -7,17 +7,39 @@
         let svgelt: SVGElement
     const data = $derived($dataStore_2d[$currentFrame])
     let d3svg: d3.Selection<SVGElement, unknown, null, undefined>
+    const lplayers = $derived.by(() => {
+        return data.filter(d => $identifications.left_team.includes(d[0]))
+    })
+    const rplayers = $derived.by(() => {
+        return data.filter(d => $identifications.right_team.includes(d[0]))
+    })
+    const allplayers = $derived([...lplayers, ...rplayers])
+    const delaunay = $derived(d3.Delaunay.from([...lplayers, ...rplayers], d => d[2][0], d => d[2][1]))
+    const voronoi = $derived(delaunay.voronoi([0, 0, 105, 68]))
+    const xaxis = d3.scaleLinear().domain([0, 1]).range([0, 105])
+    const yaxis = d3.scaleLinear().domain([0, 1]).range([0, 68])
     onMount(() => {
         $effect(() => {
             d3svg = d3.select(svgelt)
             if (data) {
+                d3svg.selectAll('path').remove()
+                d3svg.selectAll('path').data(voronoi.cellPolygons()).join('path')
+                    .attr('d', d => d ? `M${d.join('L')}Z` : null)
+                    .attr('fill', 'none').attr('transform', 'scale(105, 68)')
+                    .attr('stroke', 'black')
+                    .attr('stroke-width', 0.5)
+                    .data(allplayers).attr('opacity', 0.5)
+                    .attr('mix-blend-mode', 'color')
+                    .attr('stroke', 'none')
+                    .attr('fill', d => lplayers.includes(d) ? 'red' : 'blue')
                 d3svg.selectAll('circle').remove()
                 d3svg.selectAll('circle').data(data).join('circle')
-                    .attr('cx', d => d[2][0])
-                    .attr('cy', d => d[2][1])
-                    .attr('r', d => $identifications.ball_ids.includes(d[0]) ? 2 : 1)
+                    .attr('cx', d => xaxis(d[2][0]))
+                    .attr('cy', d => yaxis(d[2][1]))
+                    .attr('r', d => $identifications.ball_ids.includes(d[0]) ? 0.8 : 1)
+                    .attr('stroke', d => $identifications.ball_ids.includes(d[0]) ? "black" : "none")
+                    .attr('stroke-width', 0.2)
                     .attr('fill', d => getAppropriateColor(d[0]))
-                console.log(d3svg.selectAll('circle'))
             }
         })
     })

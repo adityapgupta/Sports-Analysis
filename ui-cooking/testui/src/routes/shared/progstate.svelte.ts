@@ -31,14 +31,15 @@ export let allBoxes = writable<box[]>([])
 export let activeBox = writable<number>(0)
 export let activeBoxFrames = writable(0)
 export let validVideo = writable(0)
+export let posession: Writable<{start: number, end: number, team: "left" | "right"}[]> = writable([])
 export let balls= writable<number[]>([])
-export let identifications = writable({
-    player_ids: [-1],
-    ball_ids: [-1],
-    left_team: [-1],
-    right_team: [-1],
-    referee: [-1]
-})
+export let identifications = $state(writable({
+    player_ids: [-2],
+    ball_ids: [-2],
+    left_team: [-2],
+    right_team: [-2],
+    referee: [-2]
+}))
 export let dataStore_2d: Writable<[number, number, [number, number]][][]> = $state(writable([]))
 
 interface boxesData {
@@ -92,15 +93,15 @@ export const isBoxClicked = function(inbox: box, svgelt: SVGElement, clickx: num
 
 export const getAppropriateColor = function(tracking_id: number) {
     if (tracking_id == get(activeBox)) {
-        return "#D90368"
+        return "yellow"
     } else if (get(identifications).ball_ids.includes(tracking_id)) {
         return "white"
     } else if (get(identifications).left_team.includes(tracking_id)) {
-        return "#820263"
+        return "#FF1493"
     } else if (get(identifications).right_team.includes(tracking_id)) {
-        return "#FB8B24"
+        return "#00BFFF"
     } else if (get(identifications).referee.includes(tracking_id)) {
-        return "yellow"
+        return "yellowgreen"
     } else {
         return "black"
     }
