@@ -1,4 +1,6 @@
   # Field dimensions in meters
+frame_rate: 25  # frames per second
+
 field:
   length: 105
   width: 68
@@ -134,15 +136,15 @@ thresholds:
     risk_zone_radius: 3.0  # radius around defenders to consider for risk calculation
     opportunity_duration: 1.0  # minimum duration for a valid passing opportunity in seconds
     success_probability_threshold: 0.4  # minimum probability for a pass to be considered viable
-    max_interceptor_distance: 1.5  # maximum distance from passing lane for potential interceptors
+    max_interceptor_distance: 0.1  # maximum distance from passing lane for potential interceptors
     defensive_pressure_radius: 8.0  # radius to consider defensive pressure around receiver
-    vertical_progress_bonus: 0.3  # bonus for passes that progress the ball vertically
+    horizontal_progress_bonus: 0.3  # bonus for passes that progress the ball vertically
     risk_weights:
       interceptor_probability: 0.4
       receiver_pressure: 0.3
       pass_distance: 0.3
     reward_weights:
-      vertical_progress: 0.4
+      horizontal_progress: 0.4
       space_gained: 0.3
       tactical_advantage: 0.3
 
@@ -182,7 +184,7 @@ thresholds:
 visualization:
 
   heat_map:
-    grid_size: [10, 10]  # number of cells in x and y
+    grid_size: [15, 10]  # number of cells in x and y
     smoothing: 1.5  # gaussian smoothing factor
 
   colors:

@@ -6,7 +6,6 @@ from scipy.spatial.distance import cdist
 import sys 
 # if '/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils' not in sys.path:
 #     sys.path.append('/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils') 
-from calculations import calculate_velocity, calculate_direction
 import os
 
 @dataclass
@@ -26,9 +25,9 @@ class PassingOpportunity:
     receiver_id: int
     lane: PassingLane
     defensive_pressure: float
-    vertical_progress: float
+    horizontal_progress: float
     space_gained: float
-    tactical_advantage: float
+    # tactical_advantage: float
     timestamp: float
 
 class PassingOpportunitiesAnalyzer:
@@ -50,7 +49,7 @@ class PassingOpportunitiesAnalyzer:
         self.success_probability_threshold = pass_config['success_probability_threshold']
         self.max_interceptor_distance = pass_config['max_interceptor_distance']
         self.defensive_pressure_radius = pass_config['defensive_pressure_radius']
-        self.vertical_progress_bonus = pass_config['vertical_progress_bonus']
+        self.horizontal_progress_bonus = pass_config['horizontal_progress_bonus']
         
         # Load weight configurations
         self.risk_weights = pass_config['risk_weights']
@@ -88,7 +87,7 @@ class PassingOpportunitiesAnalyzer:
         
         for defender_id, pos in defender_positions:
             distance = self.point_to_line_distance(pos, start_pos, end_pos)
-            if distance <= self.max_interceptor_distance:
+            if distance <= self.max_interceptor_distance * cdist([start_pos], [end_pos])[0][0]:
                 interceptors.append((defender_id, distance))
                 
         return sorted(interceptors, key=lambda x: x[1])
@@ -107,10 +106,10 @@ class PassingOpportunitiesAnalyzer:
                                         defensive_pressure: float) -> float:
         """Calculate probability of pass success based on various factors"""
         # Base probability decreases with distance
-        base_prob = 1.0 - (passing_lane.distance / self.max_pass_distance)
-        
+        base_prob = np.exp(-passing_lane.distance / self.max_pass_distance)
+        distance = passing_lane.distance    
         # Adjust for interceptors
-        interceptor_risk = sum(1.0 / (1.0 + dist) for _, dist in passing_lane.interceptors)
+        interceptor_risk = sum(1.0 / (1.0 + 2*dist/distance) for _, dist in passing_lane.interceptors)
         interceptor_factor = np.exp(-interceptor_risk)
         
         # Adjust for defensive pressure
@@ -195,8 +194,8 @@ class PassingOpportunitiesAnalyzer:
                 [pos for _, pos in opponent_positions]
             )
             
-            # Calculate vertical progress
-            vertical_progress = (receiver_pos[1] - passer_pos[1]) / self.field_width
+            # Calculate horizontal progress
+            horizontal_progress = (receiver_pos[0] - passer_pos[0]) / self.field_length
             
             # Calculate space gained
             space_gained = self.calculate_space_gained(
@@ -206,11 +205,11 @@ class PassingOpportunitiesAnalyzer:
             )
             
             # Calculate tactical advantage
-            tactical_advantage = self.calculate_tactical_advantage(
-                receiver_pos,
-                [pos for _, pos in teammate_positions],
-                [pos for _, pos in opponent_positions]
-            )
+            # tactical_advantage = self.calculate_tactical_advantage(
+            #     receiver_pos,
+            #     [pos for _, pos in teammate_positions],
+            #     [pos for _, pos in opponent_positions]
+            # )
             
             # Calculate success probability
             passing_lane.success_probability = self.calculate_pass_success_probability(
@@ -225,9 +224,9 @@ class PassingOpportunitiesAnalyzer:
             )
             
             passing_lane.reward_score = self.calculate_reward_score(
-                vertical_progress,
+                horizontal_progress,
                 space_gained,
-                tactical_advantage
+                # tactical_advantage
             )
             
             # Calculate total score
@@ -242,9 +241,9 @@ class PassingOpportunitiesAnalyzer:
                     receiver_id=receiver_id,
                     lane=passing_lane,
                     defensive_pressure=defensive_pressure,
-                    vertical_progress=vertical_progress,
+                    horizontal_progress=horizontal_progress,
                     space_gained=space_gained,
-                    tactical_advantage=tactical_advantage,
+                    # tactical_advantage=tactical_advantage,
                     timestamp=timestamp
                 )
                 opportunities.append(opportunity)
@@ -269,20 +268,19 @@ class PassingOpportunitiesAnalyzer:
         
         return min(1.0, risk_score)
 
-    def calculate_reward_score(self, vertical_progress: float,
-                             space_gained: float,
-                             tactical_advantage: float) -> float:
+    def calculate_reward_score(self, horizontal_progress: float,
+                             space_gained: float) -> float:
         """Calculate overall reward score for a passing opportunity"""
         # Normalize components
-        vertical_progress_norm = (vertical_progress + 1) / 2  # Convert from [-1,1] to [0,1]
+        horizontal_progress_norm = (horizontal_progress + 1) / 2  # Convert from [-1,1] to [0,1]
         space_gained_norm = min(1.0, space_gained / 20)  # Assume 20m is max space gain
-        tactical_advantage_norm = min(1.0, max(0.0, tactical_advantage))
+        # tactical_advantage_norm = min(1.0, max(0.0, tactical_advantage))
         
         # Weighted sum of reward components
         reward_score = (
-            self.reward_weights['vertical_progress'] * vertical_progress_norm +
-            self.reward_weights['space_gained'] * space_gained_norm +
-            self.reward_weights['tactical_advantage'] * tactical_advantage_norm
+            self.reward_weights['horizontal_progress'] * horizontal_progress_norm +
+            self.reward_weights['space_gained'] * space_gained_norm 
+            # self.reward_weights['tactical_advantage'] * tactical_advantage_norm
         )
         
         return min(1.0, reward_score)
@@ -333,3 +331,6 @@ class PassingOpportunitiesAnalyzer:
             'avg_reward': np.mean([op.lane.reward_score 
                                  for op in self.current_opportunities])
         }
+    
+
+

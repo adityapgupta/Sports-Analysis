@@ -6,12 +6,6 @@ from dataclasses import dataclass
 from datetime import datetime
 import matplotlib.pyplot as plt
 import yaml
-from scipy.spatial.distance import cdist
-import sys
-if '/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils' not in sys.path:
-     sys.path.append('/home/shishirr/Desktop/Applied_Data_Science_and_Artificial_Intelligence/Project/Sports-Analysis/Soccer_Analytics/utils')
-
-from calculations import calculate_velocity
 import os
 
 @dataclass

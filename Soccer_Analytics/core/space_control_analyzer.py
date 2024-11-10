@@ -32,6 +32,7 @@ class SpaceControlAnalyzer:
             
         self.field_length = config['field']['length']
         self.field_width = config['field']['width']
+        self.frame_rate = config['frame_rate']
         
         # Load space control specific settings
         space_config = config.get('thresholds', {}).get('space_control', {
@@ -310,104 +311,4 @@ class SpaceControlAnalyzer:
         plt.grid(True)
         plt.show()
 
-# Example usage
-if __name__ == "__main__":
-    # Initialize analyzer
-    analyzer = SpaceControlAnalyzer()
-    
-    # Example tracking data
-    home_positions = [
-        (1, (30.0, 30.0), (1.0, 0.0)),  # player_id, position, velocity
-        (2, (40.0, 40.0), (-1.0, 1.0)),
-        # Add more players...
-    ]
-    
-    away_positions = [
-        (1, (60.0, 30.0), (-1.0, 0.0)),
-        (2, (50.0, 40.0), (1.0, -1.0)),
-        # Add more players...
-    ]
-    
-    # Analyze space control
-    results = analyzer.analyze_space_control(home_positions, away_positions)
-    
-    # Print results
-    # print("\nSpace Control Analysis:")
-    # print(f"Home team control: {results['space_control']['home']:.1f}%")
-    # print(f"Away team control: {results['space_control']['away']:.1f}%")
-    
-    # Visualize
-    #analyzer.visualize_space_control()
-    
-    # Visualize individual player
-    #analyzer.visualize_player_influence(1, 'home')
-
-    import pickle
-
-    # load the file test.pkl
-    with open('Soccer_Analytics\core\detections.pkl', 'rb') as f:
-        data = pickle.load(f)
-
-   # Remove everything with label 0 or 3
-    remove_indices = []
-    for i in range(len(data)):
-        for j in range(len(data[i])):
-
-            if data[i][j][1] == 0 or data[i][j][1] == 3:
-                remove_indices.append([i, j])
-
-    # sort the indices in reverse order
-    remove_indices = sorted(remove_indices, key=lambda x: x[1], reverse=True)
-
-    for i, j in remove_indices:
-        data[i].pop(j)
-        
-        
-    # Make a unit random vector of dimension 2
-    def random_vector(normalize=True):
-        vec = np.random.rand(2)
-        return tuple(vec / np.linalg.norm(vec)) if normalize else tuple(vec)
-
-    control_history = []
-    for i in range(len(data)):
-        home_positions = [(data[i][j][0], data[i][j][2], random_vector() * 10) for j in range(len(data[i])) if data[i][j][1] == 1]
-        away_positions = [(data[i][j][0], data[i][j][2], random_vector() * 10) for j in range(len(data[i])) if data[i][j][1] == 2]
-        
-        results = analyzer.analyze_space_control(home_positions, away_positions)
-        # Print results
-        print("\nSpace Control Analysis:")
-        print(f"Home team control: {results['space_control']['home']:.1f}%")
-        print(f"Away team control: {results['space_control']['away']:.1f}%")
-        
-        # Visualize
-        # analyzer.visualize_space_control()
-        
-        # Visualize all player zones
-        visuzlize_plays = [(data[i][j][0], 'home' if data[i][j][1] == 1 else 'away') for j in range(len(data[i]))]
-        
-        # analyzer.visualize_players_influence(visuzlize_plays)            
-        # Store the results plot control evolution
-        control_history.append(results)
-        
-    # Plot control evolution
-    analyzer.plot_control_evolution(control_history)
-        
-        
-
-    # home_positions = [(data['tracks'][i], data['pts'][i], random_vector(normalize=False) * 10) for i in range(len(data['class_id'])) if data['class_id'][i] == 0]
-    # away_positions = [(data['tracks'][i], data['pts'][i], random_vector(normalize=False) * 10) for i in range(len(data['class_id'])) if data['class_id'][i] == 1]
-
-
-    results = analyzer.analyze_space_control(home_positions, away_positions)
-    # Print results
-    print("\nSpace Control Analysis:")
-    print(f"Home team control: {results['space_control']['home']:.1f}%")
-    print(f"Away team control: {results['space_control']['away']:.1f}%")
-
-    # Visualize
-    analyzer.visualize_space_control()
-
-    # Visualize all player zones
-    for i in range(len(data['labels'])):
-        analyzer.visualize_player_influence(data['tracks'][i], 'home' if data['class_id'][i] == 0 else 'away')
 
