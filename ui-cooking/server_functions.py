@@ -7,6 +7,7 @@ import os
 import shutil
 import pathlib
 from random import random
+import supervision as spv
 import sys
 import pickle
 sys.path.append(str(pathlib.Path(__file__).parent.parent.absolute()))
@@ -15,8 +16,13 @@ import Soccer_Analytics.core.team_shape_analyzer as tsa
 cdir = pathlib.Path(__file__).parent.absolute()
 cvid = ""
 
-with open("./media-videos/detections.pkl", 'rb') as det:
-    detections = pickle.load(det)
+def currentFrame(frame):
+    while True:
+        yield frame
+
+with open(f"{cdir}/media-videos/detections.pkl", 'rb') as det:
+    x, y = pickle.load(det)
+    print(x[0], y[0])
 
 class_map = {
     0: "ball",
@@ -27,24 +33,52 @@ class_map = {
 def generate_object_map(datas):
     # datas here is a list for every frame, containing (object, class, (x, y))
     workingmap = {}
-    for frame in datas:
+    for frame, _ in datas:
         for item in frame:
             if item[0] not in workingmap:
                 workingmap[int(item[0])] = class_map[item[1]]
     return workingmap
 
-player_map = generate_object_map(detections)
+player_map = generate_object_map(y)
 vid_rel_prefix = "media-videos/vids/"
 data_rel_prefix = "media-videos/outputs/"
 data_prefix = f"{cdir}/media-videos/outputs/"
 video_prefix = f"{cdir}/media-videos/vids/"
 # ALL FILEPATHS DO NOT CONTAINE A LEADING /
 
+def readscreendata():
+    with open(f"{cdir}/media-videos/detections.pkl", 'rb') as f:
+        x, y = pickle.load(f)
+    l2 = []
+    for i, frame in enumerate(x):
+        l = list(zip(currentFrame(i), frame.tracker_id.tolist(), *zip(*frame.xyxy.tolist())))
+        l2.extend(l)
+    df = pd.DataFrame(l2, columns=["frame", "user", "x", "y", "w", "h"])
+    df['w'] = df['w'] - df['x']
+    df['h'] = df['h'] - df['y']
+    return df
+
+def read2dscreendata():
+    with open(f"{cdir}/media-videos/detections.pkl", 'rb') as f:
+        x, y = f.read()
+    l2 = []
+    for i, frame in enumerate(x):
+        l = list(zip(currentFrame(i), frame.tracker_id.tolist(), *zip(*frame.xyxy.tolist())))
+        l2.extend(l)
+    df = pd.DataFrame(l2, columns=["frame", "id", "x", "y", "w", "h"])
+    df['w'] = df['w'] - df['x']
+    df['h'] = df['h'] - df['y']
+    return df
+
+newdetections = []
+for i in y:
+    newdetections.append([])
+    for (j, k, l) in i[0]:
+        newdetections[-1].append([int(j), int(k), (float(l[0]), float(l[1]))])
+y = newdetections
+
 def getTrackingData(filename):
-    try:
-        return pd.read_csv(f"{data_prefix}{filename}/player_screen_data.txt", names=['frame', 'user', 'x', 'y', 'w', 'h'], index_col=False)
-    except:
-        return pd.DataFrame(columns=['frame', 'user', 'x', 'y', 'w', 'h'])
+    return readscreendata()
 
 def getObjectsInfo(filename):
     try:
@@ -93,11 +127,4 @@ def handleTraining(filename):
         os.mkdir(f"{data_prefix}{filename}")
 
 def get2dData(filename):
-    global detections
-    newdetections = []
-    for i in detections:
-        newdetections.append([])
-        for (j, k, l) in i:
-            newdetections[-1].append([int(j), int(k), (float(l[0]), float(l[1]))])
-    detections = newdetections
-    return detections
+    return y

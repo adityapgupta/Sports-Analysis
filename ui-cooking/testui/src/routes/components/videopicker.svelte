@@ -53,6 +53,7 @@
                     }
                 }
             }
+            console.log(indata)
         } else if (data.type == "2dMap") {
             $dataStore_2d = data.data
         }
@@ -89,6 +90,7 @@
         if (isNaN(d)) {
             return
         }
+        console.log($frameRate, d)
         socket.send(JSON.stringify({
             type: 'bufVid',
             min: 0,
@@ -102,6 +104,10 @@
         }))
         socket.send(JSON.stringify({
             type: 'getPlayerMap',
+            video: bval
+        }))
+        socket.send(JSON.stringify({
+            type: 'getBufferedFrames',
             video: bval
         }))
     }
