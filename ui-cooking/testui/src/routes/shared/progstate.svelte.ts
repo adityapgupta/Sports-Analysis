@@ -1,4 +1,4 @@
-import { writable, get } from "svelte/store"
+import { writable, get, type Writable } from "svelte/store"
 enum pages {
     MAIN_HOME = "landing",
     HOME = "page-1",
@@ -7,6 +7,16 @@ enum pages {
     TEAM = "team",
 }
 
+export let heatmap_data: Writable<{"left-team": number[][], "right-team": number[][], "ball": number[][]}> = $state(writable({
+    'left-team': [],
+    'right-team': [],
+    'ball': []
+}))
+export let linemap_data: Writable<{"left-team": [number, number][], "right-team": [number, number][], "ball": [number, number][]}> = $state(writable({
+    'left-team': [],
+    'right-team': [],
+    'ball': []
+}))
 export let currentPage = writable(pages.MAIN_HOME)
 export let currentFile = writable("")
 export let cvideo = writable("")

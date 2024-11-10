@@ -4,7 +4,7 @@
 
     function sendUpdatedPlayers() {
         socket.send(JSON.stringify({
-            type: 'update-players',
+            type: 'updatePlayers',
             data: $player_data
         }))
     }

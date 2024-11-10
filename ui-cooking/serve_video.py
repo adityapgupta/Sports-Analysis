@@ -12,27 +12,13 @@ import json
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import threading
 from random import random
-
-def load_video_failsafe(path, names):
-    try:
-        return pd.read_csv(path, names=names, index_col=False)
-    except:
-        return pd.DataFrame(columns=names)
-
-def make_heatmap_data():
-    out = []
-    for _ in range(10):
-        out.append([])
-        for _ in range(15):
-            out[-1].append(random())
-    return out
-
-video_prefix = "media-videos/vids/"
-data_prefix = "media-videos/outputs/"
+import server_functions as srvr
 cvideo = "snmot-60.mp4"
 
-df = load_video_failsafe(f"{data_prefix}{cvideo}/player_screen_data.txt", ['frame', 'user', 'x', 'y', 'w', 'h'])
-df_identity = load_video_failsafe(f"{data_prefix}{cvideo}/player_identity.txt", ['sr_no', 'identity', 'jersey'])
+video_prefix = srvr.video_prefix
+data_prefix = srvr.data_prefix
+df = srvr.getTrackingData(cvideo)
+df_identity = srvr.getObjectsInfo(cvideo)
 
 async def handler(webs):
     global cvideo, df, video_prefix, data_prefix, df_identity
@@ -43,7 +29,7 @@ async def handler(webs):
             jsval:dict = json.loads(message)
             match jsval['type']:
                 case 'getFiles':
-                    videos = os.listdir(f'{video_prefix}')
+                    videos = srvr.getVideoList()
                     await webs.send(json.dumps({
                                 'type': 'vidList',
                                 'data': videos,
@@ -53,9 +39,8 @@ async def handler(webs):
                     mval, maxval = jsval['min'], jsval['max']
                     if jsval['video'] != cvideo:
                         cvideo = jsval['video']
-                        df = load_video_failsafe(f"{data_prefix}{cvideo}/player_screen_data.txt", ['frame', 'user', 'x', 'y', 'w', 'h'])
-                        df_identity = load_video_failsafe(f"{data_prefix}{cvideo}/player_identity.txt", ['sr_no', 'identity', 'jersey'])
-                    print(df.head())
+                        df = srvr.getTrackingData(cvideo)
+                        df_identity = srvr.getObjectsInfo(cvideo)
                     frames = df.loc[df['frame'].between(mval, maxval)]
                     frame_dict = {}
                     for frame, group in frames.groupby('frame'):
@@ -68,7 +53,7 @@ async def handler(webs):
                         'type': 'player_info',
                         'data': df_identity.values.tolist()
                     }))
-                case 'update-players':
+                case 'updatePlayers':
                     with open(f"{data_prefix}{cvideo}/player_identity.txt" , 'w') as f:
                         c = csv.writer(f)
                         c.writerows(jsval['data'])
@@ -82,12 +67,20 @@ async def handler(webs):
                     await webs.send(json.dumps({
                         'type': 'heatmapData',
                         'data': {
-                            'left-team': make_heatmap_data(),
-                            'right-team': make_heatmap_data(),
-                            'ball': make_heatmap_data()
+                            'left-team': srvr.getHeatmapData("as"),
+                            'right-team': srvr.getHeatmapData("as"),
+                            'ball': srvr.getHeatmapData("as")
                             }
                     }))
-
+                case 'getLinemapData':
+                    await webs.send(json.dumps({
+                        'type': 'linemapData',
+                        'data': {
+                            'left-team': srvr.getLinemapData("as"),
+                            'right-team': srvr.getLinemapData("as"),
+                            'ball': srvr.getLinemapData("as")
+                            }
+                    }))
         except Exception as e:
             print(e)
 
