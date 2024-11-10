@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import csv
 import json
 import yaml
@@ -7,11 +8,31 @@ import shutil
 import pathlib
 from random import random
 import sys
+import pickle
 sys.path.append(str(pathlib.Path(__file__).parent.parent.absolute()))
 import Soccer_Analytics.core.team_shape_analyzer as tsa
 
 cdir = pathlib.Path(__file__).parent.absolute()
 cvid = ""
+
+with open("./media-videos/detections.pkl", 'rb') as det:
+    detections = pickle.load(det)
+
+class_map = {
+    0: "ball",
+    1: "left_player",
+    2: "right_player",
+    3: "referee"
+}
+
+def generate_object_map(datas):
+    # datas here is a list for every frame, containing (object, class, (x, y))
+    workingmap = {}
+    for frame in datas:
+        for item in frame:
+            if item[0] not in workingmap:
+                workingmap[int(item[0])] = class_map[item[1]]
+    return workingmap
 
 vid_rel_prefix = "media-videos/vids/"
 data_rel_prefix = "media-videos/outputs/"
@@ -49,6 +70,9 @@ def getLinemapData(filename):
         out.append((out[-1][0] + random(), random()*5))
     return out
 
+def getPlayerMap(filename):
+    # The frontend expects a dict of player number to player identity
+    return generate_object_map(detections)
 
 def getVideoList():
     return os.listdir(video_prefix)

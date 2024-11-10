@@ -87,6 +87,12 @@ async def handler(webs):
                         'type': 'posessionData',
                         'data': list(srvr.getPosessionData("as"))
                     }))
+                case 'getPlayerMap':
+                    print(srvr.getPlayerMap("as"))
+                    await webs.send(json.dumps({
+                        'type': 'playerMap',
+                        'data': srvr.getPlayerMap("as")
+                    }))
         except Exception as e:
             print(e)
 

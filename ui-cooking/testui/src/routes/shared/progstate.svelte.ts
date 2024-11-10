@@ -2,7 +2,7 @@ import { writable, get, type Writable } from "svelte/store"
 enum pages {
     MAIN_HOME = "landing",
     HOME = "page-1",
-    PLAYERS_LIST = "page-2",
+    // PLAYERS_LIST = "page-2",
     ANALYTICS = "page-3",
     TEAM = "team",
 }
@@ -18,6 +18,7 @@ export let linemap_data: Writable<{"left-team": [number, number][], "right-team"
     'ball': []
 }))
 export let currentPage = writable(pages.MAIN_HOME)
+export let frameRate = writable($state(25))
 export let currentFile = writable("")
 export let cvideo = writable("")
 export let vid_prefix = writable("")
@@ -35,7 +36,7 @@ export let identifications = writable({
     ball_ids: [-1],
     left_team: [-1],
     right_team: [-1],
-    refrees: [-1]
+    referee: [-1]
 })
 
 interface boxesData {

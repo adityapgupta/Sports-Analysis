@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { cvideo, box, dataStore, video_duration, vid_prefix, player_data, balls, identifications } from "../shared/progstate.svelte"
+    import { cvideo, box, dataStore, video_duration, vid_prefix, identifications, frameRate } from "../shared/progstate.svelte"
     const { socket }: { socket: WebSocket } = $props()
 
     let videos = $state([])
     let bval = $state('');
     let fileInput: HTMLInputElement
-    function getFiles() {
-        socket.send(JSON.stringify({
+    async function getFiles() {
+        await socket.send(JSON.stringify({
             type:'getFiles',
         }))
     }
@@ -21,44 +21,40 @@
         if (data.type == 'vidList') {
             videos = data.data
             $vid_prefix = data.prefix
-        } else if (data.type == 'player_info') {
-            let newdata: [string, string, string][] = []
-            for (let i in data.data) {
-                newdata.push([data.data[i][0].toString(), data.data[i][1].toString().trim(), data.data[i][2].toString().trim()])
-            }
-            $balls = []
+        } else if (data.type == 'playerMap') {
             $identifications = {
-                player_ids: [],
                 ball_ids: [],
+                player_ids: [],
                 left_team: [],
                 right_team: [],
-                refrees: []
+                referee: []
             }
-            for (let i in newdata) {
-                const val = Number.parseInt(newdata[i][0])
-                const objclass = newdata[i][1]
-                switch (objclass) {
-                    case "ball":
-                        $identifications.ball_ids.push(val)
-                        break;
-                    case "left_team":
-                    case "right_team":
-                        $identifications.player_ids.push(val)
-                        $identifications[objclass].push(val)
-                        break
-                    case "refree":
-                        $identifications.refrees.push(val)
-                        break;
-                    default:
-                        break;
-                }
-
-                if (newdata[i][1] == "ball") {
-                    $balls.push(Number.parseInt(newdata[i][0]))
+            const indata = data.data as {[key: number]: "ball" | "referee" | "left_player" | "right_player"}
+            for (const key in indata) {
+                if (Object.prototype.hasOwnProperty.call(indata, key)) {
+                    const elt = indata[key];
+                    switch (elt) {
+                        case "ball":
+                            $identifications.ball_ids.push(Number(key))
+                            break;
+                        case "referee":
+                            $identifications.referee.push(Number(key))
+                            break;
+                        case "left_player":
+                            $identifications.left_team.push(Number(key))
+                            $identifications.player_ids.push(Number(key))
+                            break;
+                        case "right_player":
+                            $identifications.right_team.push(Number(key))
+                            $identifications.player_ids.push(Number(key))
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
-            $player_data = newdata
         }
+
     })
     socket.addEventListener('message', msg => {
         const data = JSON.parse(msg.data)
@@ -95,8 +91,12 @@
         socket.send(JSON.stringify({
             type: 'bufVid',
             min: 0,
-            max: Math.floor(25*d),
+            max: Math.floor($frameRate*d),
             video: bval
+        }))
+
+        socket.send(JSON.stringify({
+            type: 'getPlayerMap'
         }))
     }
 
@@ -106,8 +106,6 @@
             file: fileInput.value
         }))
     }
-    $inspect(bval)
-    $inspect($balls)
 </script>
 
 <div class="maingrid m-2 p-2 grid">

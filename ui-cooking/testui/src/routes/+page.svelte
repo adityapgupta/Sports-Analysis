@@ -14,8 +14,8 @@
 </script>
 
 <svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
+	<title>Project</title>
+	<meta name="description" content="Football analysis" />
 </svelte:head>
 
 <div class="flex flex-row flex-grow items-stretch">
@@ -23,7 +23,7 @@
 	<div class="flex flex-col flex-grow" style="width: 100%;">
 		<Landing visibility={$currentPage == pages.MAIN_HOME} />
 		<Homepage {socket} visibility={$currentPage == pages.HOME} />
-		<PlayerList {socket} visibility={$currentPage == pages.PLAYERS_LIST}/>
+		<!-- <PlayerList {socket} visibility={$currentPage == pages.PLAYERS_LIST}/> -->
 		<Analytics {socket} visibility={$currentPage == pages.ANALYTICS} />
 		<Team visibility = {$currentPage == pages.TEAM} />
 	</div>

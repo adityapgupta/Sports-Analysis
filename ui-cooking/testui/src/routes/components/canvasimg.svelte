@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { cvideo, port, dataStore, video_duration, activeBox, activeBoxFrames, validVideo, vid_prefix, balls, isBoxClicked } from "../shared/progstate.svelte";
+    import { cvideo, port, dataStore, video_duration, activeBox, activeBoxFrames, validVideo, vid_prefix, isBoxClicked, identifications, frameRate } from "../shared/progstate.svelte";
     let vidobj: HTMLVideoElement;
     let vidurl = $derived(`http://localhost:${$port}/${$vid_prefix}${$cvideo}`)
     let ctime = $state(0)
-    let frame = $derived(Math.floor(ctime*25))
+    let frame = $derived(Math.floor(ctime*$frameRate))
     let isPaused = $state(false)
     let canvas: HTMLCanvasElement;
     let vwidth = $state(0)
@@ -53,9 +53,8 @@
         play_button.focus()
     }
 
-    $inspect(vidurl)
 </script>
-<div class="grid grid-cols-1 flex-grow xl:grid-cols-2">
+<div class="grid grid-cols-1 flex-grow gap-4 p-2 xl:grid-cols-2">
     <div id="vid-container" class="relative w-fit">
         <video bind:this={vidobj} src={vidurl}
             bind:currentTime={ctime} bind:duration={$video_duration} bind:paused={isPaused}
@@ -69,7 +68,7 @@
                     <rect x="-25" y="-50" width="50" height="50" fill="black" />
                 </mask>
                 {#each $dataStore[frame+2] as f}
-                    {#if $balls.includes(f.owner)}
+                    {#if $identifications.ball_ids.includes(f.owner)}
                         <polygon fill={f.owner == $activeBox ? "skyblue" : "yellow"}
                         points="0,0 {-flr(vnatw/80)},{-flr(vnath/40)} {flr(vnatw/80)},{-flr(vnath/40)}"
                         transform="translate({f.x+f.w/2},{f.y-5-vnatw/40})"/>
