@@ -4,6 +4,7 @@
 
     import Heatmap from "../components/Heatmap.svelte";
     import Lineplot from "../components/Lineplot.svelte";
+    import Boxgraph from "../components/boxgraph.svelte";
     let heatmapdata: {"left-team": number[][], "right-team": number[][], "ball": number[][]} = $state({
         'left-team': [],
         'right-team': [],
@@ -15,6 +16,7 @@
         'right-team': [],
         'ball': []
     })
+    let posession: {start: number, end: number, team: "left" | "right"}[] = $state([])
 
     let getGraphsData = async function() {
         heatmapdata = {'left-team': [], 'right-team': [], 'ball': []}
@@ -24,7 +26,9 @@
         await socket.send(JSON.stringify({
             type: "getLinemapData"
         }))
-    }
+        await socket.send(JSON.stringify({
+            type: "getPosessionData"
+    }))}
 
     socket.addEventListener('message', m => {
         const data = JSON.parse(m.data)
@@ -32,6 +36,8 @@
             heatmapdata = data.data
         } else if (data.type == "linemapData") {
             linemapdata = data.data
+        } else if (data.type == "posessionData") {
+            posession = data.data
         }
     })
 
@@ -57,8 +63,6 @@
             }
         }
     }
-    $inspect(heatmapdata)
-    $inspect(linemapdata)
 </script>
 
 <div class="analytics-page grid-cols-1 xl:grid-cols-2" style:display={visibility ? "grid":"none"}>
@@ -66,7 +70,8 @@
     <Heatmap header="Right team heatmap" heatmap_data={heatmapdata["right-team"]}/>
     <Heatmap header="Ball heatmap" heatmap_data={heatmapdata["ball"]}/>
     <Lineplot header="Lineplot" line_data={linemapdata['ball']} /> 
-    <button onclick={() => {setlinedata(); getGraphsData()}} class="p-1 border-2 m-2 flex-shrink xl:col-span-2">Get data</button>
+    <Boxgraph {posession} />
+    <button onclick={() => {setlinedata(); getGraphsData()}} class="p-1 border-2 m-2 flex-shrink xl:col-span-2">Refresh data</button>
 </div>
 
 <style>

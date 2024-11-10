@@ -71,7 +71,6 @@
             })
         });
     });
-    $inspect(line_data)
 </script>
 <div class="flex flex-grow flex-col items-center m-2 p-1">
     <h2>{header}</h2>

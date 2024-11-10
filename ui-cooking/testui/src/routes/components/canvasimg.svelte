@@ -55,7 +55,7 @@
 
     $inspect(vidurl)
 </script>
-<div class="flex flex-col flex-grow xl:flex-grow-0">
+<div class="grid grid-cols-1 flex-grow xl:grid-cols-2">
     <div id="vid-container" class="relative w-fit">
         <video bind:this={vidobj} src={vidurl}
             bind:currentTime={ctime} bind:duration={$video_duration} bind:paused={isPaused}
@@ -89,12 +89,16 @@
             {/if}
     </div>
     {#if $validVideo == 0}
-        <p>Please load a video to get started</p>
+        <h2 class="text-xl self-center text-center grid" id="video-missing-message">Please load a video to get started</h2>
     {/if}
 </div>
 
 <style>
     video {
         max-height: 50vh;
+    }
+    #video-missing-message {
+        grid-column: 1/3;
+        grid-row: 2/3;
     }
 </style>

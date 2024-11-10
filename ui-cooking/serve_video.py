@@ -15,8 +15,8 @@ from random import random
 import server_functions as srvr
 cvideo = "snmot-60.mp4"
 
-video_prefix = srvr.video_prefix
-data_prefix = srvr.data_prefix
+video_prefix = srvr.vid_rel_prefix
+data_prefix = srvr.data_rel_prefix
 df = srvr.getTrackingData(cvideo)
 df_identity = srvr.getObjectsInfo(cvideo)
 
@@ -59,9 +59,10 @@ async def handler(webs):
                         c.writerows(jsval['data'])
                 case 'loadFile':
                     shutil.copy(f"{jsval['file']}", f"{video_prefix}{Path(jsval['file']).name}")
+                    srvr.handleTraining(Path(jsval['file']).name)
                     webs.send(json.dumps({
                         'type': 'fileSaveEvent',
-                        "Success": True
+                        "success": True
                     }))
                 case 'getHeatmapData':
                     await webs.send(json.dumps({
@@ -80,6 +81,11 @@ async def handler(webs):
                             'right-team': srvr.getLinemapData("as"),
                             'ball': srvr.getLinemapData("as")
                             }
+                    }))
+                case 'getPosessionData':
+                    await webs.send(json.dumps({
+                        'type': 'posessionData',
+                        'data': list(srvr.getPosessionData("as"))
                     }))
         except Exception as e:
             print(e)

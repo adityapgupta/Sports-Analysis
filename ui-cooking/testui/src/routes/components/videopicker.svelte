@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { cvideo, box, dataStore, video_duration, vid_prefix, player_data, balls } from "../shared/progstate.svelte"
+    import { cvideo, box, dataStore, video_duration, vid_prefix, player_data, balls, identifications } from "../shared/progstate.svelte"
     const { socket }: { socket: WebSocket } = $props()
 
     let videos = $state([])
@@ -27,7 +27,32 @@
                 newdata.push([data.data[i][0].toString(), data.data[i][1].toString().trim(), data.data[i][2].toString().trim()])
             }
             $balls = []
+            $identifications = {
+                player_ids: [],
+                ball_ids: [],
+                left_team: [],
+                right_team: [],
+                refrees: []
+            }
             for (let i in newdata) {
+                const val = Number.parseInt(newdata[i][0])
+                const objclass = newdata[i][1]
+                switch (objclass) {
+                    case "ball":
+                        $identifications.ball_ids.push(val)
+                        break;
+                    case "left_team":
+                    case "right_team":
+                        $identifications.player_ids.push(val)
+                        $identifications[objclass].push(val)
+                        break
+                    case "refree":
+                        $identifications.refrees.push(val)
+                        break;
+                    default:
+                        break;
+                }
+
                 if (newdata[i][1] == "ball") {
                     $balls.push(Number.parseInt(newdata[i][0]))
                 }

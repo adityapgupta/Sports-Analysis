@@ -11,9 +11,9 @@
 </script>
 
 <div class="flex-col flex-grow" style:display={visibility ? "flex" : "none"}>
-    <div class="main-grid">
-        <div class="g1 font-bold">ID</div>
-        <div class="g2 font-bold">Jersey Number</div>
+    <div class="main-grid mt-6">
+        <div class="g1 font-bold">Tracking ID</div>
+        <div class="g2 font-bold">Player class</div>
         <div class="g3 font-bold">Name</div>
         {#each $player_data as val, idx}
             {#if val[1] != "ball"}
@@ -24,7 +24,7 @@
         {/each}
 
     </div>
-    <button onclick={sendUpdatedPlayers} class="text-lg p-2 py-1 m-auto mt-2 rounded border-black border-2"> Update players to the file </button>
+    <button onclick={sendUpdatedPlayers} class="text-lg p-2 py-1 m-auto mt-2 rounded border-black border-2"> Update players to the saved file </button>
 </div>
 
 <style>
@@ -37,8 +37,9 @@
     }
     
     .main-grid {
+        overflow-x: scroll;
         display: grid;
-        grid-template-columns: fit-content(50px) 1fr 1fr;
+        grid-template-columns: fit-content(200px) 1fr 1fr;
         align-content: center;
         justify-content: center;
         text-align: center;
@@ -50,12 +51,6 @@
             padding-inline: 20px;
             border: 0.5px solid;
             
-        }
-        .g3 {
-            padding-block: 0px;
-            input {
-                padding: 5px;
-            }
         }
     }
 

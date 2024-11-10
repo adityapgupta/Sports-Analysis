@@ -30,6 +30,13 @@ export let activeBox = writable<number>(0)
 export let activeBoxFrames = writable(0)
 export let validVideo = writable(0)
 export let balls= writable<number[]>([])
+export let identifications = writable({
+    player_ids: [-1],
+    ball_ids: [-1],
+    left_team: [-1],
+    right_team: [-1],
+    refrees: [-1]
+})
 
 interface boxesData {
     [key: number]: box[]
