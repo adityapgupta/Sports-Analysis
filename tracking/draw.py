@@ -87,13 +87,14 @@ def draw_minimap(ball_data, players_data, edges_data, out_path, image_path='trac
             color = color_map[class_id]
             cv2.circle(frame, (x, y), 6, color, -1)
 
-        x, y = ball_data[i + 2]
-        x = int(x * dimensions[0])
-        y = int(y * dimensions[1])
+        if len(ball_data) > i + 2:
+            x, y = ball_data[i + 2]
+            x = int(x * dimensions[0])
+            y = int(y * dimensions[1])
 
-        color = color_map[0]
-        cv2.circle(frame, (x, y), 4, color, -1)
-        cv2.circle(frame, (x, y), 4, (0, 0, 0), 2)
+            color = color_map[0]
+            cv2.circle(frame, (x, y), 4, color, -1)
+            cv2.circle(frame, (x, y), 4, (0, 0, 0), 2)
 
         frame = cv2.bitwise_and(frame, mask)
         writer.write(frame)

@@ -63,7 +63,16 @@ def edges_interpolate(data_list):
     edges_data = []
 
     for i in range(2, len(data_list) - 2):
-        edges = [data_list[i + j][1] for j in range(-2, 3)]
+        edges = []
+        for j in range(-2, 3):
+            if len(data_list[i + j][1]) == 0:
+                for k in range(i+j-1, -1, -1):
+                    if len(data_list[k][1]) > 0:
+                        edges.append(data_list[k][1])
+                        break
+            else:
+                edges.append(data_list[i + j][1])
+
         vertices = [interpolate(edges, k, 'edges')
                     for k in range(len(edges[2]))]
 
