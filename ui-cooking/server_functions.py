@@ -26,9 +26,10 @@ def getObjectsInfo(filename):
 
 def getHeatmapData(filename):
     # The frontend expects a 10x15 grid
-    # Ideally this would return a dict
+    # Ideally this would return a dict and the serve_video would be modified
+    # The grid is of the form of [[r1c1, r2c1], [r1c2, r2c2], ...]
     out = []
-    for _ in range(30):
+    for _ in range(10):
         out.append([])
         for _ in range(15):
             out[-1].append(random())
@@ -38,7 +39,7 @@ def getLinemapData(filename):
     # The frontend needs a list of points
     out = [(0, 0)]
     for _ in range(10):
-        out.append((out[-1][0] + random(), random()))
+        out.append((out[-1][0] + random(), random()*5))
     return out
 
 
