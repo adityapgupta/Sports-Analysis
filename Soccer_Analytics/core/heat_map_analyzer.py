@@ -18,6 +18,7 @@ class HeatMapAnalyzer:
         self.field_length = config['field']['length']
         self.field_width = config['field']['width']
         self.field_radius = config['field']['radius']
+        self.frame_rate = config['frame_rate']
         self.grid_size = config['visualization']['heat_map']['grid_size']
         self.smoothing = config['visualization']['heat_map']['smoothing']
         
@@ -57,9 +58,12 @@ class HeatMapAnalyzer:
             
         return normalized
     
-    def visualize(self, title: str = "Heat Map", save_path: str = None):
+    def visualize(self, title: str = "Heat Map", save_path: str = None, show: bool = True):
         """Visualize the heat map"""
-        plt.figure(figsize=(12, 8))
+        plt.figure(figsize=(self.field_length/10, self.field_width/10))
+        plt.xlim(0, self.field_length)
+        plt.ylim(0, self.field_width)
+        
         
         # Plot heat map
         heat_map = self.get_normalized_heat_map()
@@ -74,12 +78,14 @@ class HeatMapAnalyzer:
         plt.xlabel('Field Length (m)')
         plt.ylabel('Field Width (m)')
         
+
+        
         if save_path:
             plt.savefig(save_path)
-        else:
+        
+        if show:
             plt.show()
         
-        plt.close()
     
     def _draw_field_markings(self):
         """Draw basic football field markings"""

@@ -18,7 +18,7 @@ def ball_possesion_integrate(data, times = None):
     ball_pos = np.array([field_length/2, field_width/2])
 
     if times:
-        num_frames = times*frame_rate
+        num_frames = int(times*frame_rate)
         data = data[:num_frames]
 
 
