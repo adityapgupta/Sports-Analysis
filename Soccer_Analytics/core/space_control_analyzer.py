@@ -242,7 +242,7 @@ class SpaceControlAnalyzer:
         plt.axvline(x=self.field_length/3, color='k', linestyle='--', alpha=0.3)
         plt.axvline(x=2*self.field_length/3, color='k', linestyle='--', alpha=0.3)
     
-    def visualize_player_influence(self, player_id: int, team: str):
+    def visualize_player_influence(self, player_id: int, team: str, show: bool = True):
         """Visualize individual player's spatial influence"""
         zone = next((z for z in self.control_zones 
                     if z.player_id == player_id and z.team == team), None)
@@ -250,7 +250,7 @@ class SpaceControlAnalyzer:
         if not zone:
             return
         
-        plt.figure(figsize=(10, 7))
+        # plt.figure(figsize=(10, 7))
         
         # Plot reachable space
         reachable_space = np.array(zone.reachable_space)
@@ -258,22 +258,37 @@ class SpaceControlAnalyzer:
                    c='blue' if team == 'home' else 'red',
                    alpha=0.3)
         
-        # Plot player position and velocity
-        plt.plot(zone.position[0], zone.position[1], 'o',
-                color='blue' if team == 'home' else 'red',
-                markersize=10)
+        # # Plot player position and velocity
+        # plt.plot(zone.position[0], zone.position[1], 'o',
+        #         color='blue' if team == 'home' else 'red',
+        #         markersize=10)
         
-        plt.arrow(zone.position[0], zone.position[1],
-                 zone.velocity[0], zone.velocity[1],
-                 color='black', width=0.1, head_width=0.5)
+        # plt.arrow(zone.position[0], zone.position[1],
+        #          zone.velocity[0], zone.velocity[1],
+        #          color='black', width=0.1, head_width=0.5)
+        
+        if show:
+            self._draw_pitch_markings()
+            
+            plt.title(f'Player {player_id} ({team}) Spatial Influence\n' +
+                    f'Controlled Area: {zone.controlled_area:.1f}m²')
+            plt.axis('equal')
+            plt.grid(True)
+            plt.show()
+        
+    def visualize_players_influence(self, player_data: List[Tuple[int, str]]):
+        plt.figure(figsize=(15, 8))
+        
+        for player_id, team in player_data:
+            self.visualize_player_influence(player_id, team, show=False)
         
         self._draw_pitch_markings()
-        
-        plt.title(f'Player {player_id} ({team}) Spatial Influence\n' +
-                 f'Controlled Area: {zone.controlled_area:.1f}m²')
+        plt.title('Players Spatial Influence')
         plt.axis('equal')
         plt.grid(True)
         plt.show()
+    
+    
     
     def plot_control_evolution(self, control_history: List[Dict]):
         """Plot evolution of space control over time"""
@@ -330,28 +345,57 @@ if __name__ == "__main__":
     import pickle
 
     # load the file test.pkl
-    with open('Soccer_Analytics/core/test.pkl', 'rb') as f:
+    with open('Soccer_Analytics\core\detections.pkl', 'rb') as f:
         data = pickle.load(f)
 
-    #remove the ball and ref from the data
-    # get the index of the ball and ref
-    ball_idx = data['tracks'][np.where(data['labels'] == 'ball')[0][0]] - 1
-    ref_idx = data['tracks'][np.where(data['labels'] == 'referee')[0][0]] - 1
-    print(ball_idx, ref_idx)
+   # Remove everything with label 0 or 3
+    remove_indices = []
+    for i in range(len(data)):
+        for j in range(len(data[i])):
 
-    # remove the ball and ref from the data
-    data['labels'] = np.delete(data['labels'], [ball_idx, ref_idx], axis=0)
-    data['pts'] = np.delete(data['pts'], [ball_idx, ref_idx], axis=0)
-    data['tracks'] = np.delete(data['tracks'], [ball_idx, ref_idx], axis=0)
-    # get the player positions of the players in  the possession team
+            if data[i][j][1] == 0 or data[i][j][1] == 3:
+                remove_indices.append([i, j])
 
+    # sort the indices in reverse order
+    remove_indices = sorted(remove_indices, key=lambda x: x[1], reverse=True)
+
+    for i, j in remove_indices:
+        data[i].pop(j)
+        
+        
     # Make a unit random vector of dimension 2
-    def random_unit_vector():
+    def random_vector(normalize=True):
         vec = np.random.rand(2)
-        return tuple(vec / np.linalg.norm(vec))
+        return tuple(vec / np.linalg.norm(vec)) if normalize else tuple(vec)
 
-    home_positions = [(data['tracks'][i], data['pts'][i], random_unit_vector()) for i in range(len(data['class_id'])) if data['class_id'][i] == 0]
-    away_positions = [(data['tracks'][i], data['pts'][i], random_unit_vector()) for i in range(len(data['class_id'])) if data['class_id'][i] == 1]
+    control_history = []
+    for i in range(len(data)):
+        home_positions = [(data[i][j][0], data[i][j][2], random_vector() * 10) for j in range(len(data[i])) if data[i][j][1] == 1]
+        away_positions = [(data[i][j][0], data[i][j][2], random_vector() * 10) for j in range(len(data[i])) if data[i][j][1] == 2]
+        
+        results = analyzer.analyze_space_control(home_positions, away_positions)
+        # Print results
+        print("\nSpace Control Analysis:")
+        print(f"Home team control: {results['space_control']['home']:.1f}%")
+        print(f"Away team control: {results['space_control']['away']:.1f}%")
+        
+        # Visualize
+        # analyzer.visualize_space_control()
+        
+        # Visualize all player zones
+        visuzlize_plays = [(data[i][j][0], 'home' if data[i][j][1] == 1 else 'away') for j in range(len(data[i]))]
+        
+        # analyzer.visualize_players_influence(visuzlize_plays)            
+        # Store the results plot control evolution
+        control_history.append(results)
+        
+    # Plot control evolution
+    analyzer.plot_control_evolution(control_history)
+        
+        
+
+    # home_positions = [(data['tracks'][i], data['pts'][i], random_vector(normalize=False) * 10) for i in range(len(data['class_id'])) if data['class_id'][i] == 0]
+    # away_positions = [(data['tracks'][i], data['pts'][i], random_vector(normalize=False) * 10) for i in range(len(data['class_id'])) if data['class_id'][i] == 1]
 
 
     results = analyzer.analyze_space_control(home_positions, away_positions)
