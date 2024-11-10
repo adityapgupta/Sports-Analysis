@@ -3,10 +3,9 @@ import numpy as np
 from datetime import datetime
 import matplotlib.pyplot as plt
 from scipy.spatial import Voronoi
-from heat_map_analyzer import HeatMapAnalyzer
-
 
 # class imports
+from heat_map_analyzer import HeatMapAnalyzer
 from ball_possession_analyzer import BallPossessionAnalyzer
 from distance_analyzer import DistanceAnalyzer
 from voronoi import voronoi_finite_polygons_2d
@@ -229,6 +228,7 @@ if __name__ == "__main__":
 
     # speed_visualization(data, player_id, times = None, save_path = None, show = True)
     
-    # voronoi_visualization(data, frame_id, save_path = None, show = True)
+    voronoi_visualization(data, frame_id)
+ 
     
     # heat_map_visualization(data)
