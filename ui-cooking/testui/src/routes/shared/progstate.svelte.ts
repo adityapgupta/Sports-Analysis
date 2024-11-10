@@ -18,7 +18,7 @@ export let linemap_data: Writable<{"left-team": [number, number][], "right-team"
     'ball': []
 }))
 export let currentPage = writable(pages.MAIN_HOME)
-export let frameRate = writable($state(25))
+export let frameRate = $state(writable(25))
 export let currentFile = writable("")
 export let cvideo = writable("")
 export let vid_prefix = writable("")
