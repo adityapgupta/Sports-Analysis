@@ -126,7 +126,7 @@ def space_control_integrate(data):
 
 
         control_history.append(results)
-    analyzer.plot_control_evolution(control_history)
+    return control_history
 
 def passing_oppurtunity_integrate(data, frame_id, player_id, timestamp = 10.0):
 
@@ -224,7 +224,7 @@ if __name__ == '__main__':
         data = pickle.load(f)
 
     # stats, flow_data = ball_possesion_integrate(data)
-    # space_control_integrate(data)
+    # print(space_control_integrate(data))
     # print(stats)
     # print(flow_data)
 
