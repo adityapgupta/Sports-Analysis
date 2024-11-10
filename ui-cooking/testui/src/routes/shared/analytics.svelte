@@ -66,7 +66,7 @@
     <Heatmap header="Right team heatmap" heatmap_data={heatmapdata["right-team"]}/>
     <Heatmap header="Ball heatmap" heatmap_data={heatmapdata["ball"]}/>
     <Lineplot header="Lineplot" line_data={linemapdata['ball']} /> 
-    <button onclick={() => {setlinedata(); getGraphsData()}} class="p-1 border-2 m-2 flex-shrink">Get data</button>
+    <button onclick={() => {setlinedata(); getGraphsData()}} class="p-1 border-2 m-2 flex-shrink xl:col-span-2">Get data</button>
 </div>
 
 <style>

@@ -22,7 +22,7 @@
             .scaleLinear()
             .domain([0, range])
             .range([lbord, width - rbord])
-            .nice(8)
+            .nice()
     });
     const yaxis = $derived.by(() => {
         let range = d3.max(line_data, d => d[1]) ?? 10
@@ -39,7 +39,8 @@
             const line = d3
                 .line()
                 .x((d) => xaxis(d[0]))
-                .y((d) => yaxis(d[1]));
+                .y((d) => yaxis(d[1]))
+                .curve(d3.curveBasis);
             d3svg.selectChildren().remove();
 
             const path = d3svg
@@ -61,7 +62,7 @@
                 d3svg
                     .append("g")
                     .attr("transform", `translate(0, ${height - bbord})`)
-                    .call(d3.axisBottom(xaxis).ticks(10));
+                    .call(d3.axisBottom(xaxis).ticks(7));
     
                 d3svg
                     .append("g")
