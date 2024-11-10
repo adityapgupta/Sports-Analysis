@@ -8,6 +8,8 @@ from ultralytics import YOLO
 from tracking.utils.homography import inf_main
 from tracking.utils.team import TeamClassifier
 
+import warnings
+warnings.filterwarnings('ignore')
 
 BALL_ID = 0
 PLAYER_ID = 1
