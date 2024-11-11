@@ -91,8 +91,6 @@ def speed_visualization(data, player_id, times = None, save_path = None, show = 
             player_data[i-1][0],
             player_data[i-1][1]
         )
-        print(player_data[i-1][1])
-    print(len(player_data))
 
     stats = analyzer.get_distance_stats()
     analyzer.visualize_distance_breakdown(save_path = save_path, show = show)

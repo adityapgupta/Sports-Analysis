@@ -317,9 +317,11 @@ class BallPossessionAnalyzer:
         times = [((e.timestamp - events[0].timestamp).total_seconds(), e.duration) for e in events]
         teams = [1 if e.possessing_team == 'home' else 2 for e in events]
         
+        x = {1: "left", 2: "right"}
+        
         lists = []
         for i in range(len(times)):
-            lists.append({"start": times[i][0], "duration": times[i][1], "color": f'team {teams[i]}'})
+            lists.append({"start": times[i][0], "duration": times[i][1], "color": f'{x[teams[i]]}'})
 
         return lists 
     

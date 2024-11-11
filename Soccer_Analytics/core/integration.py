@@ -181,15 +181,15 @@ def heatmap_integrate(data):
     for i, j in remove_indices:
         data[i].pop(j)
 
-    # make a dictionary with 3 keys, team-left, team-right, ball
+    # make a dictionary with 3 keys, left-team, right-team, ball
 
     player_positions = {}
 
     # make the lists for the keys as 15x10 dimensions zeros
 
-    player_positions['team-left'] = np.zeros((15, 10))
-    player_positions['team-right'] = np.zeros((15, 10))
-    player_positions['ball'] = np.zeros((15, 10))
+    player_positions['left-team'] = np.zeros((10, 15))
+    player_positions['right-team'] = np.zeros((10, 15))
+    player_positions['ball'] = np.zeros((10, 15))
     last_ball_position = [analyzer.field_length/2, analyzer.field_width/2]
     ball_position = None
     # now we need to find the positions of the players and the ball
@@ -202,11 +202,11 @@ def heatmap_integrate(data):
             
             x_c, y_c = analyzer.position_to_grid(data[i][j][2])
             if data[i][j][1] == 1:
-                player_positions['team-left'][x_c][y_c] += 1
+                player_positions['left-team'][y_c][x_c] += 1
             elif data[i][j][1] == 2:
-                player_positions['team-right'][x_c][y_c] += 1
+                player_positions['right-team'][y_c][x_c] += 1
             elif data[i][j][1] == 0:
-                player_positions['ball'][x_c][y_c] += 1
+                player_positions['ball'][y_c][x_c] += 1
         if ball_position is not None:
             last_ball_position = ball_position
             ball_position = None
@@ -215,8 +215,8 @@ def heatmap_integrate(data):
             player_positions['ball'][x_c][y_c] += 1
     
     # convert the numpy arrays to list
-    player_positions['team-left'] = player_positions['team-left'].tolist()
-    player_positions['team-right'] = player_positions['team-right'].tolist()
+    player_positions['left-team'] = player_positions['left-team'].tolist()
+    player_positions['right-team'] = player_positions['right-team'].tolist()
     player_positions['ball'] = player_positions['ball'].tolist()
     # return this dictionary
     return player_positions
@@ -224,13 +224,27 @@ def heatmap_integrate(data):
 if __name__ == '__main__':
     
     import pickle
-    with open('Soccer_Analytics/core/detections.pkl', 'rb') as f:
-        data = pickle.load(f)
-
-    # stats, flow_data = ball_possesion_integrate(data)
+    with open('Soccer_Analytics/core/trimmed.pkl', 'rb') as f:
+        _, data = pickle.load(f)
+    
+    
+    data2 = []
+    for i in range(len(data)):
+        data2.append(data[i][0])
+    from copy import deepcopy
+    
+    data = deepcopy(data2)
+    for i in range(len(data)):
+        for j in range(len(data[i])):
+            # make data[i][j] to list
+            data[i][j] = list(data[i][j])
+            data[i][j][2] = (data[i][j][2][0]* 105, data[i][j][2][1]*68)
+    
+    
+    stats, flow_data = ball_possesion_integrate(data)
     # print(space_control_integrate(data))
-    # print(stats)
-    # print(flow_data)
+    print(stats)
+    print(flow_data)
 
     frame_id = 100
     player_id = 8
@@ -249,5 +263,14 @@ if __name__ == '__main__':
         
     print(best_opportunities)
 
-    dataset = heatmap_integrate(data)
-    pp.pprint(dataset)
+    dataset_heat = heatmap_integrate(data)
+    print(dataset_heat)
+
+    combined = {}
+    combined['possesion'] = stats
+    combined['time_possesion'] = flow_data
+    combined['heatmap'] = dataset_heat
+    
+    #make it into a pickle file
+    with open('Soccer_Analytics/core/sharath.pkl', 'wb') as f:
+        pickle.dump(combined, f)
