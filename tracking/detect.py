@@ -5,9 +5,11 @@ import supervision as sv
 from tqdm import tqdm
 from ultralytics import YOLO
 
-from utils.team import TeamClassifier
-from utils.homography import inf_main
+from tracking.utils.homography import inf_main
+from tracking.utils.team import TeamClassifier
 
+import warnings
+warnings.filterwarnings('ignore')
 
 BALL_ID = 0
 PLAYER_ID = 1
@@ -120,7 +122,7 @@ def get_coords(frame, detections, project=False):
     return list(zip(tracking_ids, class_ids, coords))
 
 
-def detections(clip_path, players_path, ball_path, confidence=0.3, project=False, return_class=False, verbose=False):
+def detections(clip_path, players_path, ball_path, players_conf=0.3, ball_conf=0.5, return_class=False, project=True, verbose=False):
     players_model = YOLO(players_path)
     ball_model = YOLO(ball_path)
 
@@ -129,13 +131,16 @@ def detections(clip_path, players_path, ball_path, confidence=0.3, project=False
 
     video_info = sv.VideoInfo.from_video_path(clip_path)
     team_classifier = classifier(
-        players_model, clip_path, video_info, confidence=confidence)
+        players_model, clip_path, video_info, confidence=players_conf)
 
     frame_generator = sv.get_video_frames_generator(clip_path)
 
     detect = []
+    coordinates = []
+
     for frame in tqdm(frame_generator, total=video_info.total_frames) if verbose else frame_generator:
-        player_result = players_model(frame, conf=confidence, verbose=False)[0]
+        player_result = players_model(
+            frame, conf=players_conf, verbose=False)[0]
 
         players_detections = sv.Detections.from_ultralytics(player_result)
         players_detections = players_detections.with_nms(
@@ -147,7 +152,7 @@ def detections(clip_path, players_path, ball_path, confidence=0.3, project=False
             frame, players_detections, team_classifier)
         players_detections.class_id = players_detections.class_id.astype(int)
 
-        ball_result = ball_model(frame, verbose=False)[0]
+        ball_result = ball_model(frame, conf=ball_conf, verbose=False)[0]
         ball_detections = sv.Detections.from_ultralytics(ball_result)
 
         if len(players_detections) == 0:
@@ -169,7 +174,7 @@ def detections(clip_path, players_path, ball_path, confidence=0.3, project=False
 
         if return_class:
             detect.append(detections)
-        else:
-            detect.append(get_coords(frame, detections, project=project))
 
-    return detect
+        coordinates.append(get_coords(frame, detections, project=project))
+
+    return detect, coordinates

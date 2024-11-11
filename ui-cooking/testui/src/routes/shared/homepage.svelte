@@ -1,16 +1,17 @@
 <script lang='ts'>
-    import Canvasimg from "../components/canvasimg.svelte";
+    import Videodrawing from "../components/Videodrawing.svelte";
     import Videopicker from "../components/videopicker.svelte";
-    import Analytics from "./analytics.svelte";
+    import Playerplot2d from "../components/playerplot2d.svelte";
+
     let { socket, visibility } : { socket: WebSocket, visibility:boolean } = $props();
-    import ico1 from '$lib/images/1156910.jpg' 
 </script>
 
 <div style="width: 100%;" class="homepagecontainer px-3 py-3 flex-grow"
     style:display={visibility ? "block" : "none"} style:opacity={visibility ? 1 : 0}>
     <Videopicker {socket} />
-    <div class="flex flex-col transition-opacity xl:flex-row">
-        <Canvasimg />
+    <div class="grid grid-cols-1 justify-items-center flex-grow gap-4 p-2 xl:grid-cols-2">
+        <Videodrawing />
+        <Playerplot2d />
     </div>
 </div>
 

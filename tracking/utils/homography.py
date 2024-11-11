@@ -6,10 +6,10 @@ import torch
 import torchvision.transforms as T
 import torchvision.transforms.functional as f
 
-from utils.hrnet import get_cls_net
-from utils.calib import FramebyFrameCalib
-from utils.hrnet_l import get_cls_net as get_cls_net_l
-from utils.heatmap import get_keypoints_from_heatmap_batch_maxpool, \
+from tracking.utils.hrnet import get_cls_net
+from tracking.utils.calib import FramebyFrameCalib
+from tracking.utils.hrnet_l import get_cls_net as get_cls_net_l
+from tracking.utils.heatmap import get_keypoints_from_heatmap_batch_maxpool, \
     get_keypoints_from_heatmap_batch_maxpool_l, \
     complete_keypoints, coords_to_dict
 
@@ -92,7 +92,7 @@ def get_map_point(point, P):
     point[0] += 105 / 2
     point[1] += 68 / 2
 
-    return (point[0], point[1])
+    return (point[0]/105, point[1]/68)
 
 
 def project(P, coords, h, w):
@@ -102,7 +102,7 @@ def project(P, coords, h, w):
     edges = [(0, 0, 1), (0, h, 1), (w, h, 1), (w, 0, 1)]
     edges = [get_map_point(edge, P) for edge in edges]
 
-    return (pts, edges)
+    return pts, edges
 
 
 def process_input(input, coords, model, model_l, kp_threshold, line_threshold):
@@ -125,20 +125,20 @@ def process_input(input, coords, model, model_l, kp_threshold, line_threshold):
             [P[1][0], P[1][1], P[1][3]],
             [P[2][0], P[2][1], P[2][3]],
         ])
-        pts = project(P_reduced, coords, frame_height, frame_width)
+        pts, edges = project(P_reduced, coords, frame_height, frame_width)
 
     else:
-        pts = []
+        pts, edges = [], []
 
-    return pts
+    return pts, edges
 
 
 def inf_main(input, coords, kp_threshold=0.1486, line_threshold=0.3880, device=DEVICE):
-    cfg = yaml.safe_load(open('yml/hrnetv2_w48.yaml', 'r'))
-    cfg_l = yaml.safe_load(open('yml/hrnetv2_w48_l.yaml', 'r'))
+    cfg = yaml.safe_load(open('tracking/yml/hrnetv2_w48.yaml', 'r'))
+    cfg_l = yaml.safe_load(open('tracking/yml/hrnetv2_w48_l.yaml', 'r'))
 
-    weights_kp = '../models/SV_FT_WC14_kp'
-    weights_line = '../models/SV_FT_WC14_lines'
+    weights_kp = 'models/SV_FT_WC14_kp'
+    weights_line = 'models/SV_FT_WC14_lines'
 
     loaded_state = torch.load(weights_kp, map_location=device)
     model = get_cls_net(cfg)
@@ -152,7 +152,7 @@ def inf_main(input, coords, kp_threshold=0.1486, line_threshold=0.3880, device=D
     model_l.to(device)
     model_l.eval()
 
-    pts = process_input(
+    pts, edges = process_input(
         input,
         coords,
         model,
@@ -161,4 +161,4 @@ def inf_main(input, coords, kp_threshold=0.1486, line_threshold=0.3880, device=D
         line_threshold,
     )
 
-    return pts
+    return pts, edges
