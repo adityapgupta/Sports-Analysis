@@ -11,7 +11,7 @@ from distance_analyzer import DistanceAnalyzer
 from voronoi import voronoi_finite_polygons_2d
 
 # Visualization functions
-def ball_possesion_visualization(data, times = None, last_n_events = 20, save_path = None, show = True):
+def ball_possession_visualization(data, times = None, last_n_events = 20, save_path = None, show = True):
   
     analyzer = BallPossessionAnalyzer()
     field_length = analyzer.field_length
@@ -240,4 +240,4 @@ if __name__ == "__main__":
     heat_map_visualization(data)
     
     # ball visualization
-    ball_possesion_visualization(data, save_path = None, show = True)
+    ball_possession_visualization(data, save_path = None, show = True)
