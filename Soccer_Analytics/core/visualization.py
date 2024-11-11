@@ -58,7 +58,7 @@ def ball_possesion_visualization(data, times = None, last_n_events = 20, save_pa
 
     return stats
 
-def speed_visualization(data, player_id, times = None, save_path = None, show = True):
+def speed_visualization(data, player_id, times = None, save_path = None, show = True, smoothing_window = 10):
     
     analyzer = DistanceAnalyzer()
     frame_rate = analyzer.frame_rate
@@ -96,7 +96,7 @@ def speed_visualization(data, player_id, times = None, save_path = None, show = 
 
     stats = analyzer.get_distance_stats()
     analyzer.visualize_distance_breakdown(save_path = save_path, show = show)
-    analyzer.plot_velocity_profile(save_path = save_path, show = show, smoothing_window = 10)
+    analyzer.plot_velocity_profile(save_path = save_path, show = show, smoothing_window = smoothing_window)
 
 def voronoi_visualization(data, frame_id, save_path = None, show = True):
     
@@ -225,10 +225,14 @@ if __name__ == "__main__":
 
     player_id = 14
     frame_id = 100
-
-    # speed_visualization(data, player_id, times = None, save_path = None, show = True)
     
-    voronoi_visualization(data, frame_id)
+
+    speed_visualization(data, player_id, times = None, save_path = None, show = True)
+    
+    # voronoi_visualization(data, frame_id)
  
     
     # heat_map_visualization(data)
+    
+    # ball visualization
+    # ball_possesion_visualization(data, save_path = None, show = True)

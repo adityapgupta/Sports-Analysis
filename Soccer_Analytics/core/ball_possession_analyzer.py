@@ -370,10 +370,13 @@ class BallPossessionAnalyzer:
         # plt.plot(times, teams, 'b-', drawstyle='steps-post')
         # plt.fill_between(times, teams, step='post', alpha=0.3)
         
-        plt.yticks([1, 0, -1], ['Red', 'None', 'Blue'])
-        plt.xlabel('Time (seconds)')
         plt.title('Possession Flow')
         plt.grid(False)
+        # Don't show axes numbers
+        plt.yticks([])
+        plt.xticks([])
+        # remove the rectangular frame around the plot
+        plt.box(False)
         
         if save_path:
             plt.savefig(save_path)
