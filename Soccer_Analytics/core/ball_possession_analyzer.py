@@ -305,7 +305,7 @@ class BallPossessionAnalyzer:
         if show:
             plt.show()
     
-    def data_possesion_flow(self, last_n_events: int = 20):
+    def data_possession_flow(self, last_n_events: int = 20):
         """Data possession flow over time"""
         if not self.possession_events:
             return

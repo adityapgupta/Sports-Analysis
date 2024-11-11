@@ -9,7 +9,7 @@ from heat_map_analyzer import HeatMapAnalyzer
 import pprint as pp
 
 
-def ball_possesion_integrate(data, times = None):
+def ball_possession_integrate(data, times = None):
   
     analyzer = BallPossessionAnalyzer()
     field_length = analyzer.field_length
@@ -44,7 +44,7 @@ def ball_possesion_integrate(data, times = None):
     
     
     stats = analyzer.get_possession_stats()
-    flow_data = analyzer.data_possesion_flow()
+    flow_data = analyzer.data_possession_flow()
 
     return stats, flow_data
 
@@ -241,10 +241,10 @@ if __name__ == '__main__':
             data[i][j][2] = (data[i][j][2][0]* 105, data[i][j][2][1]*68)
     
     
-    stats, flow_data = ball_possesion_integrate(data)
+    # stats, flow_data = ball_possession_integrate(data)
     # print(space_control_integrate(data))
-    print(stats)
-    print(flow_data)
+    # print(stats)
+    # print(flow_data)
 
     frame_id = 100
     player_id = 8
@@ -252,8 +252,8 @@ if __name__ == '__main__':
 
 
     for op in opportunities:
-        print(f"Pass from {op.passer_id} to {op.receiver_id}:")
-        print(f"  Success Probability: {op.lane.success_probability:.2f}")
+        print(f"Pass from {op.passer_id} to {int(op.receiver_id)}:")
+        print(f"  Distance of Pass: {op.lane.distance:.2f}")
         print(f"  Defensive Pressure: {op.defensive_pressure:.2f}")
         print(f"  horizontal Progress: {op.horizontal_progress:.2f}")
         print(f"  Space Gained: {op.space_gained:.2f}")
@@ -261,16 +261,18 @@ if __name__ == '__main__':
         print(f"  Total Score: {op.lane.total_score:.2f}")
         print()
         
-    print(best_opportunities)
+    # pp.pprint(best_opportunities)
 
+    print(f"Best pass is from {int(best_opportunities.passer_id)} to {int(best_opportunities.receiver_id)}")
+    
     dataset_heat = heatmap_integrate(data)
-    print(dataset_heat)
+    # print(dataset_heat)
 
-    combined = {}
-    combined['possesion'] = stats
-    combined['time_possesion'] = flow_data
-    combined['heatmap'] = dataset_heat
+    # combined = {}
+    # combined['possession'] = stats
+    # combined['time_possession'] = flow_data
+    # combined['heatmap'] = dataset_heat
     
     #make it into a pickle file
-    with open('Soccer_Analytics/core/sharath.pkl', 'wb') as f:
-        pickle.dump(combined, f)
+    # with open('Soccer_Analytics/core/sharath.pkl', 'wb') as f:
+    #     pickle.dump(combined, f)
