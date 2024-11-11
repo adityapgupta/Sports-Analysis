@@ -10,8 +10,8 @@
     import menuicon from '$lib/sidebar-icons/menu.svg'
 
     const fadeOpt = {duration: 150}
-    const icons = [ico2, ico3, ico4, ico5]
-    const descriptions = ["Video", "Players", "Insights", "Team"]
+    const icons = [ico2, ico4, ico5]
+    const descriptions = ["Video", "Insights", "Team"]
 
     let changePage = function(idx: number) {
         $currentPage = Object.values(pages)[idx]
