@@ -41,9 +41,9 @@ def ball_possesion_visualization(data, times = None, last_n_events = 20, save_pa
 
             if frame[i][1] ==0:
                 ball_pos = frame[i][2]
-            elif frame[i][1] ==1:
-                home_positions.append((frame[i][0], frame[i][2]))
             elif frame[i][1] ==2:
+                home_positions.append((frame[i][0], frame[i][2]))
+            elif frame[i][1] ==1:
                 away_positions.append((frame[i][0], frame[i][2]))
 
         timestamp = datetime.fromtimestamp(j/frame_rate)
@@ -222,17 +222,24 @@ if __name__ == "__main__":
     import pickle
     with open('Soccer_Analytics/core/detections.pkl', 'rb') as f:
         data = pickle.load(f)
+    
+    data2 = []
+    for i in range(len(data)):
+        data2.append(data[i][0])
+    from copy import deepcopy
+    
+    data = deepcopy(data2)
 
-    player_id = 14
+    player_id = 14.0
     frame_id = 100
     
 
     speed_visualization(data, player_id, times = None, save_path = None, show = True)
     
-    # voronoi_visualization(data, frame_id)
+    voronoi_visualization(data, frame_id)
  
     
-    # heat_map_visualization(data)
+    heat_map_visualization(data)
     
     # ball visualization
-    # ball_possesion_visualization(data, save_path = None, show = True)
+    ball_possesion_visualization(data, save_path = None, show = True)
