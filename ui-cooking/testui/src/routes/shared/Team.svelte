@@ -7,37 +7,37 @@
         { 
             id: 1, 
             name: 'Sharath S', 
-            image: sinImage,  // Note the leading slash
+            image: "",  // Note the leading slash
             github: 'https://github.com/sharaths21312'
         },
         { 
             id: 2, 
             name: 'Sahil Chaudhary', 
-            image: sinImage,
+            image: "",
             github: 'https://github.com/sahil-chaudhary'
         },
         { 
             id: 3, 
             name: 'Aditya Gupta', 
-            image: sinImage,
+            image: "",
             github: 'https://github.com/adityapgupta'
         },
         { 
             id: 4, 
             name: 'Armaan Khetarpaul', 
-            image: sinImage,
+            image: "",
             github: 'https://github.com/Armxyz1'
         },
         { 
             id: 5, 
             name: 'Umang Majummdar', 
-            image: sinImage,
+            image: "",
             github: 'https://github.com/ZeroDawn0D'
         },
         { 
             id: 6, 
             name: 'Rk Shishir', 
-            image: sinImage,
+            image: "",
             github: 'https://github.com/Shishir1729'
         },
     ];

@@ -26,7 +26,7 @@
     <button class="inline-flex items-center w-auto h-auto p-1 buttons" onclick={() => $currentPage = pages.MAIN_HOME}>
             <img src={ico1} alt="icon" id="icon1" style:width={expanded ? "2rem" : "1.5rem"} style:height={expanded ? "2rem" : "1.5rem"} />
         {#if expanded}
-            <h2 class="text-center p-2 px-3 m-1 text-5xl font-bold" transition:fade={fadeOpt}>Sigma.Ball</h2>
+            <h2 class="text-center p-2 px-3 m-1 text-5xl font-bold" transition:fade={fadeOpt}>SoccArt</h2>
         {/if}
     </button>
     <button id="expbutton" onclick={() => expanded = !expanded} class="inline-flex items-center buttons mt-2">

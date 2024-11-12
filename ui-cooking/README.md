@@ -18,8 +18,8 @@ The file structure is as follows:
         | ...
     | outputs
         | <video-1>.mp4/
-            | player_identity.txt
-            | player_screen_data.txt
+            | analytics.pkl
+            | tracking_data.pkl
         | <video-2>.mp4/
             | ...
         | ...

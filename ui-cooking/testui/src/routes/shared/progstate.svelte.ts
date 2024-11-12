@@ -31,7 +31,7 @@ export let allBoxes = writable<box[]>([])
 export let activeBox = writable<number>(0)
 export let activeBoxFrames = writable(0)
 export let validVideo = writable(0)
-export let posession: Writable<{start: number, end: number, team: "left" | "right"}[]> = writable([])
+export let posession: Writable<{start: number, duration: number, color: "left-team" | "right-team"}[]> = writable([])
 export let balls= writable<number[]>([])
 export let identifications = $state(writable({
     player_ids: [-2],
@@ -101,7 +101,7 @@ export const getAppropriateColor = function(tracking_id: number) {
     } else if (get(identifications).right_team.includes(tracking_id)) {
         return "#00BFFF"
     } else if (get(identifications).referee.includes(tracking_id)) {
-        return "yellowgreen"
+        return "#bfb"
     } else {
         return "black"
     }

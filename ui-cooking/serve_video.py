@@ -13,94 +13,79 @@ from http.server import SimpleHTTPRequestHandler, HTTPServer
 import threading
 from random import random
 import server_functions as srvr
-cvideo = "snmot-60.mp4"
+cvideo = ""
 
 video_prefix = srvr.vid_rel_prefix
 data_prefix = srvr.data_rel_prefix
-df = srvr.getTrackingData(cvideo)
-df_identity = srvr.getObjectsInfo(cvideo)
 
 async def handler(webs):
     global cvideo, df, video_prefix, data_prefix, df_identity
     while True:
         message = await webs.recv()
         print(message)
-        try:
-            jsval:dict = json.loads(message)
-            match jsval['type']:
-                case 'getFiles':
-                    videos = srvr.getVideoList()
-                    await webs.send(json.dumps({
-                                'type': 'vidList',
-                                'data': videos,
-                                'prefix': video_prefix
-                            }))
-                case 'bufVid':
-                    mval, maxval = jsval['min'], jsval['max']
-                    # if jsval['video'] != cvideo:
-                    cvideo = jsval['video']
-                    df = srvr.getTrackingData(cvideo)
-                    df_identity = srvr.getObjectsInfo(cvideo)
-                    frames = df.loc[df['frame'].between(mval, maxval)]
-                    frame_dict = {}
-                    for frame, group in frames.groupby('frame'):
-                        frame_dict[frame] = group[['user', 'x', 'y', 'w', 'h']].to_dict(orient='records')
-                    print("frames", frames)
-                    print("df", df.head())
-                    await webs.send(json.dumps({
-                        'type': 'bufferedFrames',
-                        'data': frame_dict
-                    }))
-                    await webs.send(json.dumps({
-                        'type': 'player_info',
-                        'data': df_identity.values.tolist()
-                    }))
-                case 'updatePlayers':
-                    with open(f"{data_prefix}{cvideo}/player_identity.txt" , 'w') as f:
-                        c = csv.writer(f)
-                        c.writerows(jsval['data'])
-                case 'loadFile':
-                    shutil.copy(f"{jsval['file']}", f"{video_prefix}{Path(jsval['file']).name}")
-                    srvr.handleTraining(Path(jsval['file']).name)
-                    webs.send(json.dumps({
-                        'type': 'fileSaveEvent',
-                        "success": True
-                    }))
-                case 'getHeatmapData':
-                    await webs.send(json.dumps({
-                        'type': 'heatmapData',
-                        'data': {
-                            'left-team': srvr.getHeatmapData("as"),
-                            'right-team': srvr.getHeatmapData("as"),
-                            'ball': srvr.getHeatmapData("as")
-                            }
-                    }))
-                case 'getLinemapData':
-                    await webs.send(json.dumps({
-                        'type': 'linemapData',
-                        'data': {
-                            'left-team': srvr.getLinemapData("as"),
-                            'right-team': srvr.getLinemapData("as"),
-                            'ball': srvr.getLinemapData("as")
-                            }
-                    }))
-                case 'getPosessionData':
-                    await webs.send(json.dumps({
-                        'type': 'posessionData',
-                        'data': list(srvr.getPosessionData("as"))
-                    }))
-                case 'getPlayerMap':
-                    await webs.send(json.dumps({
-                        'type': 'playerMap',
-                        'data': srvr.getPlayerMap("as")
-                    }))
-                case 'get2dMap':
-                    await webs.send(json.dumps({
-                        'type': '2dMap',
-                        'data': srvr.get2dData("as")
-                    }))
-        except Exception as e:
-            print(e)
+        # try:
+        jsval:dict = json.loads(message)
+        match jsval['type']:
+            case 'getFiles':
+                videos = srvr.getVideoList()
+                await webs.send(json.dumps({
+                            'type': 'vidList',
+                            'data': videos,
+                            'prefix': video_prefix
+                        }))
+            case 'bufVid':
+                mval, maxval = jsval['min'], jsval['max']
+                # if jsval['video'] != cvideo:
+                cvideo = jsval['video']
+                df = srvr.readScreenSpaceData(cvideo)
+                frames = df.loc[df['frame'].between(mval, maxval)]
+                frame_dict = {}
+                for frame, group in frames.groupby('frame'):
+                    frame_dict[frame] = group[['id', 'x', 'y', 'w', 'h']].to_dict(orient='records')
+                await webs.send(json.dumps({
+                    'type': 'bufferedFrames',
+                    'data': frame_dict
+                }))
+            case 'updatePlayers':
+                with open(f"{data_prefix}{cvideo}/player_identity.txt" , 'w') as f:
+                    c = csv.writer(f)
+                    c.writerows(jsval['data'])
+            case 'loadFile':
+                shutil.copy(f"{jsval['file']}", f"{video_prefix}{Path(jsval['file']).name}")
+                srvr.handleTraining(Path(jsval['file']).name)
+                webs.send(json.dumps({
+                    'type': 'fileSaveEvent',
+                    "success": True
+                }))
+            case 'getHeatmapData':
+                await webs.send(json.dumps({
+                    'type': 'heatmapData',
+                    'data': srvr.getHeatmapData(cvideo)
+                }))
+            case 'getPosessionData':
+                await webs.send(json.dumps({
+                    'type': 'posessionData',
+                    'data': srvr.getPosessionData(cvideo)
+                }))
+                await webs.send(json.dumps({
+                    'type': 'otherPosessionData',
+                    'data': {
+                        'team_posession': srvr.getOtherPosessionData(cvideo)['team_possession'],
+                        "zone_posession": srvr.getOtherPosessionData(cvideo)['zone_possession']
+                    }
+                }))
+            case 'getPlayerMap':
+                await webs.send(json.dumps({
+                    'type': 'playerMap',
+                    'data': srvr.generateObjectMap(cvideo)
+                }))
+            case 'get2dMap':
+                await webs.send(json.dumps({
+                    'type': '2dMap',
+                    'data': srvr.getMinimapData(cvideo)
+                }))
+        # except Exception as e:
+        #     print(e)
 
 def start_http_server():
     handler = SimpleHTTPRequestHandler

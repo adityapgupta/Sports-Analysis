@@ -4,7 +4,9 @@
     import { posession as posstate } from "../shared/progstate.svelte";
     import Heatmap from "../components/Heatmap.svelte";
     import Lineplot from "../components/Lineplot.svelte";
+    import Pieplot from "../components/pieplot.svelte";
     import Boxgraph from "../components/boxgraph.svelte";
+    import Barplot from "../components/barplot.svelte";
 
     let heatmapdata: {"left-team": number[][], "right-team": number[][], "ball": number[][]} = $state({
         'left-team': [],
@@ -17,8 +19,9 @@
         'right-team': [],
         'ball': []
     })
-    let posession: {start: number, end: number, team: "left" | "right"}[] = $state([])
-
+    let posession: {start: number, duration: number, color: "left-team" | "right-team"}[] = $state([])
+    let otherPosessionData: {team_posession: any, zone_posession: any} =
+        $state({team_posession: {}, zone_posession: {}})
     let getGraphsData = async function() {
         heatmapdata = {'left-team': [], 'right-team': [], 'ball': []}
         await socket.send(JSON.stringify({
@@ -40,6 +43,8 @@
         } else if (data.type == "posessionData") {
             posession = data.data
             $posstate = posession
+        } else if (data.type == "otherPosessionData") {
+            otherPosessionData = data.data
         }
     })
 
@@ -65,14 +70,16 @@
             }
         }
     }
+
 </script>
 
-<div class="analytics-page grid-cols-1 xl:grid-cols-2" style:display={visibility ? "grid":"none"}>
+<div class="analytics-page items-center grid-cols-1 xl:grid-cols-2" style:display={visibility ? "grid":"none"}>
     <Heatmap header="Left team heatmap" heatmap_data={heatmapdata["left-team"]}/>
     <Heatmap header="Right team heatmap" heatmap_data={heatmapdata["right-team"]}/>
     <Heatmap header="Ball heatmap" heatmap_data={heatmapdata["ball"]}/>
-    <Lineplot header="Lineplot" line_data={linemapdata['ball']} /> 
     <Boxgraph {posession} />
+    <Pieplot piedata={otherPosessionData.team_posession} />
+    <!-- <Barplot bardata={otherPosessionData.zone_posession} /> -->
     <button onclick={() => {setlinedata(); getGraphsData()}} class="p-1 border-2 m-2 flex-shrink xl:col-span-2">Refresh data</button>
 </div>
 

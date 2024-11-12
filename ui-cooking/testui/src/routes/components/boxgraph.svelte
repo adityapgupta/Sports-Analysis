@@ -1,13 +1,13 @@
 <script lang="ts">
-    const { posession }: { posession: {start: number, end: number, team: "left" | "right"}[] } = $props()
+    const { posession }: { posession: {start: number, duration: number, color: "left-team" | "right-team"}[] } = $props()
     import * as d3 from 'd3'
     import { video_duration } from '../shared/progstate.svelte';
     import { onMount } from 'svelte';
     let svgElt: SVGElement
 
     
-    const xmax = $derived(d3.max(posession, d => d.end) ?? 10)
-    const xaxis = $derived(d3.scaleLinear().domain([0, xmax]).range([0, 200]).nice(2))
+    const xmax = $derived($video_duration ?? 10)
+    const xaxis = $derived(d3.scaleLinear().domain([0, xmax]).range([0, 200]))
     const evaluatedxmax = $derived(xaxis.domain().at(-1) ?? 10)
 
     onMount(() => {
@@ -17,11 +17,9 @@
             svg.selectChildren('rect')
                 .data(posession)
                 .join('rect').attr('height', 20).attr('x', d => xaxis(d.start))
-                .attr('width', d => xaxis(d.end - d.start))
-                .attr('fill', d => d.team == "left" ? "red" : "blue")
+                .attr('width', d => xaxis(d.duration))
+                .attr('fill', d => d.color == "right-team" ? "red" : "blue")
                 .attr('mask', 'url(#mask1)')
-            svg.append('rect').attr('x', 0).attr('y', 0).attr('width', 200).attr('height', 20)
-                .attr('fill', '#e5e7eb').transition().ease(d3.easeQuadIn).duration(1500).attr('x', 200).remove()
 
             svg.append("text").text(`${evaluatedxmax}s`).attr('x', 200).attr('fill', 'black')
                 .attr("y", 30)

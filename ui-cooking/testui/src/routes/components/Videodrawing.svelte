@@ -16,6 +16,7 @@
         let vidBar: HTMLInputElement
     let flr=Math.floor
     let ownershipSVG: SVGElement
+    let tmp = $derived($activeBox)
     $effect(() => {
         $currentFrame = frame
         if (ctime) {
@@ -68,9 +69,9 @@
             d3elt.selectAll('rect').remove()
             d3elt.selectAll('rect').data($posession).join('rect')
                 .attr('x', d => d3xaxis(d.start))
-                .attr('width', d => d3xaxis(d.end - d.start))
-                .attr('height', d3yaxis(1)).attr('y', d => d.team == "left" ? d3yaxis(0) : d3yaxis(1))
-                .attr('fill', d => d.team == "left" ? "red" : "blue")
+                .attr('width', d => d3xaxis(d.duration))
+                .attr('height', d3yaxis(1)).attr('y', d => d.color == "left-team" ? d3yaxis(0) : d3yaxis(1))
+                .attr('fill', d => d.color == "right-team" ? "red" : "blue")
 
     }
 </script>
@@ -90,9 +91,11 @@
                 <rect x="-50" y="-50" width="100" height="100" fill="white" />
                 <rect x="-25" y="-50" width="50" height="50" fill="black" />
             </mask>
+            {#key $activeBox}
+                
             {#each $dataStore[frame+2] as f}
                 {#if $identifications.ball_ids.includes(f.owner)}
-                    <polygon fill={getAppropriateColor(f.owner)} mask="url(#mask1)" vector-effect="non-scaling-stroke"
+                    <polygon fill={getAppropriateColor(f.owner)} vector-effect="non-scaling-stroke"
                     points="0,0 {-flr(vnatw/80)},{-flr(vnath/40)} {flr(vnatw/80)},{-flr(vnath/40)}"
                     transform="translate({f.x+f.w/2},{f.y-5-vnatw/40})"/>
                 {:else}
@@ -101,6 +104,7 @@
                         transform="translate({f.x + f.w/2},{f.y+f.h-5}) scale({f.w/60})"/>
                 {/if}
             {/each}
+            {/key}
         </svg>
         {#if $validVideo}
             <div class="flex flex-row w-auto mt-1">

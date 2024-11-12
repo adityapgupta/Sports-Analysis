@@ -9,6 +9,7 @@
     const anim_delay = 80
     let rectw = $derived(105/ROWS)
     let recth = $derived(68/COLUMNS)
+    let heatmap_max = $derived(Math.max(...heatmap_data.flat()))
     onMount(() => {
         $effect(() => {
             d3.select(heatmapView).selectAll("g").data(heatmap_data)
@@ -17,7 +18,7 @@
                 .attr('width', rectw).attr('height', recth)
                 .attr("x", (d, i) => (i-1)*rectw).transition().delay((d, i) => anim_delay*i).duration(anim_delay)
                 .attr("x", (d, i) => i*rectw)
-                .attr('opacity', d => d).attr('class', 'heatmap_rects')
+                .attr('opacity', d => d/heatmap_max).attr('class', 'heatmap_rects')
         })
     })
 </script>
@@ -38,7 +39,7 @@
     .svg-container {
         width: min(100%, 600px);
         flex-shrink: 1;
-        background-color: #0a0;
+        background-color: #2a2;
         padding: 4px;
     }
     :global(rect.heatmap_rects) {
