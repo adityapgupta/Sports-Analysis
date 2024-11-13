@@ -14,7 +14,7 @@ def convert(box, width, height):
     return bbox
 
 
-def make_labels(train_path):
+def make_labels(train_path, ball=False):
     for name in os.listdir(train_path):
         for file in os.listdir(f'{train_path}/{name}/img1'):
             os.rename(
@@ -41,15 +41,16 @@ def make_labels(train_path):
         ball_ids = []
         goalkeeper_ids = []
         referee_ids = []
+
         with open(f'{train_path}/{name}/gameinfo.ini', 'r') as file:
             data = file.readlines()
             for line in data:
                 if 'ball' in line:
                     ball_ids.append(eval(line.split('=')[0].split('_')[1]))
-                if 'goalkeeper' in line:
+                if 'goalkeeper' in line and not ball:
                     goalkeeper_ids.append(
                         eval(line.split('=')[0].split('_')[1]))
-                if 'referee' in line:
+                if 'referee' in line and not ball:
                     referee_ids.append(eval(line.split('=')[0].split('_')[1]))
 
         with open(f'{train_path}/{name}/gt/gt.txt', 'r') as file:
@@ -58,13 +59,16 @@ def make_labels(train_path):
                 line = [eval(i) for i in line.split(',')]
                 bbox = convert(line[2:6], width, height)
 
-                class_id = 1
-                if line[1] in ball_ids:
+                if ball:
                     class_id = 0
-                elif line[1] in goalkeeper_ids:
-                    class_id = 2
-                elif line[1] in referee_ids:
-                    class_id = 3
+                else:
+                    class_id = 1
+                    if line[1] in ball_ids:
+                        class_id = 0
+                    elif line[1] in goalkeeper_ids:
+                        class_id = 2
+                    elif line[1] in referee_ids:
+                        class_id = 3
 
                 with open(
                     f'{train_path}/{name}/labels/{name}_{line[0]:06d}.txt', 'a'
@@ -130,7 +134,7 @@ if __name__ == '__main__':
         task='tracking', split=['train', 'test']
     )
 
-    make_labels('../datasets/train')
+    make_labels('../datasets/train', ball=False)
     split(
         '../datasets/train',
         '../datasets/images',

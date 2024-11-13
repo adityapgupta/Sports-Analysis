@@ -1,7 +1,10 @@
+import os
 import cv2
+import pickle
 import numpy as np
 import supervision as sv
 
+cdir = os.path.dirname(os.path.abspath(__file__))
 
 color_map = {
     0: (255, 255, 255),
@@ -29,7 +32,10 @@ def annotators():
     return ellipse_annotator, label_annotator, triangle_annotator
 
 
-def draw_markers(clip_path, out_path, detections, ball_id=0):
+def draw_markers(clip_path, out_path, pkl_path, ball_id=0):
+    with open(pkl_path, 'rb') as f:
+        detections, _ = pickle.load(f)
+        
     video_info = sv.VideoInfo.from_video_path(clip_path)
     video_sink = sv.VideoSink(out_path, video_info)
 
@@ -63,7 +69,7 @@ def draw_markers(clip_path, out_path, detections, ball_id=0):
             video_sink.write_frame(annotated_frame)
 
 
-def draw_minimap(ball_data, players_data, edges_data, out_path, image_path='tracking/utils/field.png', dimensions=(640, 480), fps=25):
+def draw_minimap(ball_data, players_data, edges_data, out_path, image_path=f'{cdir}/utils/field.png', dimensions=(640, 480), fps=25):
     writer = cv2.VideoWriter(
         out_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, dimensions)
     field = cv2.imread(image_path)

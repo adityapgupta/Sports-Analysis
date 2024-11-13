@@ -12,7 +12,7 @@ if __name__ == '__main__':
     model = YOLO('../models/yolov10m.pt')
 
     model.train(
-        data='yml/config.yaml',
+        data='config/config.yaml',
         epochs=EPOCHS,
         batch=BATCH,
         amp=AMP,

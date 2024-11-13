@@ -17,7 +17,6 @@ def generate_gaussian_matrix_vectorized(h, w, px, py, sigma=2):
 
 
 def resize_keypoints(keypoints, original_size, new_size):
-
     ratio_h = new_size[0] / original_size[0]
     ratio_w = new_size[1] / original_size[1]
 
@@ -34,7 +33,6 @@ def resize_keypoints(keypoints, original_size, new_size):
 
 
 def generate_gaussian_array_vectorized(num_matrices, keypoints, original_size, down_ratio=2, sigma=2, proj_err_th=5.):
-
     new_size = tuple(ti/down_ratio for ti in original_size)
     resized_keypoints = resize_keypoints(keypoints, original_size, new_size)
 
@@ -89,7 +87,6 @@ def resize_keypoints_l(keypoints, original_size, new_size):
 
 
 def generate_gaussian_array_vectorized_l(num_matrices, keypoints, original_size, down_ratio=2, sigma=2, sigma_mult=1):
-
     def sigma_f(px, py, size, sigma):
         # multiply sigma if point in image border
         if (px < 5 or px > size[0] - 5) | (py < 5 or py > size[1] - 5):
@@ -326,7 +323,6 @@ def coords_to_dict(coords, threshold=0.05, ground_plane_only=False):
 
 
 def complete_keypoints(kp_dict, lines_dict, w, h, normalize=False):
-
     def line_intersection(x1, y1, x2, y2):
         # 1e-7 sum in case there are two identical coordinate values
         x1[-1] += 1e-7

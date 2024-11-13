@@ -1,3 +1,5 @@
+import os
+import sys
 import yaml
 import numpy as np
 from PIL import Image
@@ -6,10 +8,12 @@ import torch
 import torchvision.transforms as T
 import torchvision.transforms.functional as f
 
-from tracking.utils.hrnet import get_cls_net
-from tracking.utils.calib import FramebyFrameCalib
-from tracking.utils.hrnet_l import get_cls_net as get_cls_net_l
-from tracking.utils.heatmap import get_keypoints_from_heatmap_batch_maxpool, \
+cdir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(cdir)
+from hrnet import get_cls_net
+from calib import FramebyFrameCalib
+from hrnet_l import get_cls_net as get_cls_net_l
+from heatmap import get_keypoints_from_heatmap_batch_maxpool, \
     get_keypoints_from_heatmap_batch_maxpool_l, \
     complete_keypoints, coords_to_dict
 
@@ -134,11 +138,11 @@ def process_input(input, coords, model, model_l, kp_threshold, line_threshold):
 
 
 def inf_main(input, coords, kp_threshold=0.1486, line_threshold=0.3880, device=DEVICE):
-    cfg = yaml.safe_load(open('tracking/yml/hrnetv2_w48.yaml', 'r'))
-    cfg_l = yaml.safe_load(open('tracking/yml/hrnetv2_w48_l.yaml', 'r'))
+    cfg = yaml.safe_load(open(f'{cdir}/../config/hrnetv2_w48.yaml', 'r'))
+    cfg_l = yaml.safe_load(open(f'{cdir}/../config/hrnetv2_w48_l.yaml', 'r'))
 
-    weights_kp = 'models/SV_FT_WC14_kp'
-    weights_line = 'models/SV_FT_WC14_lines'
+    weights_kp = f'{cdir}/../../models/SV_FT_WC14_kp'
+    weights_line = f'{cdir}/../../models/SV_FT_WC14_lines'
 
     loaded_state = torch.load(weights_kp, map_location=device)
     model = get_cls_net(cfg)

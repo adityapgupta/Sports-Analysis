@@ -1,7 +1,0 @@
-numpy
-opencv-python
-matplotlib
-ultralytics # YOLO model
-ipykernel
-pandas
-soccernet

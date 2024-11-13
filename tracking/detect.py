@@ -1,3 +1,7 @@
+import os
+import sys
+import pickle
+import warnings
 import numpy as np
 import subprocess as sp
 import supervision as sv
@@ -5,10 +9,10 @@ import supervision as sv
 from tqdm import tqdm
 from ultralytics import YOLO
 
-from tracking.utils.homography import inf_main
-from tracking.utils.team import TeamClassifier
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from utils.team import TeamClassifier
+from utils.homography import inf_main
 
-import warnings
 warnings.filterwarnings('ignore')
 
 BALL_ID = 0
@@ -122,7 +126,7 @@ def get_coords(frame, detections, project=False):
     return list(zip(tracking_ids, class_ids, coords))
 
 
-def detections(clip_path, players_path, ball_path, players_conf=0.3, ball_conf=0.5, return_class=False, project=True, verbose=False):
+def detections(clip_path, players_path, ball_path, pkl_path, players_conf=0.3, ball_conf=0.5, return_class=False, project=True, verbose=False):
     players_model = YOLO(players_path)
     ball_model = YOLO(ball_path)
 
@@ -177,4 +181,5 @@ def detections(clip_path, players_path, ball_path, players_conf=0.3, ball_conf=0
 
         coordinates.append(get_coords(frame, detections, project=project))
 
-    return detect, coordinates
+    with open(pkl_path, 'wb') as f:
+        pickle.dump((detect, coordinates), f)

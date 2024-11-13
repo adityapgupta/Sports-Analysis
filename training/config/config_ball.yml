@@ -1,0 +1,7 @@
+path: ../datasets
+train: images/train
+val: images/val
+
+# Classes
+names:
+  0: ball
