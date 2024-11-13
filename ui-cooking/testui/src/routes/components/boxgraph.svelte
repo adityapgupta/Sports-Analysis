@@ -1,5 +1,6 @@
 <script lang="ts">
-    const { posession }: { posession: {start: number, duration: number, color: "left-team" | "right-team"}[] } = $props()
+    import type { possessionT } from '../shared/types';
+    const { posession }: { posession: possessionT } = $props()
     import * as d3 from 'd3'
     import { video_duration } from '../shared/progstate.svelte';
     import { onMount } from 'svelte';
@@ -8,7 +9,7 @@
     
     const xmax = $derived($video_duration ?? 10)
     const xaxis = $derived(d3.scaleLinear().domain([0, xmax]).range([0, 200]))
-    const evaluatedxmax = $derived(xaxis.domain().at(-1) ?? 10)
+    const evaluatedxmax = $derived(xaxis.domain().at(-1) || 10)
 
     onMount(() => {
         $effect(() => {
@@ -18,7 +19,7 @@
                 .data(posession)
                 .join('rect').attr('height', 20).attr('x', d => xaxis(d.start))
                 .attr('width', d => xaxis(d.duration))
-                .attr('fill', d => d.color == "right-team" ? "red" : "blue")
+                .attr('fill', d => d.team == "right" ? "red" : "blue")
                 .attr('mask', 'url(#mask1)')
 
             svg.append("text").text(`${evaluatedxmax}s`).attr('x', 200).attr('fill', 'black')
@@ -34,7 +35,7 @@
 </script>
 
 <div class="w-full flex flex-col items-center p-3 px-6">
-    <h2 class="font-xl text-center p-2">Posession over time</h2>
+    <h2 class="text-2xl text-center p-2">Posession over time</h2>
     <div class="svg-container">
         <svg viewBox="0 0 200 30" bind:this={svgElt}>
             

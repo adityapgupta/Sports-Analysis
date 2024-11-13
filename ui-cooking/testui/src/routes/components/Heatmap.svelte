@@ -24,7 +24,7 @@
 </script>
 
 <div class="analytics-content flex flex-col flex-grow items-center m-2 p-1">
-    <h2>{header}</h2>
+    <h2 class="text-2xl mb-2">{header}</h2>
     <div class="svg-container">
         <svg viewBox="0 0 105 68" class="heatmap-svg" bind:this={heatmapView}>
         </svg>

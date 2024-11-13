@@ -1,13 +1,10 @@
 <script lang="ts" >
-    import { setContext } from "svelte";
     let { socket, visibility }: { socket: WebSocket, visibility: Boolean } = $props()
     import { posession as posstate } from "../shared/progstate.svelte";
     import Heatmap from "../components/Heatmap.svelte";
-    import Lineplot from "../components/Lineplot.svelte";
     import Pieplot from "../components/pieplot.svelte";
     import Boxgraph from "../components/boxgraph.svelte";
-    import Barplot from "../components/barplot.svelte";
-    import type { HeatmapData } from "./types";
+    import type { HeatmapData, possessionT, possessionTeam, possessionZone } from "./types";
 
     let heatmapdata: HeatmapData = $state({
         'left': [],
@@ -15,7 +12,10 @@
         'ball': []
     })
 
-    let posession: {start: number, duration: number, color: "left-team" | "right-team"}[] = $state([])
+    let posession: possessionT = $state([])
+    let teamPosession: possessionTeam = $state({home: 10, away: 10})
+    let zonePosession: possessionZone = $state({defense: 0, middle: 0, attack: 0})
+
     let otherPosessionData: {team_posession: any, zone_posession: any} =
         $state({team_posession: {}, zone_posession: {}})
     let getGraphsData = async function() {
@@ -39,10 +39,13 @@
                 'ball': data.data['ball']
             }
         } else if (data.type == "posessionData") {
-            posession = data.data
+            const indata = data.data as {'time_possession': possessionT,
+                        'team_possession': possessionTeam,
+                        'zone_possession': possessionZone}
+            posession = indata.time_possession
+            teamPosession = indata.team_possession
+            zonePosession = indata.zone_possession
             $posstate = posession
-        } else if (data.type == "otherPosessionData") {
-            otherPosessionData = data.data
         }
     })
 
@@ -72,12 +75,11 @@
 </script>
 
 <div class="analytics-page items-center grid-cols-1 xl:grid-cols-2" style:display={visibility ? "grid":"none"}>
-    <Heatmap header="Left team heatmap" heatmap_data={heatmapdata["left-team"]}/>
-    <Heatmap header="Right team heatmap" heatmap_data={heatmapdata["right-team"]}/>
+    <Heatmap header="Left team heatmap" heatmap_data={heatmapdata["left"]}/>
+    <Heatmap header="Right team heatmap" heatmap_data={heatmapdata["right"]}/>
     <Heatmap header="Ball heatmap" heatmap_data={heatmapdata["ball"]}/>
     <Boxgraph {posession} />
-    <Pieplot piedata={otherPosessionData.team_posession} />
-    <!-- <Barplot bardata={otherPosessionData.zone_posession} /> -->
+    <Pieplot piedata={teamPosession} />
     <button onclick={() => {setlinedata(); getGraphsData()}} class="p-1 border-2 m-2 flex-shrink xl:col-span-2">Refresh data</button>
 </div>
 

@@ -1,5 +1,5 @@
 import { writable, get, type Writable } from "svelte/store"
-import type { screenData, box, minimapData, posessionT } from "./types"
+import type { screenData, box, minimapData, possessionT } from "./types"
 
 export enum pages {
     MAIN_HOME = "landing",
@@ -20,8 +20,7 @@ export let dataStore = writable<screenData>({})
 export let allBoxes = writable<box[]>([])
 export let activeBox = writable<number>(0)
 export let validVideo = writable(0)
-export let posession: Writable<posessionT> = writable([])
-export let balls= writable<number[]>([])
+export let posession: Writable<possessionT> = writable([])
 export let identifications = $state(writable({
     player_ids: [-2],
     ball_ids: [-2],

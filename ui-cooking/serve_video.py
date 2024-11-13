@@ -65,13 +65,10 @@ async def handler(webs):
             case 'getPosessionData':
                 await webs.send(json.dumps({
                     'type': 'posessionData',
-                    'data': srvr.getPosessionData(cvideo)
-                }))
-                await webs.send(json.dumps({
-                    'type': 'otherPosessionData',
                     'data': {
-                        'team_posession': srvr.getOtherPosessionData(cvideo)['team_possession'],
-                        "zone_posession": srvr.getOtherPosessionData(cvideo)['zone_possession']
+                        'time_possession': srvr.getPosessionData(cvideo),
+                        'team_possession': srvr.getOtherPosessionData(cvideo)['team_possession'],
+                        'zone_possession': srvr.getOtherPosessionData(cvideo)['zone_possession']
                     }
                 }))
             case 'getPlayerMap':
@@ -84,8 +81,6 @@ async def handler(webs):
                     'type': '2dMap',
                     'data': srvr.getMinimapData(cvideo)
                 }))
-        # except Exception as e:
-        #     print(e)
 
 def start_http_server():
     handler = SimpleHTTPRequestHandler
