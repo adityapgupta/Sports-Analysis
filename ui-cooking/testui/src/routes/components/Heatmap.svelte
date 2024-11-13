@@ -4,12 +4,12 @@
     const { heatmap_data, header }: { heatmap_data: number[][], header: string } = $props()
 
     let heatmapView: SVGElement
-    const ROWS = $derived(heatmap_data[0]?.length || 15)
-    const COLUMNS = $derived(heatmap_data.length || 10)
+    const ROWS = $derived(heatmap_data?.[0]?.length || 15)
+    const COLUMNS = $derived(heatmap_data?.length || 10)
     const anim_delay = 80
     let rectw = $derived(105/ROWS)
     let recth = $derived(68/COLUMNS)
-    let heatmap_max = $derived(Math.max(...heatmap_data.flat()))
+    let heatmap_max = $derived(Math.max(...Array.from(heatmap_data?.flat() ?? [0])))
     onMount(() => {
         $effect(() => {
             d3.select(heatmapView).selectAll("g").data(heatmap_data)

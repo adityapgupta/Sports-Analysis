@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { cvideo, box, dataStore, video_duration, vid_prefix, identifications, frameRate, dataStore_2d } from "../shared/progstate.svelte"
+    import { cvideo, dataStore, video_duration, vid_prefix, identifications, frameRate, dataStore_2d } from "../shared/progstate.svelte"
     const { socket }: { socket: WebSocket } = $props()
+    import type { box } from "../shared/types"
 
     let videos = $state([])
     let bval = $state('');
@@ -61,30 +62,17 @@
     socket.addEventListener('message', msg => {
         const data = JSON.parse(msg.data)
         if (data.type == 'bufferedFrames') {
-            const recvdata = data.data as {[key: number] : Array<{ id: number, x: number, w: number, h: number, y: number }>}
+            const recvdata = data.data as {[key: number] : Array<box>}
             $dataStore = {}
             for (const key in recvdata) {
                 dataStore.update(currentData => {
-                    const boxedData = recvdata[key].map(v => new box(v.id, v.x, v.y, v.w, v.h))
+                    const boxedData = recvdata[key]
                     return { ...currentData, [key]: boxedData };
                 });
             }
-            const evaledobjs: { [key: number]: number } = {}
-            Object.values($dataStore).forEach((bs, idx, arr) => makeBoxesReevaluate(bs, evaledobjs))
         }
     })
     
-    function makeBoxesReevaluate(indata: box[], alrEvaled: {[key: number]: number}) {
-        for (const boxval of indata) {
-            if (Object.keys(alrEvaled).find(d => Math.floor(Number(d)) == Math.floor(boxval.owner))) {
-                boxval.appearedFrames = alrEvaled[boxval.owner]
-            } else {
-                boxval.evaluateAppearedFrames()
-                alrEvaled[boxval.owner] = boxval.appearedFrames
-            }
-        }
-    }
-
     function loadFrameData() {
         const d = $video_duration
         if (isNaN(d)) {

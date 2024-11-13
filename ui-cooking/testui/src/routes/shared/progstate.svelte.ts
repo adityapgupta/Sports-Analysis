@@ -1,22 +1,13 @@
 import { writable, get, type Writable } from "svelte/store"
-enum pages {
+import type { screenData, box, minimapData, posessionT } from "./types"
+
+export enum pages {
     MAIN_HOME = "landing",
     HOME = "page-1",
-    // PLAYERS_LIST = "page-2",
     ANALYTICS = "page-3",
     TEAM = "team",
 }
 
-export let heatmap_data: Writable<{"left-team": number[][], "right-team": number[][], "ball": number[][]}> = $state(writable({
-    'left-team': [],
-    'right-team': [],
-    'ball': []
-}))
-export let linemap_data: Writable<{"left-team": [number, number][], "right-team": [number, number][], "ball": [number, number][]}> = $state(writable({
-    'left-team': [],
-    'right-team': [],
-    'ball': []
-}))
 export let currentPage = writable(pages.MAIN_HOME)
 export let frameRate = $state(writable(25))
 export let currentFile = $state(writable(""))
@@ -24,14 +15,12 @@ export let currentFrame = $state(writable(0))
 export let cvideo = writable("")
 export let vid_prefix = writable("")
 export let port = writable(8000)
-export let player_data = $state(writable<Array<[string, string, string]>>([]))
 export let video_duration = $state(writable(0));
-export let dataStore = writable<boxesData>({})
+export let dataStore = writable<screenData>({})
 export let allBoxes = writable<box[]>([])
 export let activeBox = writable<number>(0)
-export let activeBoxFrames = writable(0)
 export let validVideo = writable(0)
-export let posession: Writable<{start: number, duration: number, color: "left-team" | "right-team"}[]> = writable([])
+export let posession: Writable<posessionT> = writable([])
 export let balls= writable<number[]>([])
 export let identifications = $state(writable({
     player_ids: [-2],
@@ -40,49 +29,7 @@ export let identifications = $state(writable({
     right_team: [-2],
     referee: [-2]
 }))
-export let dataStore_2d: Writable<[number, number, [number, number]][][]> = $state(writable([]))
-
-interface boxesData {
-    [key: number]: box[]
-}
-class box {
-    x: number
-    y: number
-    w: number
-    h: number
-    owner: number
-    appearedFrames = 0
-
-    constructor(owner: number, x: number, y: number, w: number, h: number) {
-        this.x = x
-        this.y = y
-        this.w = w
-        this.h = h
-        this.owner = owner
-    }
-
-    // transform image coordinates because the video is a different size to actual coordinates
-    transformedCoords(rw: any, rh: number, aw: number, ah: number) { 
-        const vmult = ah/rh
-        const hmult = aw/rw
-        return [this.x*hmult, this.y*vmult, this.w*hmult, this.h*vmult].map(Math.floor)
-    }
-
-    evaluateAppearedFrames() {
-        this.appearedFrames = 0
-        const storeData = get(dataStore);
-        for (const key in storeData) {
-            if (storeData.hasOwnProperty(key)) {
-                const items = storeData[key];
-                for (const item of items) {
-                    if (item.owner == this.owner) {
-                        this.appearedFrames++
-                    }
-                }
-            }
-        }
-    }
-}
+export let dataStore_2d: Writable<minimapData> = $state(writable([]))
 
 const leeway = 20;
 export const isBoxClicked = function(inbox: box, svgelt: SVGElement, clickx: number, clicky: number, vidx: number, vidy: number) {
@@ -106,6 +53,3 @@ export const getAppropriateColor = function(tracking_id: number) {
         return "black"
     }
 }
-
-
-export { pages, type boxesData, box }

@@ -7,39 +7,37 @@
     import Pieplot from "../components/pieplot.svelte";
     import Boxgraph from "../components/boxgraph.svelte";
     import Barplot from "../components/barplot.svelte";
+    import type { HeatmapData } from "./types";
 
-    let heatmapdata: {"left-team": number[][], "right-team": number[][], "ball": number[][]} = $state({
-        'left-team': [],
-        'right-team': [],
+    let heatmapdata: HeatmapData = $state({
+        'left': [],
+        'right': [],
         'ball': []
     })
 
-    let linemapdata: {"left-team": [number, number][], "right-team": [number, number][], "ball": [number, number][]} = $state({
-        'left-team': [],
-        'right-team': [],
-        'ball': []
-    })
     let posession: {start: number, duration: number, color: "left-team" | "right-team"}[] = $state([])
     let otherPosessionData: {team_posession: any, zone_posession: any} =
         $state({team_posession: {}, zone_posession: {}})
     let getGraphsData = async function() {
-        heatmapdata = {'left-team': [], 'right-team': [], 'ball': []}
-        await socket.send(JSON.stringify({
+        heatmapdata = {'left': [], 'right': [], 'ball': []}
+        socket.send(JSON.stringify({
             type: "getHeatmapData"
         }))
-        await socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
             type: "getLinemapData"
         }))
-        await socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
             type: "getPosessionData"
     }))}
 
     socket.addEventListener('message', m => {
         const data = JSON.parse(m.data)
         if (data.type == "heatmapData") {
-            heatmapdata = data.data
-        } else if (data.type == "linemapData") {
-            linemapdata = data.data
+            heatmapdata = {
+                'left': data.data['left-team'],
+                'right': data.data['right-team'],
+                'ball': data.data['ball']
+            }
         } else if (data.type == "posessionData") {
             posession = data.data
             $posstate = posession

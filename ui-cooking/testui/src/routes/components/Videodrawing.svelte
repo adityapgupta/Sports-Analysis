@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { cvideo, port, dataStore, video_duration, activeBox, activeBoxFrames, validVideo, vid_prefix, posession, isBoxClicked, identifications, frameRate, currentFrame, getAppropriateColor } from "../shared/progstate.svelte";
+    import { cvideo, port, dataStore, video_duration, activeBox, validVideo, vid_prefix, posession, isBoxClicked, identifications, frameRate, currentFrame, getAppropriateColor } from "../shared/progstate.svelte";
     import * as d3 from 'd3'
     let vidobj: HTMLVideoElement;
     let vidurl = $derived(`http://localhost:${$port}/${$vid_prefix}${$cvideo}`)
@@ -53,8 +53,7 @@
         if (current_frame_boxes) {
             let b = current_frame_boxes.findLast(inbox => isBoxClicked(inbox, drawSVG, e.layerX, e.layerY, vnatw, vnath))
             if (b) { 
-                $activeBox = b.owner
-                $activeBoxFrames = b.appearedFrames
+                $activeBox = b.id
                 setTimeout(redrawsvgelt, 100)
             }
         }
@@ -70,8 +69,8 @@
             d3elt.selectAll('rect').data($posession).join('rect')
                 .attr('x', d => d3xaxis(d.start))
                 .attr('width', d => d3xaxis(d.duration))
-                .attr('height', d3yaxis(1)).attr('y', d => d.color == "left-team" ? d3yaxis(0) : d3yaxis(1))
-                .attr('fill', d => d.color == "right-team" ? "red" : "blue")
+                .attr('height', d3yaxis(1)).attr('y', d => d.team == "left" ? d3yaxis(0) : d3yaxis(1))
+                .attr('fill', d => d.team == "right" ? "red" : "blue")
 
     }
 </script>
@@ -94,12 +93,12 @@
             {#key $activeBox}
                 
             {#each $dataStore[frame+2] as f}
-                {#if $identifications.ball_ids.includes(f.owner)}
-                    <polygon fill={getAppropriateColor(f.owner)} vector-effect="non-scaling-stroke"
+                {#if $identifications.ball_ids.includes(f.id)}
+                    <polygon fill={getAppropriateColor(f.id)} vector-effect="non-scaling-stroke"
                     points="0,0 {-flr(vnatw/80)},{-flr(vnath/40)} {flr(vnatw/80)},{-flr(vnath/40)}"
                     transform="translate({f.x+f.w/2},{f.y-5-vnatw/40})"/>
                 {:else}
-                    <ellipse stroke="{getAppropriateColor(f.owner)}" mask="url(#mask1)" vector-effect="non-scaling-stroke"
+                    <ellipse stroke="{getAppropriateColor(f.id)}" mask="url(#mask1)" vector-effect="non-scaling-stroke"
                         stroke-width="3px" cx=0 cy=0 ry=25 rx=45 fill="none"
                         transform="translate({f.x + f.w/2},{f.y+f.h-5}) scale({f.w/60})"/>
                 {/if}
