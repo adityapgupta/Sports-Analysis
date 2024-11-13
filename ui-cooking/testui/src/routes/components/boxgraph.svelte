@@ -32,12 +32,13 @@
                 .attr('fill', 'none').attr('stroke', 'black')
         })
     })
+    $inspect(posession)
 </script>
 
 <div class="w-full flex flex-col items-center p-3 px-6">
-    <h2 class="text-2xl text-center p-2">Posession over time</h2>
+    <h2 class="text-xl text-center p-2">Posession over time</h2>
     <div class="svg-container">
-        <svg viewBox="0 0 200 30" bind:this={svgElt}>
+        <svg viewBox="0 0 200 40" bind:this={svgElt}>
             
         </svg>
     </div>

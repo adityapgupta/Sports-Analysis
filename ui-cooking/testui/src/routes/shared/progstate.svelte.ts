@@ -6,6 +6,7 @@ export enum pages {
     HOME = "page-1",
     ANALYTICS = "page-3",
     TEAM = "team",
+    SETTINGS = "settings",
 }
 
 export let currentPage = writable(pages.MAIN_HOME)
@@ -52,3 +53,7 @@ export const getAppropriateColor = function(tracking_id: number) {
         return "black"
     }
 }
+
+export const configuration = $state(writable({
+    drawVoronoi: false
+}))

@@ -1,5 +1,6 @@
 <script lang="ts">
-    const { bardata }: { bardata: { "attacking": number, "defenasive": number, "middle": number }} = $props()
+    import type { possessionZone, possessionTeam } from '../shared/types';
+    const { bardata, header }: { bardata: possessionZone | possessionTeam, header: string } = $props()
     import * as d3 from 'd3'
     import { onMount } from 'svelte';
     let svgelt: SVGElement;
@@ -7,47 +8,45 @@
     onMount(() => {
         $effect(() => {
             const margin = { top: 20, right: 30, bottom: 40, left: 90 };
-            const width = 460 - margin.left - margin.right;
-            const height = 400 - margin.top - margin.bottom;
+            const width = 400 - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
 
             const svg = d3.select(svgelt)
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", `translate(${margin.left},${margin.top})`);
-
-            const data = [
-                { category: "attacking", value: bardata.attacking },
-                { category: "defenasive", value: bardata.defenasive },
-                { category: "middle", value: bardata.middle }
-            ];
+            svg.selectChildren().remove()
 
             const x = d3.scaleLinear()
-                .domain([0, d3.max(data, d => d.value) ?? 10])
+                .domain([0, d3.max(Object.values(bardata)) as number])
                 .range([0, width]);
 
             const y = d3.scaleBand()
+                .domain(Object.keys(bardata))
                 .range([0, height])
-                .domain(data.map(d => d.category))
                 .padding(0.1);
-
-            svg.append("g")
+            
+            const g = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+            
+            g.append("g")
+                .attr("class", "x-axis")
+                .call(d3.axisBottom(x))
+                .attr("transform", `translate(0,${height})`);
+            g.append("g")
+                .attr("class", "y-axis")
                 .call(d3.axisLeft(y));
-
-            svg.selectAll("myRect")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("x", x(0))
-                .attr("y", (d, i) => i*200)
-                .attr("width", d => x(d.value))
+            
+            svg.selectAll("rect").data(Object.entries(bardata))
+                .join("rect")
+                .attr("x", margin.left)
+                .attr("y", d => margin.top + (y(d[0]) ?? 10))
+                .attr("width", d => (x(d[1]) ?? 10))
                 .attr("height", y.bandwidth())
-                .attr("fill", "#69b3a2");
+                .attr("fill", "steelblue");
+
         })
     })
 </script>
 
 <div class="w-ful h-full flex-col items-center">
-    <h2 class="text-2xl text-center">Posession data</h2>
-    <svg bind:this={svgelt} viewBox="0 0 400 400"></svg>
+    <h2 class="text-xl text-center">{header}</h2>
+    <svg bind:this={svgelt} viewBox="0 0 400 300"></svg>
 </div>

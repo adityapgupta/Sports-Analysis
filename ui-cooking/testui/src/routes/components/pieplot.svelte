@@ -24,6 +24,6 @@
 </script>
 
 <div class="w-ful h-full flex-col items-center">
-    <h2 class="text-2xl text-center">Posession data</h2>
+    <h2 class="text-xl text-center">Posession data</h2>
     <svg bind:this={svgelt} viewBox="0 0 30 30"></svg>
 </div>

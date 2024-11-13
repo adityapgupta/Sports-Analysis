@@ -5,6 +5,7 @@
     import Pieplot from "../components/pieplot.svelte";
     import Boxgraph from "../components/boxgraph.svelte";
     import type { HeatmapData, possessionT, possessionTeam, possessionZone } from "./types";
+    import Barplot from "../components/barplot.svelte";
 
     let heatmapdata: HeatmapData = $state({
         'left': [],
@@ -39,10 +40,15 @@
                 'ball': data.data['ball']
             }
         } else if (data.type == "posessionData") {
-            const indata = data.data as {'time_possession': possessionT,
-                        'team_possession': possessionTeam,
-                        'zone_possession': possessionZone}
-            posession = indata.time_possession
+            const indata = data.data
+            console.log(indata.time_possession)
+            posession = indata.time_possession.map((d: any) => {
+                return {
+                    start: d.start,
+                    duration: d.duration,
+                    team: d.color == "left-team" ? "left" : "right"
+                }
+            })
             teamPosession = indata.team_possession
             zonePosession = indata.zone_possession
             $posstate = posession
@@ -74,12 +80,14 @@
 
 </script>
 
-<div class="analytics-page items-center grid-cols-1 xl:grid-cols-2" style:display={visibility ? "grid":"none"}>
+<div class="analytics-page items-center gap-2 grid-cols-1 xl:grid-cols-2" style:display={visibility ? "grid":"none"}>
     <Heatmap header="Left team heatmap" heatmap_data={heatmapdata["left"]}/>
     <Heatmap header="Right team heatmap" heatmap_data={heatmapdata["right"]}/>
     <Heatmap header="Ball heatmap" heatmap_data={heatmapdata["ball"]}/>
     <Boxgraph {posession} />
-    <Pieplot piedata={teamPosession} />
+    <!-- <Pieplot piedata={teamPosession} /> -->
+    <Barplot bardata={zonePosession} header="Zone posession"/>
+    <Barplot bardata={teamPosession} header="Team posession"/>
     <button onclick={() => {setlinedata(); getGraphsData()}} class="p-1 border-2 m-2 flex-shrink xl:col-span-2">Refresh data</button>
 </div>
 

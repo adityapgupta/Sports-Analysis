@@ -7,15 +7,17 @@
     import ico3 from '$lib/sidebar-icons/ico3.svg'
     import ico4 from '$lib/sidebar-icons/ico4.svg'
     import ico5 from '$lib/sidebar-icons/ico5.svg'
+    import settingsicon from '$lib/sidebar-icons/settings.svg'
     import menuicon from '$lib/sidebar-icons/menu.svg'
 
     const fadeOpt = {duration: 150}
-    const icons = [ico2, ico4, ico5]
-    const descriptions = ["Video", "Insights", "Team"]
+    const icons = [ico2, ico4, ico5, settingsicon]
+    const descriptions = ["Video", "Insights", "Team", "Settings"]
 
     let changePage = function(idx: number) {
         $currentPage = Object.values(pages)[idx]
     }
+    $inspect($currentPage)
 </script>
 
 <svelte:head>

@@ -1,12 +1,12 @@
 <script lang="ts">
     import footballimg from '$lib/images/Football_field.svg';
     import { onMount } from 'svelte';
-    import { validVideo, dataStore_2d, currentFrame, getAppropriateColor, identifications, activeBox } from '../shared/progstate.svelte';
+    import { validVideo, dataStore_2d, configuration, currentFrame, getAppropriateColor, identifications, activeBox } from '../shared/progstate.svelte';
     import * as d3 from 'd3'
     // svelte-ignore non_reactive_update
     let svgelt: SVGElement
     const data = $derived($dataStore_2d[$currentFrame])
-    const drawVoronoi = false
+    const drawVoronoi = $derived($configuration.drawVoronoi)
     
     let d3svg: d3.Selection<SVGElement, unknown, null, undefined>
     const lplayers = $derived.by(() => {
@@ -28,8 +28,8 @@
             }
             d3svg = d3.select(svgelt)
             if (data) {
+                d3svg.selectAll('path').remove()
                 if (drawVoronoi){
-                    d3svg.selectAll('path').remove()
                     d3svg.selectAll('path').data(voronoi.cellPolygons()).join('path')
                         .attr('d', d => d ? `M${d.join('L')}Z` : null)
                         .attr('fill', 'none').attr('transform', 'scale(105, 68)')
