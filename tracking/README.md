@@ -7,11 +7,11 @@ and for using the detections to annotate the videos and create minimaps.
 `detect.py` contains functions to detect the players and the ball in a frame.
 The outputs are written to a pkl file to be used later.
 
-The team classification is done using a SigLIP model https://huggingface.co/docs/transformers/en/model_doc/siglip
+The team classification is done using a [SigLIP model](https://huggingface.co/docs/transformers/en/model_doc/siglip)
 
-The code for this has been taken from https://github.com/roboflow/sports
+The code for this has been taken from [here](https://github.com/roboflow/sports)
 
-The projections are calculated using a homography matrix. The code for this has been taken from https://github.com/mguti97/No-Bells-Just-Whistles.
+The projections are calculated using a homography matrix. The code for this has been taken from [here](https://github.com/mguti97/No-Bells-Just-Whistles)
 
 ## Interpolate
 `interpolate.py` contains functions to smooth out the detections since they contain a lot of jitter. This has been done to get smoother outputs for further analytics.
