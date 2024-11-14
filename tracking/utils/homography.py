@@ -22,6 +22,13 @@ DEVICE = torch.device('cuda')
 
 
 def projection_from_cam_params(final_params_dict):
+    """
+    Get projection matrix from camera parameters.
+    P = KR[I|t]
+    K -> Intrinsic matrix
+    R -> Rotation matrix
+    t -> Translation vector
+    """
     cam_params = final_params_dict['cam_params']
     x_focal_length = cam_params['x_focal_length']
     y_focal_length = cam_params['y_focal_length']
@@ -44,6 +51,9 @@ def projection_from_cam_params(final_params_dict):
 
 
 def inference(cam, frame, model, model_l, kp_threshold, line_threshold, device=DEVICE):
+    """
+    Inference function for the model. It takes a frame and returns the camera parameters.
+    """
     frame = Image.fromarray(frame)
     frame = f.to_tensor(frame).float().unsqueeze(0)
     frame = frame if frame.size()[-1] == 960 else T.Resize((540, 960))(frame)
@@ -51,6 +61,7 @@ def inference(cam, frame, model, model_l, kp_threshold, line_threshold, device=D
     frame = frame.to(device)
     _, _, h, w = frame.size()
 
+    # Perform keypoint and line detection
     model.eval()
     model.to(device)
 
@@ -91,6 +102,9 @@ def inference(cam, frame, model, model_l, kp_threshold, line_threshold, device=D
 
 
 def get_map_point(point, P):
+    """
+    Get the map point from the point and the projection matrix.
+    """
     point = np.linalg.inv(P) @ np.array(point)
     point = point/point[2]
     point[0] += 105 / 2
@@ -100,6 +114,9 @@ def get_map_point(point, P):
 
 
 def project(P, coords, h, w):
+    """
+    Return projected points and edges for the 2D map.
+    """
     pts = [get_map_point([(x1 + x2) / 2, y2, 1], P)
            for x1, _, x2, y2 in coords]
 
@@ -110,6 +127,9 @@ def project(P, coords, h, w):
 
 
 def process_input(input, coords, model, model_l, kp_threshold, line_threshold):
+    """
+    Takes 3D map coordinates, poses and labels and returns the 2D map points and edges.
+    """
     frame_height = input.shape[0]
     frame_width = input.shape[1]
 
@@ -138,9 +158,13 @@ def process_input(input, coords, model, model_l, kp_threshold, line_threshold):
 
 
 def inf_main(input, coords, kp_threshold=0.1486, line_threshold=0.3880, device=DEVICE):
+    """
+    Main function for inference.
+    """
     cfg = yaml.safe_load(open(f'{cdir}/../config/hrnetv2_w48.yaml', 'r'))
     cfg_l = yaml.safe_load(open(f'{cdir}/../config/hrnetv2_w48_l.yaml', 'r'))
 
+    # Load models
     weights_kp = f'{cdir}/../../models/SV_FT_WC14_kp'
     weights_line = f'{cdir}/../../models/SV_FT_WC14_lines'
 
@@ -156,6 +180,7 @@ def inf_main(input, coords, kp_threshold=0.1486, line_threshold=0.3880, device=D
     model_l.to(device)
     model_l.eval()
 
+    # Process input
     pts, edges = process_input(
         input,
         coords,
