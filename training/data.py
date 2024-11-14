@@ -6,6 +6,10 @@ from SoccerNet.Downloader import SoccerNetDownloader
 
 
 def convert(box, width, height):
+    """
+    Converts the bounding box from (x, y, w, h) to (x_center, y_center, w, h)
+    and normalizes the values between 0 and 1.
+    """
     x, y, w, h = box
     x, w = x / width, w / width
     y, h = y / height, h / height
@@ -15,6 +19,12 @@ def convert(box, width, height):
 
 
 def make_labels(train_path, ball=False):
+    """
+    Creates the labels for the images in the SoccerNet dataset
+    and renames the images to include the name of the video.
+
+    Setting 'ball' to True makes the function create labels only for the ball.
+    """
     for name in os.listdir(train_path):
         for file in os.listdir(f'{train_path}/{name}/img1'):
             os.rename(
@@ -29,6 +39,7 @@ def make_labels(train_path, ball=False):
             shutil.rmtree(label_path)
         os.makedirs(label_path)
 
+        # get image width and height from metadata
         width, height = 1, 1
         with open(f'{train_path}/{name}/seqinfo.ini', 'r') as file:
             data = file.readlines()
@@ -42,6 +53,7 @@ def make_labels(train_path, ball=False):
         goalkeeper_ids = []
         referee_ids = []
 
+        # get the ids of the ball, goalkeeper and referee from metadata
         with open(f'{train_path}/{name}/gameinfo.ini', 'r') as file:
             data = file.readlines()
             for line in data:
@@ -53,6 +65,7 @@ def make_labels(train_path, ball=False):
                 if 'referee' in line and not ball:
                     referee_ids.append(eval(line.split('=')[0].split('_')[1]))
 
+        # create labels for each image and save them in the labels folder
         with open(f'{train_path}/{name}/gt/gt.txt', 'r') as file:
             data = file.readlines()
             for line in data:
@@ -77,6 +90,9 @@ def make_labels(train_path, ball=False):
 
 
 def split(train_path, images_path, labels_path):
+    """
+    Splits the images and labels into training and validation sets.
+    """
     if os.path.exists(images_path):
         shutil.rmtree(images_path)
     os.makedirs(images_path)
@@ -126,6 +142,8 @@ def split(train_path, images_path, labels_path):
                 )
 
 
+# main function to create datasets from Soccernet dataset
+# Get password from the SoccerNet website
 if __name__ == '__main__':
     mySoccerNetDownloader = SoccerNetDownloader(LocalDirectory='../datasets/')
     mySoccerNetDownloader.password = 'your_password'
@@ -134,6 +152,7 @@ if __name__ == '__main__':
         task='tracking', split=['train', 'test']
     )
 
+    # set ball=True for finetuning the model to detect only the ball
     make_labels('../datasets/train', ball=False)
     split(
         '../datasets/train',

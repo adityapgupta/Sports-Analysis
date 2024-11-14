@@ -23,11 +23,16 @@ DEVICE = 'cuda'
 
 
 def make_video(clip_path, out_path):
+    """
+    Makes a video from the images in the clip_path folder.
+
+    Requires ffmpeg to be installed.
+    """
     ffmpeg_path = 'ffmpeg'
     command = [
         ffmpeg_path,
         '-i', f'{clip_path}/%06d.jpg',
-        '-r', '25',
+        '-r', '25', # fps
         '-y',
         '-v', 'quiet',
         '-c:v', 'libx264',
@@ -37,6 +42,11 @@ def make_video(clip_path, out_path):
 
 
 def extract_crops(model, source_video_path, stride, player_id, confidence=0.3):
+    """
+    Returns the crops of the frame where the player is detected in the video.
+
+    Uses the bounding box of the detection to crop the image.
+    """
     frame_generator = sv.get_video_frames_generator(
         source_video_path, stride=stride
     )
@@ -55,6 +65,9 @@ def extract_crops(model, source_video_path, stride, player_id, confidence=0.3):
 
 
 def classifier(model, clip_path, video_info, confidence=0.3):
+    """
+    Separates the players in the video into two teams using the SigLIP model
+    """
     stride = video_info.fps
 
     crops = extract_crops(
@@ -65,6 +78,7 @@ def classifier(model, clip_path, video_info, confidence=0.3):
         confidence=confidence
     )
 
+    # Initialize the TeamClassifier model and fit it to the crops
     team_classifier = TeamClassifier(device=DEVICE, verbose=False)
     team_classifier.fit(crops)
 
@@ -72,6 +86,10 @@ def classifier(model, clip_path, video_info, confidence=0.3):
 
 
 def goalkeepers_team(players, goalkeepers):
+    """
+    Decides the team of the goalkeeper based on the distance
+    between the goalkeeper and the centroid of the players of each team
+    """
     goalkeepers_xy = goalkeepers.get_anchors_coordinates(
         sv.Position.BOTTOM_CENTER
     )
@@ -90,6 +108,9 @@ def goalkeepers_team(players, goalkeepers):
 
 
 def team_detection(frame, detections, team_classifier):
+    """
+    Assigns a team to the detected players
+    """
     goalkeeper_detections = detections[detections.class_id == GOALKEEPER_ID]
     players_detections = detections[detections.class_id == PLAYER_ID]
     referees_detections = detections[detections.class_id == REFEREE_ID]
@@ -115,6 +136,11 @@ def team_detection(frame, detections, team_classifier):
 
 
 def get_coords(frame, detections, project=False):
+    """
+    Returns the tracking ids, class ids and coordinates of the detections.
+
+    If project is True, the coordinates are projected to the 2D plane.
+    """
     coords = detections.xyxy
     tracking_ids = detections.tracker_id
     class_ids = detections.class_id
@@ -127,13 +153,22 @@ def get_coords(frame, detections, project=False):
 
 
 def detections(clip_path, players_path, ball_path, pkl_path, players_conf=0.3, ball_conf=0.5, return_class=False, project=True, verbose=False):
+    """
+    Detects the players and the ball in the video and saves the detections in a pickle file.
+
+    Detection confidence for players and ball can be set using players_conf and ball_conf respectively.
+    If return_class is True, the detection class is saved. This is used to make the video.
+    If project is True, the detections are projected to the 2D plane. This is used to make the minimap.
+    """
     players_model = YOLO(players_path)
     ball_model = YOLO(ball_path)
 
+    # tracking ids are maintained using ByteTrack
     tracker = sv.ByteTrack()
     tracker.reset()
 
     video_info = sv.VideoInfo.from_video_path(clip_path)
+    # initialize the team classifier model using a frame from every second of the video
     team_classifier = classifier(
         players_model, clip_path, video_info, confidence=players_conf)
 
@@ -143,6 +178,7 @@ def detections(clip_path, players_path, ball_path, pkl_path, players_conf=0.3, b
     coordinates = []
 
     for frame in tqdm(frame_generator, total=video_info.total_frames) if verbose else frame_generator:
+        # detect players in the frame
         player_result = players_model(
             frame, conf=players_conf, verbose=False)[0]
 
@@ -151,25 +187,31 @@ def detections(clip_path, players_path, ball_path, pkl_path, players_conf=0.3, b
             threshold=0.5,
             class_agnostic=True,
         )
+
+        # update the tracker with the new detections
         players_detections = tracker.update_with_detections(players_detections)
         players_detections = team_detection(
             frame, players_detections, team_classifier)
         players_detections.class_id = players_detections.class_id.astype(int)
 
+        # detect the ball in the frame
         ball_result = ball_model(frame, conf=ball_conf, verbose=False)[0]
         ball_detections = sv.Detections.from_ultralytics(ball_result)
 
+        # accounting for frames where no players or balls are detected
         if len(players_detections) == 0:
             players_detections.tracker_id = np.array([])
 
         if len(ball_detections) == 0:
             ball_detections.tracker_id = np.array([])
         else:
+            # if multiple balls are detected, choose the one with the highest confidence
             max_conf = ball_detections.confidence.max()
             ball_detections = ball_detections[ball_detections.confidence == max_conf]
             ball_detections.tracker_id = np.array([-1]*len(ball_detections))
 
         try:
+            # merge the detections of the players and the ball
             detections = sv.Detections.merge(
                 [ball_detections, players_detections])
         except:
@@ -181,5 +223,6 @@ def detections(clip_path, players_path, ball_path, pkl_path, players_conf=0.3, b
 
         coordinates.append(get_coords(frame, detections, project=project))
 
+    # save the detections in a pickle file
     with open(pkl_path, 'wb') as f:
         pickle.dump((detect, coordinates), f)

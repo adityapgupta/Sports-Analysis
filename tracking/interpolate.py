@@ -4,7 +4,14 @@ import pandas as pd
 
 
 def interpolate(frames, k, mode):
+    """
+    Averages the value of the k-th frame by using a weighted 
+    average of the values from the frames around it
+    """
     x, y = 0, 0
+
+    # set of weights to be used
+    # the weights are higher for the frames closer to the k-th frame
     weights = [2/14, 3/14, 4/14, 3/14, 2/14]
 
     for i, frame in enumerate(frames):
@@ -19,6 +26,10 @@ def interpolate(frames, k, mode):
 
 
 def ball_interpolate(pkl_path):
+    """
+    Interpolates the ball coordinates by linearly
+    interpolating the missing values from the frames
+    """
     with open(pkl_path, 'rb') as f:
         _, data_list = pickle.load(f)
 
@@ -29,6 +40,8 @@ def ball_interpolate(pkl_path):
             if track == -1 and x > 0 and y > 0 and x < 105 and y < 68:
                 ball_data.loc[i] = {'frame': i, 'x': x, 'y': y}
             else:
+                # input nan for the frames where the ball is not detected
+                # these frames will be interpolated
                 ball_data.loc[i] = {'frame': i, 'x': np.nan, 'y': np.nan}
             break
 
@@ -39,6 +52,10 @@ def ball_interpolate(pkl_path):
 
 
 def players_interpolate(pkl_path):
+    """
+    Interpolates the players coordinates by taking a 
+    weighted average of the frames around it
+    """
     with open(pkl_path, 'rb') as f:
         _, data_list = pickle.load(f)
 
@@ -67,6 +84,10 @@ def players_interpolate(pkl_path):
 
 
 def edges_interpolate(pkl_path):
+    """
+    Interpolates the values of the edges of the visible
+    cone by taking a weighted average of the frames around it
+    """
     with open(pkl_path, 'rb') as f:
         _, data_list = pickle.load(f)
 

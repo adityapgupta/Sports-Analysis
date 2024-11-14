@@ -15,15 +15,21 @@ color_map = {
 
 
 def annotators():
+    """
+    Initializes the annotators for the detections.
+    """
+    # annotator for players and referees
     ellipse_annotator = sv.EllipseAnnotator(
         color=sv.ColorPalette.from_hex(['#FFD700', '#FF1493', '#00BFFF']),
         thickness=2
     )
+    # annotator for shwoing the tracker id
     label_annotator = sv.LabelAnnotator(
         color=sv.ColorPalette.from_hex(['#FFD700', '#FF1493', '#00BFFF']),
         text_color=sv.Color.from_hex('#000000'),
         text_position=sv.Position.BOTTOM_CENTER,
     )
+    # annotator for the ball
     triangle_annotator = sv.TriangleAnnotator(
         color=sv.Color.from_hex('#FFD700'),
         base=20, height=17
@@ -33,6 +39,9 @@ def annotators():
 
 
 def draw_markers(clip_path, out_path, pkl_path, ball_id=0):
+    """
+    Uses the detections to annotate the original video.
+    """
     with open(pkl_path, 'rb') as f:
         detections, _ = pickle.load(f)
         
@@ -70,6 +79,9 @@ def draw_markers(clip_path, out_path, pkl_path, ball_id=0):
 
 
 def draw_minimap(ball_data, players_data, edges_data, out_path, image_path=f'{cdir}/utils/field.png', dimensions=(640, 480), fps=25):
+    """
+    Uses the detections to draw the minimap.
+    """
     writer = cv2.VideoWriter(
         out_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, dimensions)
     field = cv2.imread(image_path)
