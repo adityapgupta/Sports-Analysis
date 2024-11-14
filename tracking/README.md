@@ -11,7 +11,7 @@ The team classification is done using a SigLIP model https://huggingface.co/docs
 
 The code for this has been taken from https://github.com/roboflow/sports
 
-The projections are calculated using a homography matrix. The code for this has been taken from https://github.com/mguti97/No-Bells-Just-Whistles. The relevant files are placed in the `utils` folder.
+The projections are calculated using a homography matrix. The code for this has been taken from https://github.com/mguti97/No-Bells-Just-Whistles.
 
 ## Interpolate
 `interpolate.py` contains functions to smooth out the detections since they contain a lot of jitter. This has been done to get smoother outputs for further analytics.

@@ -3,7 +3,7 @@
 The base YOLO models have decent object detections for football videos,
 but it can be improved using labelled data from Soccernet.
 
-Two separate models have been finetuned, one for player detection and one for ball detection. Both of these are available in the `models` folder.
+Two separate models have been finetuned, one for player detection and one for ball detection. Both of these are available in the `models` folder for direct use.
 
 ## Usage
 1. Visit https://www.soccer-net.org/data to fill an NDA to access the data. This will give you a password to be used to download the data.

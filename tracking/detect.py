@@ -152,7 +152,7 @@ def get_coords(frame, detections, project=False):
     return list(zip(tracking_ids, class_ids, coords))
 
 
-def detections(clip_path, players_path, ball_path, pkl_path, players_conf=0.3, ball_conf=0.5, return_class=False, project=True, verbose=False):
+def detections(clip_path, players_path, ball_path, pkl_path, players_conf=0.3, ball_conf=0.5, project=True, verbose=False):
     """
     Detects the players and the ball in the video and saves the detections in a pickle file.
 
@@ -218,9 +218,7 @@ def detections(clip_path, players_path, ball_path, pkl_path, players_conf=0.3, b
             detections = sv.Detections.empty()
             detections.tracker_id = np.array([])
 
-        if return_class:
-            detect.append(detections)
-
+        detect.append(detections)
         coordinates.append(get_coords(frame, detections, project=project))
 
     # save the detections in a pickle file
