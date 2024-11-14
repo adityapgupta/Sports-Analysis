@@ -31,10 +31,16 @@ if __name__ == '__main__':
         help='Path to the ball model',
     )
     parser.add_argument(
-        '--pkl_path', 
+        '--detections_path', 
         type=str, 
-        default=f'{cdir}/results/trimmed/trimmed.pkl', 
-        help='Path to the output pkl file',
+        default=f'{cdir}/results/trimmed/detections_trimmed.pkl', 
+        help='Path to the detections pkl file',
+    )
+    parser.add_argument(
+        '--analyze_path',
+        type=str,
+        default=None,
+        help='Path to the analysis pkl file'
     )
     parser.add_argument(
         '--markers_path', 
@@ -128,7 +134,8 @@ if __name__ == '__main__':
 
     # path to the output files
     # change according to your needs
-    pkl_path = args.pkl_path
+    detections_path = args.detections_path
+    analyze_path = args.analyze_path
     markers_path = args.markers_path
     minimap_path = args.minimap_path
 
@@ -139,7 +146,7 @@ if __name__ == '__main__':
         clip_path, 
         players_path, 
         ball_path, 
-        pkl_path, 
+        detections_path, 
         players_conf=args.players_conf,
         ball_conf=args.ball_conf,
         project=args.project,
@@ -147,12 +154,12 @@ if __name__ == '__main__':
     )
 
     # draw the detections on the video
-    draw_markers(clip_path, markers_path, pkl_path)
+    draw_markers(clip_path, markers_path, detections_path)
 
     # interpolate and smoothen the data for analysis
-    ball_data = interpolate.ball_interpolate(pkl_path)
-    players_data = interpolate.players_interpolate(pkl_path)
-    edges_data = interpolate.edges_interpolate(pkl_path)
+    ball_data = interpolate.ball_interpolate(detections_path)
+    players_data = interpolate.players_interpolate(detections_path)
+    edges_data = interpolate.edges_interpolate(detections_path)
 
     # draw the minimap
     # set the dimensions of the minimap using dimensions
@@ -170,10 +177,11 @@ if __name__ == '__main__':
     # can choose voronoi, heatmap, ball, speed
     # choose the other required parameters accordingly by referring to the README file in the analytics folder
     visualize(
-        pkl_path, 
+        detections_path, 
         statistic=args.statistic, 
         player_id=args.player_id,
         frame_id=args.frame_id,
         times=args.times,
         show=args.show,
+        save_path=analyze_path,
     )
