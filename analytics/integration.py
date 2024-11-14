@@ -170,6 +170,14 @@ def passing_opportunity_integrate(data, frame_id, player_id, timestamp = 10.0):
         other_opponent_players, 
         timestamp
     )
+    
+    # Make it into a list
+    copy_opportunities = []
+    
+    for i in range(len(opportunities)):
+        copy_dict = {}
+        copy_dict['player_id'] = opportunities[i].player_id
+    
     best_opportunities = analyzer.get_best_opportunity()
 
     return opportunities, best_opportunities
