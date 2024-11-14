@@ -17,7 +17,6 @@
     let changePage = function(idx: number) {
         $currentPage = Object.values(pages)[idx]
     }
-    $inspect($currentPage)
 </script>
 
 <svelte:head>

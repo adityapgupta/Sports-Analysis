@@ -16,3 +16,26 @@ export type box = {
     h: number,
     id: number
 }
+
+export type PassingLane = {
+    start_pos: [number, number],
+    end_pos: [number, number],
+    distance: number
+    interceptors: [number, number][] // (player id: int, distance: float)
+    success_probability: number
+    risk_score: number
+    reward_score: number
+    total_score: number
+}
+
+export type PassingOppurtunity = {
+    passer_id: number
+    receiver_id: number
+    lane: PassingLane
+    defensive_pressure: number
+    horizontal_progress: number
+    space_gained: number
+    timestamp: number
+}
+
+export type displayQuads = [[number, number], [number, number], [number, number], [number, number]][]

@@ -10,8 +10,8 @@
     style:display={visibility ? "block" : "none"} style:opacity={visibility ? 1 : 0}>
     <Videopicker {socket} />
     <div class="grid grid-cols-1 justify-items-center flex-grow gap-4 p-2 xl:grid-cols-2">
-        <Videodrawing />
-        <Playerplot2d />
+        <Videodrawing {socket}/>
+        <Playerplot2d {socket} />
     </div>
 </div>
 

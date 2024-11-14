@@ -57,11 +57,7 @@
             }
         } else if (data.type == "2dMap") {
             $dataStore_2d = data.data
-        }
-    })
-    socket.addEventListener('message', msg => {
-        const data = JSON.parse(msg.data)
-        if (data.type == 'bufferedFrames') {
+        } else if (data.type == 'bufferedFrames') {
             const recvdata = data.data as {[key: number] : Array<box>}
             $dataStore = {}
             for (const key in recvdata) {
@@ -70,6 +66,8 @@
                     return { ...currentData, [key]: boxedData };
                 });
             }
+        } else if (data.type == "error") {
+            console.error(data.data)
         }
     })
     
@@ -97,6 +95,9 @@
             type: 'getBufferedFrames',
             video: bval
         }))
+        socket.send(JSON.stringify({
+            type: 'getPosessionData'
+        }))
     }
 
     async function copyFileInternal() {
@@ -108,7 +109,7 @@
 </script>
 
 <div class="maingrid m-2 p-2 grid">
-    <button name="selectFileButton" class="bg-slate-400 p-2" onclick={copyFileInternal}>Copy to infererr</button>
+    <button name="selectFileButton" class="bg-slate-400 p-2" onclick={copyFileInternal}>Copy to internal</button>
     <input bind:this={fileInput} class="m-1 rounded" placeholder="Enter a full filepath here"/>
     <button name="getVideoButton" id="get_videos"
     class="bg-slate-400 p-2" onclick={getFiles}>Get videos</button>

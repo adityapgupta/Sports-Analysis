@@ -32,7 +32,6 @@
                 .attr('fill', 'none').attr('stroke', 'black')
         })
     })
-    $inspect(posession)
 </script>
 
 <div class="w-full flex flex-col items-center p-3 px-6">

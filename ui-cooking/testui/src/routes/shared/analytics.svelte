@@ -41,7 +41,6 @@
             }
         } else if (data.type == "posessionData") {
             const indata = data.data
-            console.log(indata.time_possession)
             posession = indata.time_possession.map((d: any) => {
                 return {
                     start: d.start,

@@ -9,18 +9,25 @@ import pathlib
 from random import random
 import supervision as spv
 import sys
+import subprocess as sp
 import pickle
 sys.path.append(str(pathlib.Path(__file__).parent.parent.absolute()))
-import Soccer_Analytics.core.team_shape_analyzer as tsa
+import analytics.integration as analytics
+
+if os.name == 'nt':
+    python_exec = 'python'
+else:
+    python_exec = 'python3'
 
 cdir = pathlib.Path(__file__).parent.absolute()
 cvid = ""
 tracking_data = ()
 analytics_data = {}
 tracking_data_2d = []
+view_data_2d = []
 
 def load_file_data(filename, force_reload = False):
-    global tracking_data, analytics_data, tracking_data_2d, cvid
+    global tracking_data, analytics_data, tracking_data_2d, cvid, view_data_2d
     if (not force_reload and cvid == filename):
         return
     print("attempting to access", filename, cvid)
@@ -29,14 +36,17 @@ def load_file_data(filename, force_reload = False):
         with open(f"{cdir}/media-videos/outputs/{filename}/tracking_data.pkl", 'rb') as f:
             tracking_data = pickle.load(f)
             # tracking_data[1] is of the format [([(id, class, (x , y))], coordinates)]
-            tmp = []
+            view_data_2d = []
+            tracking_data_2d = []
             for frame in tracking_data[1]:
-                tmp.append([(int(t[0]), int(t[1]), (float(t[2][0]), float(t[2][1]))) for t in frame[0]])
-            tracking_data_2d = tmp
+                tracking_data_2d.append([(int(t[0]), int(t[1]), (float(t[2][0]), float(t[2][1]))) for t in frame[0]])
+                view_data_2d.append([(float(t[0]), float(t[1])) for t in frame[1]])
+
         with open(f"{cdir}/media-videos/outputs/{filename}/analytics.pkl", 'rb') as f:
             analytics_data = pickle.load(f)
     except FileNotFoundError:
         print(f"That file is not found, {cdir}/media-videos/outputs/{filename}/tracking_data.pkl")
+
 
 def currentFrame(frame):
     while True:
@@ -99,7 +109,27 @@ def handleTraining(filename):
         return
     if not os.path.exists(f"{data_prefix}{filename}"):
         os.mkdir(f"{data_prefix}{filename}")
+    runModel(filename)
 
 def getMinimapData(filename):
     load_file_data(filename)
     return tracking_data_2d
+
+def getQuadData(filename):
+    load_file_data(filename)
+    return view_data_2d
+
+# def getPasses(frame, pid):
+#     print(analytics.passing_opportunity_integrate(tracking_data_2d, frame, pid))
+#     return analytics.passing_opportunity_integrate(tracking_data_2d, frame, pid)
+
+def runModel(filename):
+    program = [
+        python_exec,
+        f"{cdir}/../main.py",
+        "--clip_path",
+        f"{cdir}/media-videos/vids/{filename}",
+        "--analyze_path",
+        f"{cdir}/media-videos/outputs/{filename}/analytics.pkl",
+    ]
+    sp.Popen(program)

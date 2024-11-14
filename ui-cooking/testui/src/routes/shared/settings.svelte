@@ -1,7 +1,6 @@
 <script lang="ts">
     import { configuration } from "./progstate.svelte";
     const { visibility } = $props()
-    $inspect(visibility)
 </script>
 <div class="m-3 p-3" style:display={visibility ? "block" : "none"}>
     <label for="draw_voronoi">Draw voronoi on 2d chart</label>

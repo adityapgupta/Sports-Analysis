@@ -1,6 +1,7 @@
 <script lang="ts">
     import { cvideo, port, dataStore, video_duration, activeBox, validVideo, vid_prefix, posession, isBoxClicked, identifications, frameRate, currentFrame, getAppropriateColor } from "../shared/progstate.svelte";
     import * as d3 from 'd3'
+    let {socket} : {socket: WebSocket} = $props()
     let vidobj: HTMLVideoElement;
     let vidurl = $derived(`http://localhost:${$port}/${$vid_prefix}${$cvideo}`)
     let ctime = $state(0)
@@ -57,6 +58,9 @@
                 setTimeout(redrawsvgelt, 100)
             }
         }
+        // if ($activeBox != -2) {
+        //     socket.send(JSON.stringify({type: 'calculatePass', frame: frame, pid: $activeBox}))
+        // }
         play_button.focus()
         $currentFrame = frame
     }

@@ -80,10 +80,20 @@ async def handler(webs):
                 case 'get2dMap':
                     await webs.send(json.dumps({
                         'type': '2dMap',
-                        'data': srvr.getMinimapData(cvideo)
+                        'data': srvr.getMinimapData(cvideo),
+                        'quad': srvr.getQuadData(cvideo)
                     }))
+                # case 'calculatePass':
+                #     await webs.send(json.dumps({
+                #         'type': 'passData',
+                #         'data': srvr.getPasses(jsval['frame'], jsval['pid'])
+                #     }))
         except Exception as e:
-            print(traceback.format_exc(e))
+            await webs.send(json.dumps({
+                'type': 'error',
+                'data': traceback.format_exc()
+            }))
+            e
 
 def start_http_server():
     handler = SimpleHTTPRequestHandler

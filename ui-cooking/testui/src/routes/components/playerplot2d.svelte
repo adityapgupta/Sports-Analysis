@@ -1,13 +1,37 @@
 <script lang="ts">
     import footballimg from '$lib/images/Football_field.svg';
+    import type { displayQuads, PassingOppurtunity } from '../shared/types';
     import { onMount } from 'svelte';
     import { validVideo, dataStore_2d, configuration, currentFrame, getAppropriateColor, identifications, activeBox } from '../shared/progstate.svelte';
     import * as d3 from 'd3'
+    let { socket }: { socket: WebSocket } = $props()
     // svelte-ignore non_reactive_update
     let svgelt: SVGElement
     const data = $derived($dataStore_2d[$currentFrame])
     const drawVoronoi = $derived($configuration.drawVoronoi)
-    
+    let passes: PassingOppurtunity[] = $state([])
+    let bestPass: PassingOppurtunity | null = $state(null)
+    let quads: displayQuads = $state([])
+
+    // socket.addEventListener('message', (event) => {
+    //     const data = JSON.parse(event.data)
+    //     if (data.type === 'passData') {
+    //         console.log(data)
+    //         const d = data.data as [PassingOppurtunity[], PassingOppurtunity | null]
+    //         passes = d[0]
+    //         bestPass = d[1]
+    //     }
+    // })
+
+    socket.addEventListener('message', msg => {
+        const data = JSON.parse(msg.data)
+        if (data.type === '2dMap') {
+            console.log(data)
+            quads = data.quad
+            console.log($state.snapshot(quads))
+        }
+    })
+
     let d3svg: d3.Selection<SVGElement, unknown, null, undefined>
     const lplayers = $derived.by(() => {
         return data?.filter(d => $identifications.left_team.includes(d[0])) ?? []
@@ -29,6 +53,8 @@
             d3svg = d3.select(svgelt)
             if (data) {
                 d3svg.selectAll('path').remove()
+                d3svg.selectAll('circle').remove()
+
                 if (drawVoronoi){
                     d3svg.selectAll('path').data(voronoi.cellPolygons()).join('path')
                         .attr('d', d => d ? `M${d.join('L')}Z` : null)
@@ -40,7 +66,6 @@
                         .attr('stroke', 'none')
                         .attr('fill', d => lplayers.includes(d) ? 'red' : 'blue')
                 }
-                d3svg.selectAll('circle').remove()
                 d3svg.selectAll('circle').data(data).join('circle')
                     .attr('cx', d => xaxis(d[2][0]))
                     .attr('cy', d => yaxis(d[2][1]))
@@ -58,7 +83,10 @@
 <div class="mapcontainer">
     <img class="fieldimg" src={footballimg} alt="2d map view"/>
     <svg bind:this={svgelt} class="absolute width-full height-full top-0 left-0" viewBox="0 0 105 68">
-
+        {#if quads[$currentFrame]}
+            <polygon points={quads[$currentFrame].map(d => `${d[0]*105},${d[1]*68}`).join(' ')}
+                fill = "white" opacity=0.3 style="mix-blend-mode: lighten"/>
+        {/if}
     </svg>
 </div>
 {/if}
