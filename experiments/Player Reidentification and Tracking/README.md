@@ -1,4 +1,4 @@
-The experiments were done in testing_claims.ipynb. These exiperiments werenot able to be transferred or deployed into the model due to its high time consumption.
+The experiments were done in `testing_claims.ipynb`. These exiperiments were not able to be transferred or deployed into the model due to its high time consumption.
 
 There would be some modifications done in this folder depending on time available.
 
