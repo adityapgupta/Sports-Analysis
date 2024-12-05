@@ -1,6 +1,6 @@
-# Sports Analysis
+# SoccArt - Pipeline for Soccer Game Analysis
 
-Welcome to the Sports Analysis project! This innovative tool leverages advanced computer vision techniques to analyze football games using video feeds. By employing finetuned versions of YOLOv10, we accurately detect players and the ball, enabling comprehensive game analysis. Gain valuable insights such as ball movement patterns, team formation heatmaps, player statistics, and passing opportunities.
+Welcome to the Soccer Analysis project! This innovative tool leverages advanced computer vision techniques to analyze football games using video feeds. By employing finetuned versions of YOLOv10, we accurately detect players and the ball, enabling comprehensive game analysis. Gain valuable insights such as ball movement patterns, team formation heatmaps, player statistics, and passing opportunities.
 
 ## Key Features
 - **Accurate Player and Ball Detection**: Utilizing state-of-the-art YOLOv10 models.
