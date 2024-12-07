@@ -68,8 +68,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         '--project', 
-        type=bool, 
-        default=True, 
+        action='store_false', 
         help='Project the detections to the 2D plane'
     )
     parser.add_argument(
