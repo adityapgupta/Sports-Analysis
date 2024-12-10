@@ -1,6 +1,6 @@
 # SoccArt - Pipeline for Soccer Game Analysis
 
-Welcome to the Soccer Analysis project! This innovative tool leverages advanced computer vision techniques to analyze football games using video feeds. By employing finetuned versions of YOLOv10, we accurately detect players and the ball, enabling comprehensive game analysis. Gain valuable insights such as ball movement patterns, team formation heatmaps, player statistics, and passing opportunities.
+Welcome to the Soccer Analysis project! This paper presents an automated computer vision pipeline for soccer game analysis using video input. The system employs YOLOv10 and ByteTrack for robust detection and tracking of players, referees, and the ball. Team identification and jersey number recognition are achieved through SigLIP-based color clustering and neural networks like ResNet34 and ViTPose. Field-camera calibration and homography transformation map detected entities onto a minimap. Interpolation with sliding window smoothing ensures temporal consistency. The pipeline provides accurate positional data and annotations, enabling detailed gameplay analysis and insights into soccer strategies.
 
 ## Conference Presentation
 This project was proudly presented as a poster at the 1st Conference on Applied AI and Scientific Machine Learning (CASML 2024) from 16th to 18th December 2024. Our innovative approach to soccer game analysis garnered significant interest and showcased the potential of advanced computer vision techniques in sports analytics.
