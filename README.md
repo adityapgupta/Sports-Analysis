@@ -2,6 +2,25 @@
 
 Welcome to the Soccer Analysis project! This innovative tool leverages advanced computer vision techniques to analyze football games using video feeds. By employing finetuned versions of YOLOv10, we accurately detect players and the ball, enabling comprehensive game analysis. Gain valuable insights such as ball movement patterns, team formation heatmaps, player statistics, and passing opportunities.
 
+## Conference Presentation
+This project was proudly presented as a poster at the 1st Conference on Applied AI and Scientific Machine Learning (CASML 2024) from 16th to 18th December 2024. Our innovative approach to soccer game analysis garnered significant interest and showcased the potential of advanced computer vision techniques in sports analytics.
+### Poster Title
+**SoccArt: Soccer Game Analysis**
+
+**State of the Art Soccer Analysis Pipeline using Artificial Intelligence**
+
+[View Poster](docs/CASML_Poster_Soccer_Game_Analysis.pdf)
+
+[Read Abstract](docs/CASML_Abstract_Soccer_Game_Analysis.pdf)
+
+### Authors
+- Aditya Gupta
+- Armaan Khetarpaul
+- R. K. Shishir
+- Sahil Chaudhary
+- S. Sharath
+- Umang Majumder
+
 ## Key Features
 - **Accurate Player and Ball Detection**: Utilizing state-of-the-art YOLOv10 models.
 - **In-depth Game Analysis**: Extract meaningful insights from video feeds.
