@@ -13,6 +13,8 @@ This project was proudly presented as a poster at the 1st Conference on Applied 
 
 [Read Abstract](docs/CASML_Abstract_Soccer_Game_Analysis.pdf)
 
+[Watch Tracking Demo](https://youtu.be/RK7scSvPiHY)
+
 ### Authors
 - Aditya Gupta
 - Armaan Khetarpaul
