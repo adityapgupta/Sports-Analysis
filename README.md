@@ -23,6 +23,31 @@ This project was proudly presented as a poster at the 1st Conference on Applied 
 - S. Sharath
 - Umang Majumder
 
+## Evaluation Metrics
+### Player Detection AP Score (at IoU = 0.5)  
+
+| Model               | Average Precision (AP) |
+|---------------------|-------------------------|
+| YOLOv5 (Roboflow)   | 0.810                  |
+| YOLOv8 (PyResearch) | 0.794                  |
+| **YOLOv10 (Ours)**  | **0.862**              |
+
+###  Jersey No. Recognition Accuracy
+
+| Model                              | Accuracy (%) |
+|------------------------------------|--------------|
+| **ZZPM**                           | **92.85**    |
+| AIBrain Global Team                | 75.18        |
+| PARSeq & VitPose based (Ours)      | 79.31        |
+
+### Calibration Metric Scores
+
+| Model                       | *acc@5*  | *CR*    | **FS**  |
+|-----------------------------|----------|---------|---------|
+| SAIVA_Calibration           | -        | -       | 0.52    |
+| Sportlight                  | **0.766**| 0.734   | 0.56    |
+| **No-Bells-Just-Whistles**  | 0.737    | **0.775**| **0.57** |
+
 ## Key Features
 - **Accurate Player and Ball Detection**: Utilizing state-of-the-art YOLOv10 models.
 - **In-depth Game Analysis**: Extract meaningful insights from video feeds.
